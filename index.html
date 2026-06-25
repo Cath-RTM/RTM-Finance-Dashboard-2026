@@ -18,56 +18,83 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--navy);color:var(--txt);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;}
-.hdr{background:var(--navy2);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
-.hdr-brand{display:flex;align-items:center;gap:12px;}
-.hdr-bar{width:8px;height:28px;background:var(--amber);border-radius:2px;}
-.hdr-title{font-size:15px;font-weight:600;color:var(--white);letter-spacing:.01em;}
-.hdr-sub{font-size:12px;color:var(--muted);}
-.hdr-badge{background:rgba(253,168,19,.15);color:var(--amber);border:1px solid rgba(253,168,19,.3);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;letter-spacing:.04em;}
-.nav{background:var(--navy2);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;gap:4px;overflow-x:auto;}
-.tab{padding:10px 18px;font-size:13px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;user-select:none;white-space:nowrap;}
+
+/* HEADER */
+.hdr{background:var(--navy2);border-bottom:1px solid var(--border);padding:0 1rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
+.hdr-brand{display:flex;align-items:center;gap:10px;}
+.hdr-brand img{height:28px;width:auto;}
+.hdr-title{font-size:13px;font-weight:600;color:var(--white);letter-spacing:.01em;}
+.hdr-sub{font-size:11px;color:var(--muted);}
+.hdr-badge{background:rgba(253,168,19,.15);color:var(--amber);border:1px solid rgba(253,168,19,.3);padding:3px 8px;border-radius:20px;font-size:10px;font-weight:500;white-space:nowrap;}
+
+/* NAV */
+.nav{background:var(--navy2);border-bottom:1px solid var(--border);padding:0 1rem;display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.tab{padding:10px 14px;font-size:12px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;user-select:none;white-space:nowrap;flex-shrink:0;}
 .tab:hover{color:var(--txt);}
 .tab.active{color:var(--amber);border-bottom-color:var(--amber);font-weight:500;}
-.pane{display:none;padding:1.75rem 2rem;max-width:1200px;margin:0 auto;}
+
+/* PANES */
+.pane{display:none;padding:1rem;max-width:1200px;margin:0 auto;}
 .pane.active{display:block;}
+
+/* LABELS */
 .slabel{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;}
-.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-bottom:1.75rem;}
-.mc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;transition:background .15s;}
-.mc:hover{background:var(--cardh);}
-.mc .lbl{font-size:11px;color:var(--muted);margin-bottom:5px;}
-.mc .val{font-size:21px;font-weight:600;color:var(--white);line-height:1.1;}
-.mc .sub{font-size:11px;color:var(--muted);margin-top:3px;}
+
+/* METRIC GRIDS */
+.mg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1.25rem;}
+.grid-4{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1.25rem;}
+.grid-3{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1.25rem;}
+.grid-6{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1.25rem;}
+
+/* METRIC CARDS */
+.mc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.75rem .9rem;}
+.mc .lbl{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.mc .val{font-size:19px;font-weight:600;color:var(--white);line-height:1.1;}
+.mc .sub{font-size:11px;color:var(--muted);margin-top:2px;}
 .val.pos{color:var(--pos)!important;}
 .val.neg{color:var(--neg)!important;}
 .val.amb{color:var(--amber)!important;}
 .val.teal{color:var(--teal2)!important;}
-.cc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;}
+
+/* CHART CARDS */
+.cc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;margin-bottom:1rem;}
 .ct{font-size:13px;font-weight:500;color:var(--txt);margin-bottom:3px;}
-.cs{font-size:11px;color:var(--muted);margin-bottom:1rem;}
+.cs{font-size:11px;color:var(--muted);margin-bottom:.75rem;}
 .cw{position:relative;width:100%;}
-.leg{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin-bottom:.9rem;}
-.leg span{display:flex;align-items:center;gap:6px;}
-.ld{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;}
-@media(max-width:640px){.two{grid-template-columns:1fr;}}
-.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;}
-@media(max-width:700px){.three{grid-template-columns:1fr;}}
-table.dt{width:100%;border-collapse:collapse;font-size:13px;}
-table.dt th{text-align:left;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;padding:8px 10px;border-bottom:1px solid var(--border);}
-table.dt td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--txt);}
-table.dt tr:hover td{background:var(--cardh);}
+
+/* LEGEND */
+.leg{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:var(--muted);margin-bottom:.75rem;}
+.leg span{display:flex;align-items:center;gap:5px;}
+.ld{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+
+/* GRID LAYOUTS */
+.two{display:grid;grid-template-columns:1fr;gap:1rem;margin-bottom:1rem;}
+.three{display:grid;grid-template-columns:1fr;gap:1rem;margin-bottom:1rem;}
+
+/* TABLES */
+table.dt{width:100%;border-collapse:collapse;font-size:12px;}
+table.dt th{text-align:left;font-size:10px;font-weight:500;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;padding:7px 8px;border-bottom:1px solid var(--border);}
+table.dt td{padding:7px 8px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--txt);}
 table.dt tr:last-child td{border-bottom:none;}
 table.dt td:not(:first-child),table.dt th:not(:first-child){text-align:right;}
 table.dt .tot td{font-weight:600;border-top:1px solid var(--border);color:var(--amber);}
 .td-pos{color:var(--pos)!important;}
 .td-neg{color:var(--neg)!important;}
 .td-warn{color:var(--warn)!important;}
-.flag{background:rgba(242,107,91,.1);border:1px solid rgba(242,107,91,.3);border-radius:8px;padding:10px 14px;font-size:12px;color:#f9b4ac;margin-bottom:1.25rem;line-height:1.6;}
+
+/* TABLE SCROLL WRAPPER */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+
+/* FLAGS */
+.flag{background:rgba(242,107,91,.1);border:1px solid rgba(242,107,91,.3);border-radius:8px;padding:10px 12px;font-size:12px;color:#f9b4ac;margin-bottom:1rem;line-height:1.6;}
 .flag strong{font-weight:600;display:block;margin-bottom:3px;color:var(--neg);}
-.good-box{background:rgba(46,196,138,.08);border:1px solid rgba(46,196,138,.2);border-radius:8px;padding:10px 14px;font-size:12px;color:#a0e8ca;margin-bottom:1.25rem;line-height:1.6;}
+.good-box{background:rgba(46,196,138,.08);border:1px solid rgba(46,196,138,.2);border-radius:8px;padding:10px 12px;font-size:12px;color:#a0e8ca;margin-bottom:1rem;line-height:1.6;}
 .good-box strong{font-weight:600;display:block;margin-bottom:3px;color:var(--pos);}
-.ig{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem;}
-.ins{border-radius:8px;padding:10px 13px;font-size:12px;line-height:1.55;border:1px solid transparent;}
+
+/* ASSESSMENT CARDS */
+.ig{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:1rem;}
+.ins{border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.55;border:1px solid transparent;}
 .ins .it{font-weight:600;margin-bottom:3px;font-size:13px;}
 .warn-ins{background:rgba(253,168,19,.08);border-color:rgba(253,168,19,.2);color:#f5d080;}
 .warn-ins .it{color:var(--amber);}
@@ -77,20 +104,58 @@ table.dt .tot td{font-weight:600;border-top:1px solid var(--border);color:var(--
 .info-ins .it{color:var(--teal2);}
 .neg-ins{background:rgba(242,107,91,.08);border-color:rgba(242,107,91,.2);color:#f9b4ac;}
 .neg-ins .it{color:var(--neg);}
+
+/* MILESTONES */
 .prog-wrap{margin-bottom:1rem;}
 .prog-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;}
 .prog-bar{height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;}
 .prog-fill{height:100%;border-radius:4px;}
-.milestone{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;margin-bottom:.75rem;}
-.ms-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;}
+.milestone{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;margin-bottom:.75rem;}
+.ms-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:.5rem;flex-wrap:wrap;}
 .ms-title{font-size:13px;font-weight:500;}
-.ms-badge{font-size:11px;padding:2px 8px;border-radius:4px;font-weight:500;}
+.ms-badge{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500;white-space:nowrap;}
 .ms-badge.locked{background:rgba(242,107,91,.15);color:#f9b4ac;}
 .ms-badge.close{background:rgba(253,168,19,.15);color:var(--amber);}
 .ms-badge.reached{background:rgba(46,196,138,.15);color:var(--pos);}
 .ms-desc{font-size:12px;color:var(--muted);line-height:1.55;}
-hr.dv{border:none;border-top:1px solid var(--border);margin:1.5rem 0;}
-.footer{text-align:center;padding:1.5rem 2rem;font-size:11px;color:var(--muted);border-top:1px solid var(--border);margin-top:2rem;}
+
+hr.dv{border:none;border-top:1px solid var(--border);margin:1.25rem 0;}
+.footer{text-align:center;padding:1.25rem 1rem;font-size:11px;color:var(--muted);border-top:1px solid var(--border);margin-top:1.5rem;}
+
+/* TABLET: 600px+ */
+@media(min-width:600px){
+  .hdr{padding:0 1.5rem;}
+  .hdr-brand img{height:32px;}
+  .hdr-title{font-size:14px;}
+  .nav{padding:0 1.5rem;}
+  .tab{font-size:13px;padding:10px 16px;}
+  .pane{padding:1.5rem;}
+  .mg{grid-template-columns:repeat(3,1fr);}
+  .grid-4{grid-template-columns:repeat(2,1fr);}
+  .grid-3{grid-template-columns:repeat(3,1fr);}
+  .grid-6{grid-template-columns:repeat(3,1fr);}
+  .two{grid-template-columns:1fr 1fr;}
+  .three{grid-template-columns:1fr 1fr;}
+  .ig{grid-template-columns:repeat(2,1fr);}
+}
+
+/* DESKTOP: 900px+ */
+@media(min-width:900px){
+  .hdr{padding:0 2rem;}
+  .hdr-title{font-size:15px;}
+  .nav{padding:0 2rem;}
+  .pane{padding:1.75rem 2rem;}
+  .mg{grid-template-columns:repeat(4,1fr);}
+  .grid-4{grid-template-columns:repeat(4,1fr);}
+  .grid-3{grid-template-columns:repeat(3,1fr);}
+  .grid-6{grid-template-columns:repeat(3,1fr);}
+  .two{grid-template-columns:1fr 1fr;}
+  .three{grid-template-columns:1fr 1fr 1fr;}
+  .ig{grid-template-columns:repeat(3,1fr);}
+  .mc .val{font-size:21px;}
+  table.dt{font-size:13px;}
+  table.dt th{font-size:11px;}
+}
 </style>
 </head>
 <body>
@@ -118,7 +183,7 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1.5rem 0;}
 <!-- OVERVIEW -->
 <div id="pane-overview" class="pane active">
   <p class="slabel">Combined overview — all entities · Jan–May 2026</p>
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.75rem;">
+  <div class="grid-4">
     <div class="mc"><div class="lbl">Total sales (YTD)</div><div class="val amb">$1.992M</div><div class="sub">Avg $398.3K/mo</div></div>
     <div class="mc"><div class="lbl">New sales (YTD)</div><div class="val pos">$149.1K</div><div class="sub">RTM + Unify</div></div>
     <div class="mc"><div class="lbl">Cancellations (YTD)</div><div class="val neg">$102.3K</div><div class="sub">All entities</div></div>
@@ -190,9 +255,9 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1.5rem 0;}
       <div class="cw" style="height:200px;"><canvas id="c_s_nodig"></canvas></div>
     </div>
   </div>
-  <p class="slabel">Monthly sales table — all entities</p>
+  <p class="slabel" style="margin-top:1rem;"></p><p class="slabel">Monthly sales table — all entities</p>
   <div class="cc">
-    <table class="dt">
+    <div class="tbl-wrap"><table class="dt">
       <thead><tr><th>Month</th><th>RTM</th><th>Unify360</th><th>NoDig</th><th>Total</th></tr></thead>
       <tbody>
         <tr><td>Jan 2026</td><td>$389,314</td><td>$20,582</td><td>$5,902</td><td class="td-warn">$415,798</td></tr>
@@ -202,10 +267,10 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1.5rem 0;}
         <tr><td>May 2026</td><td>$364,956</td><td>$16,222</td><td>$5,623</td><td class="td-warn">$386,801</td></tr>
         <tr class="tot"><td>Total</td><td>$1,870,175</td><td>$92,371</td><td>$29,151</td><td>$1,991,697</td></tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
-  <p class="slabel">RTM — new sales vs. cancellations</p>
-  <div class="cc"><table class="dt"><thead><tr><th>Month</th><th>New sales</th><th>Cancellations</th><th>Net</th></tr></thead><tbody id="rtmNetTable"></tbody></table></div>
+  <p class="slabel" style="margin-top:1rem;"></p><p class="slabel">RTM — new sales vs. cancellations</p>
+  <div class="cc"><div class="tbl-wrap"><table class="dt"><thead><tr><th>Month</th><th>New sales</th><th>Cancellations</th><th>Net</th></tr></thead><tbody id="rtmNetTable"></tbody></table></div>
   <div class="ig">
     <div class="ins neg-ins"><div class="it">RTM declining month-over-month</div>RTM dropped from $389.3K in January to $365K in May — a $24.4K or 6.3% slide. Steady erosion that compounds fast if unchecked.</div>
     <div class="ins neg-ins"><div class="it">Unify360 in consistent decline</div>U360 has lost $4.4K/mo since January ($20.6K → $16.2K), a 21% drop in 5 months. No new sales are replacing the attrition.</div>
@@ -235,9 +300,9 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1.5rem 0;}
       <div class="cw" style="height:360px;"><canvas id="c_sv_donut"></canvas></div>
     </div>
   </div>
-  <p class="slabel">Full service revenue table</p>
+  <p class="slabel" style="margin-top:1rem;"></p><p class="slabel">Full service revenue table</p>
   <div class="cc">
-    <table class="dt">
+    <div class="tbl-wrap"><table class="dt">
       <thead><tr><th>Service</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Total</th><th>% share</th></tr></thead>
       <tbody>
         <tr><td>SEO</td><td>$106,400</td><td>$103,844</td><td>$113,857</td><td>$111,855</td><td>$108,770</td><td class="td-warn">$544,724</td><td>27.3%</td></tr>
@@ -257,7 +322,7 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1.5rem 0;}
         <tr><td>Apps</td><td>$1,794</td><td>$1,594</td><td>$1,495</td><td>$1,794</td><td>$1,495</td><td>$8,172</td><td>0.4%</td></tr>
         <tr class="tot"><td>Total</td><td>$415,798</td><td>$402,371</td><td>$387,875</td><td>$398,852</td><td>$386,801</td><td>$1,991,697</td><td>100%</td></tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
   <div class="ig">
     <div class="ins warn-ins"><div class="it">SEO + LSA = 46% of total revenue</div>Two services account for nearly half of all revenue ($916.8K of $1.99M). Heavy concentration — if either sees a cancellation wave, the impact is outsized.</div>
@@ -301,9 +366,9 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1.5rem 0;}
       <div class="cw" style="height:220px;"><canvas id="c_ca_am"></canvas></div>
     </div>
   </div>
-  <p class="slabel">Cancellation by service — monthly detail</p>
+  <p class="slabel" style="margin-top:1rem;"></p><p class="slabel">Cancellation by service — monthly detail</p>
   <div class="cc">
-    <table class="dt">
+    <div class="tbl-wrap"><table class="dt">
       <thead><tr><th>Service</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Total</th></tr></thead>
       <tbody>
         <tr><td>LSA</td><td class="td-neg">$7,975</td><td>$6,794</td><td>$3,277</td><td>$3,397</td><td>$5,294</td><td class="td-neg">$26,737</td></tr>
@@ -318,7 +383,7 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1.5rem 0;}
         <tr><td>NoDig</td><td>$0</td><td>$279</td><td>$0</td><td>$0</td><td>$279</td><td>$558</td></tr>
         <tr class="tot"><td>Total</td><td>$36,108</td><td>$17,273</td><td>$15,091</td><td>$9,845</td><td>$23,996</td><td>$102,312</td></tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
   <div class="ig">
     <div class="ins good-ins"><div class="it">Strong Jan → Apr improvement</div>Cancellations fell from $36.1K in January to $9.8K in April — a 72.8% reduction over 4 months. A meaningful operational improvement.</div>
@@ -347,9 +412,9 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1.5rem 0;}
     <div class="leg"><span><span class="ld" style="background:#FDA813;"></span>RTM</span><span><span class="ld" style="background:#0D7A8C;"></span>Unify360</span><span><span class="ld" style="background:#534AB7;"></span>NoDig</span></div>
     <div class="cw" style="height:260px;"><canvas id="c_fc_bar"></canvas></div>
   </div>
-  <p class="slabel">Forecast detail table</p>
+  <p class="slabel" style="margin-top:1rem;"></p><p class="slabel">Forecast detail table</p>
   <div class="cc">
-    <table class="dt">
+    <div class="tbl-wrap"><table class="dt">
       <thead><tr><th>Month</th><th>RTM</th><th>Unify360</th><th>NoDig</th><th>Combined</th><th>Note</th></tr></thead>
       <tbody>
         <tr><td>Jan</td><td>$384,530</td><td>$21,046</td><td>$5,902</td><td class="td-warn">$411,478</td><td>Actual</td></tr>
@@ -359,7 +424,7 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1.5rem 0;}
         <tr><td>May</td><td>$326,488</td><td>$16,871</td><td>$5,334</td><td class="td-warn">$348,693</td><td>Actual</td></tr>
         <tr><td>Jun</td><td class="td-neg">$279,269</td><td class="td-neg">$15,081</td><td>$5,125</td><td class="td-neg">$299,476</td><td style="color:var(--warn);">Forecast</td></tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
   <div class="ig">
     <div class="ins neg-ins"><div class="it">27% recurring decline in 6 months</div>RTM's recurring base dropped from $384.5K in January to a projected $279.3K in June — a $105K loss in 6 months.</div>
@@ -374,7 +439,7 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1.5rem 0;}
 <!-- SALARY ANALYSIS -->
 <div id="pane-salary" class="pane">
   <p class="slabel">Salary feasibility analysis — June 2026</p>
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.75rem;">
+  <div class="grid-4">
     <div class="mc"><div class="lbl">Monthly revenue</div><div class="val amb">$325,000</div><div class="sub">Company-wide baseline</div></div>
     <div class="mc"><div class="lbl">Monthly salary cost</div><div class="val neg">$199,374</div><div class="sub">Excl. ownership</div></div>
     <div class="mc"><div class="lbl">Salary-to-revenue ratio</div><div class="val neg">61.3%</div><div class="sub">Danger zone (target: ≤40%)</div></div>
@@ -401,7 +466,7 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1.5rem 0;}
   <div class="milestone"><div class="ms-head"><div class="ms-title">Milestone 3 — Ideal compensation structure</div><div class="ms-badge locked">$498,435/mo revenue target</div></div><div class="ms-desc">At $498,435/month, salary-to-revenue hits 40% — the industry-ideal ratio.</div><div style="margin-top:.75rem;"><div class="prog-label"><span style="font-size:12px;color:var(--muted);">Current ($325K) vs. ideal ($498.4K)</span><span style="font-size:12px;color:var(--neg);">65.2%</span></div><div class="prog-bar"><div class="prog-fill" style="width:65.2%;background:var(--neg);"></div></div></div></div>
   <p class="slabel" style="margin-top:1.25rem;">Scenario analysis</p>
   <div class="cc">
-    <table class="dt">
+    <div class="tbl-wrap"><table class="dt">
       <thead><tr><th>Scenario</th><th>Salary cost</th><th>Salary % of revenue</th><th>Revenue-to-salary</th><th>Verdict</th></tr></thead>
       <tbody>
         <tr><td>Current (no increase)</td><td>$199,374</td><td class="td-neg">61.3%</td><td class="td-neg">1.63×</td><td class="td-neg">Unsustainable</td></tr>
@@ -411,7 +476,7 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1.5rem 0;}
         <tr><td>Selective only (+$4.7K)</td><td>$204,074</td><td class="td-warn">62.8%</td><td class="td-warn">1.59×</td><td class="td-pos">✓ Approved (neutral)</td></tr>
         <tr class="tot"><td>At $398.7K revenue (50% target)</td><td>$199,374</td><td class="td-warn">50.0%</td><td class="td-warn">2.00×</td><td class="td-warn">Milestone 2 threshold</td></tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
   <div class="good-box"><strong>✓ The path forward is clear</strong>Revenue growth is the only sustainable lever. Closing the gap to Milestone 2 ($398.7K/mo) requires ~$73,748 in new monthly recurring — achievable through reduced cancellations and new sales.</div>
   <div class="ig">
