@@ -6,15 +6,14 @@
 <title>RTM — Sales & Operations Dashboard 2026</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-:root {
-  --navy:#042234; --navy2:#0a3550; --navy3:#0e4268;
-  --amber:#FDA813; --amber2:#c4830a;
-  --teal:#0D7A8C; --teal2:#11a0b8;
-  --white:#fff; --off:#f0f4f8;
-  --muted:#8ba3b8; --border:rgba(255,255,255,0.08);
-  --card:rgba(255,255,255,0.04); --cardh:rgba(255,255,255,0.07);
-  --pos:#2ec48a; --neg:#f26b5b; --warn:#FDA813;
-  --txt:#e8f0f7; --txt2:#8ba3b8;
+:root{
+  --navy:#042234;--navy2:#0a3550;
+  --amber:#FDA813;--teal:#0D7A8C;--teal2:#11a0b8;
+  --white:#fff;--muted:#8ba3b8;
+  --border:rgba(255,255,255,0.08);
+  --card:rgba(255,255,255,0.04);--cardh:rgba(255,255,255,0.07);
+  --pos:#2ec48a;--neg:#f26b5b;--warn:#FDA813;
+  --txt:#e8f0f7;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--navy);color:var(--txt);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;}
@@ -22,60 +21,54 @@ body{background:var(--navy);color:var(--txt);font-family:'Segoe UI',system-ui,sa
 /* HEADER */
 .hdr{background:var(--navy2);border-bottom:1px solid var(--border);padding:0 1rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
 .hdr-brand{display:flex;align-items:center;gap:10px;}
-.hdr-brand img{height:28px;width:auto;}
-.hdr-title{font-size:13px;font-weight:600;color:var(--white);letter-spacing:.01em;}
-.hdr-sub{font-size:11px;color:var(--muted);}
-.hdr-badge{background:rgba(253,168,19,.15);color:var(--amber);border:1px solid rgba(253,168,19,.3);padding:3px 8px;border-radius:20px;font-size:10px;font-weight:500;white-space:nowrap;}
+.hdr-brand img{height:26px;width:auto;}
+.hdr-text .hdr-title{font-size:12px;font-weight:600;color:var(--white);}
+.hdr-text .hdr-sub{font-size:10px;color:var(--muted);}
+.hdr-badge{background:rgba(253,168,19,.15);color:var(--amber);border:1px solid rgba(253,168,19,.3);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:500;white-space:nowrap;}
 
 /* NAV */
-.nav{background:var(--navy2);border-bottom:1px solid var(--border);padding:0 1rem;display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.nav{background:var(--navy2);border-bottom:1px solid var(--border);padding:0 .5rem;display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .nav::-webkit-scrollbar{display:none;}
-.tab{padding:10px 14px;font-size:12px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;user-select:none;white-space:nowrap;flex-shrink:0;}
-.tab:hover{color:var(--txt);}
-.tab.active{color:var(--amber);border-bottom-color:var(--amber);font-weight:500;}
+.tab{padding:10px 12px;font-size:11px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;}
+.tab.active{color:var(--amber);border-bottom-color:var(--amber);font-weight:600;}
 
 /* PANES */
 .pane{display:none;padding:1rem;max-width:1200px;margin:0 auto;}
 .pane.active{display:block;}
 
-/* LABELS */
-.slabel{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;}
-
-/* METRIC GRIDS */
-.mg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1.25rem;}
-.grid-4{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1.25rem;}
-.grid-3{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1.25rem;}
-.grid-6{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1.25rem;}
+/* SECTION LABEL */
+.slabel{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;}
 
 /* METRIC CARDS */
-.mc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.75rem .9rem;}
-.mc .lbl{font-size:11px;color:var(--muted);margin-bottom:4px;}
-.mc .val{font-size:19px;font-weight:600;color:var(--white);line-height:1.1;}
-.mc .sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.mg4{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1.25rem;}
+.mg3{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1.25rem;}
+.mc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.7rem .9rem;}
+.mc .lbl{font-size:10px;color:var(--muted);margin-bottom:4px;}
+.mc .val{font-size:18px;font-weight:600;color:var(--white);line-height:1.1;}
+.mc .sub{font-size:10px;color:var(--muted);margin-top:2px;}
 .val.pos{color:var(--pos)!important;}
 .val.neg{color:var(--neg)!important;}
 .val.amb{color:var(--amber)!important;}
 .val.teal{color:var(--teal2)!important;}
 
-/* CHART CARDS */
-.cc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;margin-bottom:1rem;}
-.ct{font-size:13px;font-weight:500;color:var(--txt);margin-bottom:3px;}
+/* CHART CARD */
+.cc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:1rem;}
+.ct{font-size:13px;font-weight:500;color:var(--txt);margin-bottom:2px;}
 .cs{font-size:11px;color:var(--muted);margin-bottom:.75rem;}
 .cw{position:relative;width:100%;}
-
-/* LEGEND */
 .leg{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:var(--muted);margin-bottom:.75rem;}
 .leg span{display:flex;align-items:center;gap:5px;}
 .ld{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
 
-/* GRID LAYOUTS */
+/* LAYOUTS - mobile first: stack everything */
 .two{display:grid;grid-template-columns:1fr;gap:1rem;margin-bottom:1rem;}
 .three{display:grid;grid-template-columns:1fr;gap:1rem;margin-bottom:1rem;}
 
 /* TABLES */
-table.dt{width:100%;border-collapse:collapse;font-size:12px;}
-table.dt th{text-align:left;font-size:10px;font-weight:500;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;padding:7px 8px;border-bottom:1px solid var(--border);}
-table.dt td{padding:7px 8px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--txt);}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+table.dt{width:100%;border-collapse:collapse;font-size:12px;min-width:400px;}
+table.dt th{text-align:left;font-size:10px;font-weight:500;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;padding:6px 8px;border-bottom:1px solid var(--border);}
+table.dt td{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--txt);}
 table.dt tr:last-child td{border-bottom:none;}
 table.dt td:not(:first-child),table.dt th:not(:first-child){text-align:right;}
 table.dt .tot td{font-weight:600;border-top:1px solid var(--border);color:var(--amber);}
@@ -83,19 +76,16 @@ table.dt .tot td{font-weight:600;border-top:1px solid var(--border);color:var(--
 .td-neg{color:var(--neg)!important;}
 .td-warn{color:var(--warn)!important;}
 
-/* TABLE SCROLL WRAPPER */
-.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-
 /* FLAGS */
 .flag{background:rgba(242,107,91,.1);border:1px solid rgba(242,107,91,.3);border-radius:8px;padding:10px 12px;font-size:12px;color:#f9b4ac;margin-bottom:1rem;line-height:1.6;}
-.flag strong{font-weight:600;display:block;margin-bottom:3px;color:var(--neg);}
+.flag strong{font-weight:600;display:block;margin-bottom:2px;color:var(--neg);}
 .good-box{background:rgba(46,196,138,.08);border:1px solid rgba(46,196,138,.2);border-radius:8px;padding:10px 12px;font-size:12px;color:#a0e8ca;margin-bottom:1rem;line-height:1.6;}
-.good-box strong{font-weight:600;display:block;margin-bottom:3px;color:var(--pos);}
+.good-box strong{font-weight:600;display:block;margin-bottom:2px;color:var(--pos);}
 
-/* ASSESSMENT CARDS */
+/* ASSESSMENT */
 .ig{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:1rem;}
 .ins{border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.55;border:1px solid transparent;}
-.ins .it{font-weight:600;margin-bottom:3px;font-size:13px;}
+.ins .it{font-weight:600;margin-bottom:3px;font-size:12px;}
 .warn-ins{background:rgba(253,168,19,.08);border-color:rgba(253,168,19,.2);color:#f5d080;}
 .warn-ins .it{color:var(--amber);}
 .good-ins{background:rgba(46,196,138,.08);border-color:rgba(46,196,138,.2);color:#a0e8ca;}
@@ -106,50 +96,45 @@ table.dt .tot td{font-weight:600;border-top:1px solid var(--border);color:var(--
 .neg-ins .it{color:var(--neg);}
 
 /* MILESTONES */
-.prog-wrap{margin-bottom:1rem;}
-.prog-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;}
-.prog-bar{height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;}
+.prog-bar{height:7px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;margin-top:4px;}
 .prog-fill{height:100%;border-radius:4px;}
 .milestone{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;margin-bottom:.75rem;}
-.ms-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:.5rem;flex-wrap:wrap;}
-.ms-title{font-size:13px;font-weight:500;}
-.ms-badge{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500;white-space:nowrap;}
+.ms-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:.4rem;flex-wrap:wrap;}
+.ms-title{font-size:12px;font-weight:500;}
+.ms-badge{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500;}
 .ms-badge.locked{background:rgba(242,107,91,.15);color:#f9b4ac;}
 .ms-badge.close{background:rgba(253,168,19,.15);color:var(--amber);}
 .ms-badge.reached{background:rgba(46,196,138,.15);color:var(--pos);}
-.ms-desc{font-size:12px;color:var(--muted);line-height:1.55;}
+.ms-desc{font-size:11px;color:var(--muted);line-height:1.5;}
 
-hr.dv{border:none;border-top:1px solid var(--border);margin:1.25rem 0;}
 .footer{text-align:center;padding:1.25rem 1rem;font-size:11px;color:var(--muted);border-top:1px solid var(--border);margin-top:1.5rem;}
 
-/* TABLET: 600px+ */
-@media(min-width:600px){
+/* TABLET 580px+ */
+@media(min-width:580px){
   .hdr{padding:0 1.5rem;}
-  .hdr-brand img{height:32px;}
-  .hdr-title{font-size:14px;}
+  .hdr-brand img{height:30px;}
+  .hdr-text .hdr-title{font-size:14px;}
+  .hdr-text .hdr-sub{font-size:11px;}
   .nav{padding:0 1.5rem;}
-  .tab{font-size:13px;padding:10px 16px;}
+  .tab{font-size:12px;padding:10px 14px;}
   .pane{padding:1.5rem;}
-  .mg{grid-template-columns:repeat(3,1fr);}
-  .grid-4{grid-template-columns:repeat(2,1fr);}
-  .grid-3{grid-template-columns:repeat(3,1fr);}
-  .grid-6{grid-template-columns:repeat(3,1fr);}
+  .mg4{grid-template-columns:repeat(4,1fr);}
+  .mg3{grid-template-columns:repeat(3,1fr);}
   .two{grid-template-columns:1fr 1fr;}
   .three{grid-template-columns:1fr 1fr;}
   .ig{grid-template-columns:repeat(2,1fr);}
+  .mc .val{font-size:20px;}
 }
 
-/* DESKTOP: 900px+ */
+/* DESKTOP 900px+ */
 @media(min-width:900px){
   .hdr{padding:0 2rem;}
-  .hdr-title{font-size:15px;}
+  .hdr-brand img{height:32px;}
+  .hdr-text .hdr-title{font-size:15px;}
   .nav{padding:0 2rem;}
+  .tab{font-size:13px;padding:10px 18px;}
   .pane{padding:1.75rem 2rem;}
-  .mg{grid-template-columns:repeat(4,1fr);}
-  .grid-4{grid-template-columns:repeat(4,1fr);}
-  .grid-3{grid-template-columns:repeat(3,1fr);}
-  .grid-6{grid-template-columns:repeat(3,1fr);}
-  .two{grid-template-columns:1fr 1fr;}
+  .mg3{grid-template-columns:repeat(3,1fr);}
   .three{grid-template-columns:1fr 1fr 1fr;}
   .ig{grid-template-columns:repeat(3,1fr);}
   .mc .val{font-size:21px;}
@@ -162,8 +147,8 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1.25rem 0;}
 
 <div class="hdr">
   <div class="hdr-brand">
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAXwAAABhCAYAAADV2Bo7AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQ1IDc5LjE2MzQ5OSwgMjAxOC8wOC8xMy0xNjo0MDoyMiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTkgKFdpbmRvd3MpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjZFREQwOUU5MUE1QzExRUM4OTQ4RDg0MEE5RjJBRUVDIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjZFREQwOUVBMUE1QzExRUM4OTQ4RDg0MEE5RjJBRUVDIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NkVERDA5RTcxQTVDMTFFQzg5NDhEODQwQTlGMkFFRUMiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NkVERDA5RTgxQTVDMTFFQzg5NDhEODQwQTlGMkFFRUMiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5qlmoFAABPoElEQVR42ux9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" alt="Real Time Marketing" style="height:32px;width:auto;margin-right:12px;">
-    <div>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAXwAAABhCAYAAADV2Bo7AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQ1IDc5LjE2MzQ5OSwgMjAxOC8wOC8xMy0xNjo0MDoyMiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTkgKFdpbmRvd3MpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjZFREQwOUU5MUE1QzExRUM4OTQ4RDg0MEE5RjJBRUVDIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjZFREQwOUVBMUE1QzExRUM4OTQ4RDg0MEE5RjJBRUVDIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NkVERDA5RTcxQTVDMTFFQzg5NDhEODQwQTlGMkFFRUMiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NkVERDA5RTgxQTVDMTFFQzg5NDhEODQwQTlGMkFFRUMiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5qlmoFAABPoElEQVR42ux9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" alt="RTM">
+    <div class="hdr-text">
       <div class="hdr-title">Sales & Operations Dashboard</div>
       <div class="hdr-sub">January – May 2026 · RTM, Unify360 & NoDig</div>
     </div>
@@ -174,7 +159,7 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1.25rem 0;}
 <div class="nav">
   <div class="tab active" onclick="sw('overview',this)">Overview</div>
   <div class="tab" onclick="sw('sales',this)">Sales by Entity</div>
-  <div class="tab" onclick="sw('services',this)">Sales by Service</div>
+  <div class="tab" onclick="sw('services',this)">By Service</div>
   <div class="tab" onclick="sw('cancel',this)">Cancellations</div>
   <div class="tab" onclick="sw('forecast',this)">Forecast</div>
   <div class="tab" onclick="sw('salary',this)">Salary Analysis</div>
@@ -182,8 +167,8 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1.25rem 0;}
 
 <!-- OVERVIEW -->
 <div id="pane-overview" class="pane active">
-  <p class="slabel">Combined overview — all entities · Jan–May 2026</p>
-  <div class="grid-4">
+  <p class="slabel">Combined overview — Jan–May 2026</p>
+  <div class="mg4">
     <div class="mc"><div class="lbl">Total sales (YTD)</div><div class="val amb">$1.992M</div><div class="sub">Avg $398.3K/mo</div></div>
     <div class="mc"><div class="lbl">New sales (YTD)</div><div class="val pos">$149.1K</div><div class="sub">RTM + Unify</div></div>
     <div class="mc"><div class="lbl">Cancellations (YTD)</div><div class="val neg">$102.3K</div><div class="sub">All entities</div></div>
@@ -194,298 +179,233 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1.25rem 0;}
     <div class="mc"><div class="lbl">Partnership commissions</div><div class="val teal">$10.7K</div><div class="sub">YTD all partners</div></div>
   </div>
   <div class="three">
-    <div class="cc" style="margin-bottom:0;">
-      <div class="ct">RTM</div><div class="cs" style="color:#FDA813;">$1.870M YTD · 93.9% of total</div>
-      <div class="cw" style="height:190px;"><canvas id="c_ov_rtm"></canvas></div>
-    </div>
-    <div class="cc" style="margin-bottom:0;">
-      <div class="ct">Unify360</div><div class="cs" style="color:#0D7A8C;">$92.4K YTD · 4.6% of total</div>
-      <div class="cw" style="height:190px;"><canvas id="c_ov_u360"></canvas></div>
-    </div>
-    <div class="cc" style="margin-bottom:0;">
-      <div class="ct">NoDig</div><div class="cs" style="color:#534AB7;">$29.2K YTD · 1.5% of total</div>
-      <div class="cw" style="height:190px;"><canvas id="c_ov_nodig"></canvas></div>
-    </div>
+    <div class="cc" style="margin-bottom:0;"><div class="ct">RTM</div><div class="cs" style="color:#FDA813;">$1.870M YTD · 93.9%</div><div class="cw" style="height:170px;"><canvas id="c_ov_rtm"></canvas></div></div>
+    <div class="cc" style="margin-bottom:0;"><div class="ct">Unify360</div><div class="cs" style="color:#0D7A8C;">$92.4K YTD · 4.6%</div><div class="cw" style="height:170px;"><canvas id="c_ov_u360"></canvas></div></div>
+    <div class="cc" style="margin-bottom:0;"><div class="ct">NoDig</div><div class="cs" style="color:#534AB7;">$29.2K YTD · 1.5%</div><div class="cw" style="height:170px;"><canvas id="c_ov_nodig"></canvas></div></div>
   </div>
-  <div style="margin-bottom:1.25rem;"></div>
+  <div style="margin-bottom:1rem;"></div>
   <div class="two">
-    <div class="cc" style="margin-bottom:0;">
-      <div class="ct">New sales vs. cancellations</div><div class="cs">Combined entities · monthly</div>
-      <div class="leg"><span><span class="ld" style="background:#2ec48a;"></span>New recurring</span><span><span class="ld" style="background:#f26b5b;"></span>Cancellations</span></div>
-      <div class="cw" style="height:210px;"><canvas id="c_ov_nvc"></canvas></div>
-    </div>
-    <div class="cc" style="margin-bottom:0;">
-      <div class="ct">Active client count</div><div class="cs">Month-end active clients</div>
-      <div class="cw" style="height:210px;"><canvas id="c_ov_clients"></canvas></div>
-    </div>
+    <div class="cc" style="margin-bottom:0;"><div class="ct">New sales vs. cancellations</div><div class="cs">Combined · monthly</div><div class="leg"><span><span class="ld" style="background:#2ec48a;"></span>New</span><span><span class="ld" style="background:#f26b5b;"></span>Cancels</span></div><div class="cw" style="height:200px;"><canvas id="c_ov_nvc"></canvas></div></div>
+    <div class="cc" style="margin-bottom:0;"><div class="ct">Active client count</div><div class="cs">Month-end</div><div class="cw" style="height:200px;"><canvas id="c_ov_clients"></canvas></div></div>
   </div>
-  <div style="margin-bottom:1.25rem;"></div>
+  <div style="margin-bottom:1rem;"></div>
   <div class="ig">
-    <div class="ins neg-ins"><div class="it">Net recurring deficit</div>YTD new recurring ($50.3K) vs. cancellations ($102.3K) = <strong>-$52K net loss</strong> in recurring revenue. April was the only profitable month (+$1.5K).</div>
-    <div class="ins warn-ins"><div class="it">Client attrition</div>Active clients dropped from 246 → 217 over 5 months — a loss of 29 clients (11.8%). At current pace, that's ~70 clients lost annually.</div>
-    <div class="ins good-ins"><div class="it">Cancellation improvement</div>Cancel dollars dropped sharply from $36.1K in Jan → $9.8K in Apr before spiking in May ($24K). March and April show real improvement.</div>
-    <div class="ins info-ins"><div class="it">NoDig is stable</div>NoDig runs a flat ~$5.9K/mo with near-zero cancellations. Small but reliable recurring contribution.</div>
-    <div class="ins warn-ins"><div class="it">RTM carries 93.9% of revenue</div>Heavy concentration in RTM. Any acceleration in cancellations or client loss directly threatens total revenue with no buffer.</div>
-    <div class="ins good-ins"><div class="it">April recovery signal</div>RTM bounced from $363.9K in March back to $375.8K in April — the one month where the trend reversed. Worth investigating what drove it.</div>
+    <div class="ins neg-ins"><div class="it">Net recurring deficit</div>YTD new recurring ($50.3K) vs. cancellations ($102.3K) = <strong>-$52K net loss</strong>. April was the only profitable month (+$1.5K).</div>
+    <div class="ins warn-ins"><div class="it">Client attrition</div>Active clients dropped 246 → 217 over 5 months (11.8% loss). At current pace, ~70 clients lost annually.</div>
+    <div class="ins good-ins"><div class="it">Cancellation improvement</div>Cancel dollars dropped from $36.1K in Jan → $9.8K in Apr before spiking in May. March and April showed real improvement.</div>
+    <div class="ins info-ins"><div class="it">NoDig is stable</div>Flat ~$5.9K/mo with near-zero cancellations. Small but reliable recurring contribution.</div>
+    <div class="ins warn-ins"><div class="it">RTM carries 93.9% of revenue</div>Heavy concentration in RTM. Any acceleration in cancellations directly threatens total revenue.</div>
+    <div class="ins good-ins"><div class="it">April recovery signal</div>RTM bounced from $363.9K in March back to $375.8K in April — the one month the trend reversed.</div>
   </div>
 </div>
 
 <!-- SALES BY ENTITY -->
 <div id="pane-sales" class="pane">
   <p class="slabel">Sales by entity — detail</p>
-  <div class="three">
+  <div class="mg3">
     <div class="mc"><div class="lbl">RTM sales (YTD)</div><div class="val amb">$1.870M</div><div class="sub">93.9% of total</div></div>
-    <div class="mc"><div class="lbl">Unify360 sales (YTD)</div><div class="val teal">$92.4K</div><div class="sub">4.6% of total</div></div>
-    <div class="mc"><div class="lbl">NoDig sales (YTD)</div><div class="val">$29.2K</div><div class="sub">1.5% of total</div></div>
+    <div class="mc"><div class="lbl">Unify360 (YTD)</div><div class="val teal">$92.4K</div><div class="sub">4.6% of total</div></div>
+    <div class="mc"><div class="lbl">NoDig (YTD)</div><div class="val">$29.2K</div><div class="sub">1.5% of total</div></div>
   </div>
   <div class="three">
-    <div class="cc">
-      <div class="ct">RTM</div><div class="cs">Sales, new sales & cancellations</div>
-      <div class="leg"><span><span class="ld" style="background:#FDA813;"></span>Sales</span><span><span class="ld" style="background:#2ec48a;"></span>New</span><span><span class="ld" style="background:#f26b5b;"></span>Cancels</span></div>
-      <div class="cw" style="height:200px;"><canvas id="c_s_rtm"></canvas></div>
-    </div>
-    <div class="cc">
-      <div class="ct">Unify360</div><div class="cs">Sales & cancellations</div>
-      <div class="leg"><span><span class="ld" style="background:#0D7A8C;"></span>Sales</span><span><span class="ld" style="background:#f26b5b;"></span>Cancels</span></div>
-      <div class="cw" style="height:200px;"><canvas id="c_s_u360"></canvas></div>
-    </div>
-    <div class="cc">
-      <div class="ct">NoDig</div><div class="cs">Sales & cancellations</div>
-      <div class="leg"><span><span class="ld" style="background:#534AB7;"></span>Sales</span><span><span class="ld" style="background:#f26b5b;"></span>Cancels</span></div>
-      <div class="cw" style="height:200px;"><canvas id="c_s_nodig"></canvas></div>
-    </div>
+    <div class="cc"><div class="ct">RTM</div><div class="cs">Sales, new & cancellations</div><div class="leg"><span><span class="ld" style="background:#FDA813;"></span>Sales</span><span><span class="ld" style="background:#2ec48a;"></span>New</span><span><span class="ld" style="background:#f26b5b;"></span>Cancels</span></div><div class="cw" style="height:190px;"><canvas id="c_s_rtm"></canvas></div></div>
+    <div class="cc"><div class="ct">Unify360</div><div class="cs">Sales & cancellations</div><div class="leg"><span><span class="ld" style="background:#0D7A8C;"></span>Sales</span><span><span class="ld" style="background:#f26b5b;"></span>Cancels</span></div><div class="cw" style="height:190px;"><canvas id="c_s_u360"></canvas></div></div>
+    <div class="cc"><div class="ct">NoDig</div><div class="cs">Sales & cancellations</div><div class="leg"><span><span class="ld" style="background:#534AB7;"></span>Sales</span><span><span class="ld" style="background:#f26b5b;"></span>Cancels</span></div><div class="cw" style="height:190px;"><canvas id="c_s_nodig"></canvas></div></div>
   </div>
-  <p class="slabel" style="margin-top:1rem;"></p><p class="slabel">Monthly sales table — all entities</p>
-  <div class="cc">
-    <div class="tbl-wrap"><table class="dt">
-      <thead><tr><th>Month</th><th>RTM</th><th>Unify360</th><th>NoDig</th><th>Total</th></tr></thead>
-      <tbody>
-        <tr><td>Jan 2026</td><td>$389,314</td><td>$20,582</td><td>$5,902</td><td class="td-warn">$415,798</td></tr>
-        <tr><td>Feb 2026</td><td>$376,261</td><td>$20,287</td><td>$5,822</td><td class="td-warn">$402,371</td></tr>
-        <tr><td>Mar 2026</td><td>$363,863</td><td>$18,110</td><td>$5,902</td><td class="td-warn">$387,875</td></tr>
-        <tr><td>Apr 2026</td><td>$375,781</td><td>$17,168</td><td>$5,902</td><td class="td-warn">$398,852</td></tr>
-        <tr><td>May 2026</td><td>$364,956</td><td>$16,222</td><td>$5,623</td><td class="td-warn">$386,801</td></tr>
-        <tr class="tot"><td>Total</td><td>$1,870,175</td><td>$92,371</td><td>$29,151</td><td>$1,991,697</td></tr>
-      </tbody>
-    </table></div>
-  </div>
-  <p class="slabel" style="margin-top:1rem;"></p><p class="slabel">RTM — new sales vs. cancellations</p>
-  <div class="cc"><div class="tbl-wrap"><table class="dt"><thead><tr><th>Month</th><th>New sales</th><th>Cancellations</th><th>Net</th></tr></thead><tbody id="rtmNetTable"></tbody></table></div>
+  <p class="slabel">Monthly sales — all entities</p>
+  <div class="cc"><div class="tscroll"><table class="dt"><thead><tr><th>Month</th><th>RTM</th><th>Unify360</th><th>NoDig</th><th>Total</th></tr></thead><tbody>
+    <tr><td>Jan</td><td>$389,314</td><td>$20,582</td><td>$5,902</td><td class="td-warn">$415,798</td></tr>
+    <tr><td>Feb</td><td>$376,261</td><td>$20,287</td><td>$5,822</td><td class="td-warn">$402,371</td></tr>
+    <tr><td>Mar</td><td>$363,863</td><td>$18,110</td><td>$5,902</td><td class="td-warn">$387,875</td></tr>
+    <tr><td>Apr</td><td>$375,781</td><td>$17,168</td><td>$5,902</td><td class="td-warn">$398,852</td></tr>
+    <tr><td>May</td><td>$364,956</td><td>$16,222</td><td>$5,623</td><td class="td-warn">$386,801</td></tr>
+    <tr class="tot"><td>Total</td><td>$1,870,175</td><td>$92,371</td><td>$29,151</td><td>$1,991,697</td></tr>
+  </tbody></table></div></div>
+  <p class="slabel">RTM — new sales vs. cancellations</p>
+  <div class="cc"><div class="tscroll"><table class="dt"><thead><tr><th>Month</th><th>New sales</th><th>Cancellations</th><th>Net</th></tr></thead><tbody id="rtmNetTable"></tbody></table></div></div>
   <div class="ig">
-    <div class="ins neg-ins"><div class="it">RTM declining month-over-month</div>RTM dropped from $389.3K in January to $365K in May — a $24.4K or 6.3% slide. Steady erosion that compounds fast if unchecked.</div>
-    <div class="ins neg-ins"><div class="it">Unify360 in consistent decline</div>U360 has lost $4.4K/mo since January ($20.6K → $16.2K), a 21% drop in 5 months. No new sales are replacing the attrition.</div>
-    <div class="ins good-ins"><div class="it">NoDig is the stable anchor</div>NoDig runs a flat $5.6–5.9K every month with near-zero variance. Small but reliable — not declined at all over the period.</div>
-    <div class="ins warn-ins"><div class="it">RTM carries 93.9% of revenue</div>Heavy concentration in RTM. Any acceleration in cancellations directly threatens total revenue with no buffer from other entities.</div>
-    <div class="ins neg-ins"><div class="it">Net new is negative for RTM</div>RTM brought in $147.9K in new sales but lost $96.9K to cancellations — a net gain of only $51K over 5 months.</div>
-    <div class="ins good-ins"><div class="it">April showed a recovery signal</div>RTM bounced from $363.9K in March back to $375.8K in April — the one month where the trend reversed. Worth investigating.</div>
+    <div class="ins neg-ins"><div class="it">RTM declining month-over-month</div>Dropped from $389.3K → $365K in May — $24.4K or 6.3% slide over 5 months.</div>
+    <div class="ins neg-ins"><div class="it">Unify360 in consistent decline</div>Lost $4.4K/mo since January ($20.6K → $16.2K), a 21% drop. No new sales replacing attrition.</div>
+    <div class="ins good-ins"><div class="it">NoDig is the stable anchor</div>Flat $5.6–5.9K every month with near-zero variance. Has not declined at all over the period.</div>
+    <div class="ins warn-ins"><div class="it">RTM carries 93.9% of revenue</div>Any acceleration in RTM cancellations directly threatens total revenue with no buffer.</div>
+    <div class="ins neg-ins"><div class="it">Net new is negative for RTM</div>$147.9K new sales but $96.9K cancellations — only $51K net gain over 5 months.</div>
+    <div class="ins good-ins"><div class="it">April recovery signal</div>RTM bounced from $363.9K → $375.8K in April. The one month the trend reversed.</div>
   </div>
 </div>
 
 <!-- SALES BY SERVICE -->
 <div id="pane-services" class="pane">
   <p class="slabel">Sales by service — YTD Jan–May 2026</p>
-  <div class="mg">
-    <div class="mc"><div class="lbl">Top service</div><div class="val" style="font-size:16px;">SEO</div><div class="sub">$544.7K YTD (27.3%)</div></div>
-    <div class="mc"><div class="lbl">2nd service</div><div class="val" style="font-size:16px;">LSA</div><div class="sub">$372.0K YTD (18.7%)</div></div>
-    <div class="mc"><div class="lbl">3rd service</div><div class="val" style="font-size:16px;">LBO</div><div class="sub">$205.1K YTD (10.3%)</div></div>
-    <div class="mc"><div class="lbl">4th service</div><div class="val" style="font-size:16px;">GBP</div><div class="sub">$199.7K YTD (10.0%)</div></div>
+  <div class="mg4">
+    <div class="mc"><div class="lbl">Top service</div><div class="val" style="font-size:16px;">SEO</div><div class="sub">$544.7K · 27.3%</div></div>
+    <div class="mc"><div class="lbl">2nd service</div><div class="val" style="font-size:16px;">LSA</div><div class="sub">$372.0K · 18.7%</div></div>
+    <div class="mc"><div class="lbl">3rd service</div><div class="val" style="font-size:16px;">LBO</div><div class="sub">$205.1K · 10.3%</div></div>
+    <div class="mc"><div class="lbl">4th service</div><div class="val" style="font-size:16px;">GBP</div><div class="sub">$199.7K · 10.0%</div></div>
   </div>
   <div class="two">
-    <div class="cc">
-      <div class="ct">Revenue by service — YTD total</div><div class="cs">All services ranked</div>
-      <div class="cw" style="height:360px;"><canvas id="c_sv_bar"></canvas></div>
-    </div>
-    <div class="cc">
-      <div class="ct">Service revenue share</div><div class="cs">Top 8 services · YTD</div>
-      <div class="cw" style="height:360px;"><canvas id="c_sv_donut"></canvas></div>
-    </div>
+    <div class="cc"><div class="ct">Revenue by service — YTD</div><div class="cs">All services ranked</div><div class="cw" style="height:340px;"><canvas id="c_sv_bar"></canvas></div></div>
+    <div class="cc"><div class="ct">Service revenue share</div><div class="cs">Top 8 services</div><div class="cw" style="height:340px;"><canvas id="c_sv_donut"></canvas></div></div>
   </div>
-  <p class="slabel" style="margin-top:1rem;"></p><p class="slabel">Full service revenue table</p>
-  <div class="cc">
-    <div class="tbl-wrap"><table class="dt">
-      <thead><tr><th>Service</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Total</th><th>% share</th></tr></thead>
-      <tbody>
-        <tr><td>SEO</td><td>$106,400</td><td>$103,844</td><td>$113,857</td><td>$111,855</td><td>$108,770</td><td class="td-warn">$544,724</td><td>27.3%</td></tr>
-        <tr><td>LSA</td><td>$82,272</td><td>$76,525</td><td>$68,569</td><td>$76,311</td><td>$68,362</td><td class="td-warn">$372,040</td><td>18.7%</td></tr>
-        <tr><td>LBO</td><td>$47,020</td><td>$46,173</td><td>$38,251</td><td>$40,660</td><td>$32,981</td><td>$205,085</td><td>10.3%</td></tr>
-        <tr><td>GBP</td><td>$43,781</td><td>$42,793</td><td>$35,577</td><td>$39,630</td><td>$37,922</td><td>$199,704</td><td>10.0%</td></tr>
-        <tr><td>PPC</td><td>$25,117</td><td>$24,031</td><td>$26,749</td><td>$27,605</td><td>$29,447</td><td>$132,949</td><td>6.7%</td></tr>
-        <tr><td>RTM Package</td><td>$24,495</td><td>$21,892</td><td>$22,489</td><td>$20,739</td><td>$28,939</td><td>$118,554</td><td>6.0%</td></tr>
-        <tr><td>Social</td><td>$20,464</td><td>$22,363</td><td>$23,914</td><td>$22,914</td><td>$21,015</td><td>$110,670</td><td>5.6%</td></tr>
-        <tr><td>Software (U360)</td><td>$20,582</td><td>$20,287</td><td>$18,110</td><td>$17,168</td><td>$16,222</td><td>$92,371</td><td>4.6%</td></tr>
-        <tr><td>Design</td><td>$16,777</td><td>$16,443</td><td>$10,659</td><td>$11,054</td><td>$16,998</td><td>$71,932</td><td>3.6%</td></tr>
-        <tr><td>Hosting</td><td>$9,887</td><td>$10,165</td><td>$10,841</td><td>$12,249</td><td>$7,915</td><td>$51,056</td><td>2.6%</td></tr>
-        <tr><td>NoDig</td><td>$5,902</td><td>$5,822</td><td>$5,902</td><td>$5,902</td><td>$5,623</td><td>$29,151</td><td>1.5%</td></tr>
-        <tr><td>Call</td><td>$5,024</td><td>$4,756</td><td>$5,102</td><td>$5,680</td><td>$5,452</td><td>$26,014</td><td>1.3%</td></tr>
-        <tr><td>Yelp</td><td>$4,320</td><td>$4,219</td><td>$3,770</td><td>$3,111</td><td>$3,111</td><td>$18,531</td><td>0.9%</td></tr>
-        <tr><td>Email</td><td>$1,963</td><td>$1,463</td><td>$2,590</td><td>$2,179</td><td>$2,549</td><td>$10,744</td><td>0.5%</td></tr>
-        <tr><td>Apps</td><td>$1,794</td><td>$1,594</td><td>$1,495</td><td>$1,794</td><td>$1,495</td><td>$8,172</td><td>0.4%</td></tr>
-        <tr class="tot"><td>Total</td><td>$415,798</td><td>$402,371</td><td>$387,875</td><td>$398,852</td><td>$386,801</td><td>$1,991,697</td><td>100%</td></tr>
-      </tbody>
-    </table></div>
-  </div>
+  <p class="slabel">Full service revenue table</p>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead><tr><th>Service</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Total</th><th>%</th></tr></thead>
+    <tbody>
+      <tr><td>SEO</td><td>$106,400</td><td>$103,844</td><td>$113,857</td><td>$111,855</td><td>$108,770</td><td class="td-warn">$544,724</td><td>27.3%</td></tr>
+      <tr><td>LSA</td><td>$82,272</td><td>$76,525</td><td>$68,569</td><td>$76,311</td><td>$68,362</td><td class="td-warn">$372,040</td><td>18.7%</td></tr>
+      <tr><td>LBO</td><td>$47,020</td><td>$46,173</td><td>$38,251</td><td>$40,660</td><td>$32,981</td><td>$205,085</td><td>10.3%</td></tr>
+      <tr><td>GBP</td><td>$43,781</td><td>$42,793</td><td>$35,577</td><td>$39,630</td><td>$37,922</td><td>$199,704</td><td>10.0%</td></tr>
+      <tr><td>PPC</td><td>$25,117</td><td>$24,031</td><td>$26,749</td><td>$27,605</td><td>$29,447</td><td>$132,949</td><td>6.7%</td></tr>
+      <tr><td>RTM Package</td><td>$24,495</td><td>$21,892</td><td>$22,489</td><td>$20,739</td><td>$28,939</td><td>$118,554</td><td>6.0%</td></tr>
+      <tr><td>Social</td><td>$20,464</td><td>$22,363</td><td>$23,914</td><td>$22,914</td><td>$21,015</td><td>$110,670</td><td>5.6%</td></tr>
+      <tr><td>Software (U360)</td><td>$20,582</td><td>$20,287</td><td>$18,110</td><td>$17,168</td><td>$16,222</td><td>$92,371</td><td>4.6%</td></tr>
+      <tr><td>Design</td><td>$16,777</td><td>$16,443</td><td>$10,659</td><td>$11,054</td><td>$16,998</td><td>$71,932</td><td>3.6%</td></tr>
+      <tr><td>Hosting</td><td>$9,887</td><td>$10,165</td><td>$10,841</td><td>$12,249</td><td>$7,915</td><td>$51,056</td><td>2.6%</td></tr>
+      <tr><td>NoDig</td><td>$5,902</td><td>$5,822</td><td>$5,902</td><td>$5,902</td><td>$5,623</td><td>$29,151</td><td>1.5%</td></tr>
+      <tr><td>Call</td><td>$5,024</td><td>$4,756</td><td>$5,102</td><td>$5,680</td><td>$5,452</td><td>$26,014</td><td>1.3%</td></tr>
+      <tr><td>Yelp</td><td>$4,320</td><td>$4,219</td><td>$3,770</td><td>$3,111</td><td>$3,111</td><td>$18,531</td><td>0.9%</td></tr>
+      <tr><td>Email</td><td>$1,963</td><td>$1,463</td><td>$2,590</td><td>$2,179</td><td>$2,549</td><td>$10,744</td><td>0.5%</td></tr>
+      <tr><td>Apps</td><td>$1,794</td><td>$1,594</td><td>$1,495</td><td>$1,794</td><td>$1,495</td><td>$8,172</td><td>0.4%</td></tr>
+      <tr class="tot"><td>Total</td><td>$415,798</td><td>$402,371</td><td>$387,875</td><td>$398,852</td><td>$386,801</td><td>$1,991,697</td><td>100%</td></tr>
+    </tbody>
+  </table></div></div>
   <div class="ig">
-    <div class="ins warn-ins"><div class="it">SEO + LSA = 46% of total revenue</div>Two services account for nearly half of all revenue ($916.8K of $1.99M). Heavy concentration — if either sees a cancellation wave, the impact is outsized.</div>
-    <div class="ins neg-ins"><div class="it">LSA is declining fastest</div>LSA dropped from $82.3K in January to $68.4K in May — a $13.9K or 16.9% fall. The single largest dollar decline of any service.</div>
-    <div class="ins neg-ins"><div class="it">LBO also trending down</div>LBO fell from $47K in January to $33K in May — a $14K or 29.8% drop. Combined with LSA, these two account for most revenue erosion.</div>
-    <div class="ins good-ins"><div class="it">PPC is the only growing service</div>PPC grew every single month: $25.1K → $29.4K, a 17.2% increase over 5 months. The only service with consistent positive momentum.</div>
-    <div class="ins good-ins"><div class="it">SEO is holding steady</div>SEO revenue is relatively stable ($106.4K–$113.9K). The largest service and showing resilience compared to LSA and LBO.</div>
-    <div class="ins info-ins"><div class="it">RTM Package volatile</div>RTM Package jumped from $20.7K in April to $28.9K in May — the largest single-month swing of any service in the dataset.</div>
+    <div class="ins warn-ins"><div class="it">SEO + LSA = 46% of revenue</div>Two services account for nearly half of all revenue ($916.8K). Heavy concentration risk if either sees a cancellation wave.</div>
+    <div class="ins neg-ins"><div class="it">LSA declining fastest</div>Dropped from $82.3K → $68.4K in May — a $13.9K or 16.9% fall. Largest dollar decline of any service.</div>
+    <div class="ins neg-ins"><div class="it">LBO also trending down</div>Fell from $47K → $33K in May — a 29.8% drop. With LSA, these two account for most revenue erosion.</div>
+    <div class="ins good-ins"><div class="it">PPC is the only growing service</div>Grew every month: $25.1K → $29.4K (+17.2%). Only service with consistent positive momentum.</div>
+    <div class="ins good-ins"><div class="it">SEO holding steady</div>Relatively stable at $106–$114K range. Largest service showing resilience vs. LSA and LBO.</div>
+    <div class="ins info-ins"><div class="it">RTM Package volatile</div>Jumped from $20.7K → $28.9K in May — the largest single-month swing of any service.</div>
   </div>
 </div>
 
 <!-- CANCELLATIONS -->
 <div id="pane-cancel" class="pane">
   <p class="slabel">Cancellation analysis — Jan–May 2026</p>
-  <div class="mg">
+  <div class="mg3">
     <div class="mc"><div class="lbl">Total cancellations</div><div class="val neg">$102,312</div><div class="sub">All services YTD</div></div>
     <div class="mc"><div class="lbl">Highest month</div><div class="val neg">$36,108</div><div class="sub">January</div></div>
     <div class="mc"><div class="lbl">Lowest month</div><div class="val pos">$9,845</div><div class="sub">April</div></div>
-    <div class="mc"><div class="lbl">Top cancel reason</div><div class="val" style="font-size:15px;">In-House</div><div class="sub">$36,027 YTD</div></div>
-    <div class="mc"><div class="lbl">2nd cancel reason</div><div class="val" style="font-size:15px;">Chng. Provider</div><div class="sub">$32,836 YTD</div></div>
-    <div class="mc"><div class="lbl">Top cancel service</div><div class="val" style="font-size:15px;">LSA</div><div class="sub">$26,737 YTD</div></div>
+    <div class="mc"><div class="lbl">Top cancel reason</div><div class="val" style="font-size:14px;">In-House</div><div class="sub">$36,027 YTD</div></div>
+    <div class="mc"><div class="lbl">2nd cancel reason</div><div class="val" style="font-size:14px;">Chng. Provider</div><div class="sub">$32,836 YTD</div></div>
+    <div class="mc"><div class="lbl">Top cancel service</div><div class="val" style="font-size:14px;">LSA</div><div class="sub">$26,737 YTD</div></div>
   </div>
-  <div class="flag"><strong>⚠ May spike after April improvement</strong>Cancellations dropped to a YTD low of $9,845 in April, then rebounded sharply to $23,996 in May. Monitor June closely — the forecast projects $57.6K.</div>
+  <div class="flag"><strong>⚠ May spike after April improvement</strong>Cancellations dropped to $9,845 in April then rebounded to $23,996 in May. June forecast projects $57.6K — the highest in the dataset.</div>
   <div class="two">
-    <div class="cc">
-      <div class="ct">Cancellations by month</div><div class="cs">All entities combined</div>
-      <div class="cw" style="height:220px;"><canvas id="c_ca_trend"></canvas></div>
-    </div>
-    <div class="cc">
-      <div class="ct">Cancellations by service — YTD</div><div class="cs">Top services ranked</div>
-      <div class="cw" style="height:220px;"><canvas id="c_ca_svc"></canvas></div>
-    </div>
+    <div class="cc"><div class="ct">Cancellations by month</div><div class="cs">All entities combined</div><div class="cw" style="height:210px;"><canvas id="c_ca_trend"></canvas></div></div>
+    <div class="cc"><div class="ct">By service — YTD</div><div class="cs">Top services ranked</div><div class="cw" style="height:210px;"><canvas id="c_ca_svc"></canvas></div></div>
   </div>
   <div class="two">
-    <div class="cc">
-      <div class="ct">Cancellation reason breakdown</div><div class="cs">YTD all entities</div>
-      <div class="cw" style="height:220px;"><canvas id="c_ca_reason"></canvas></div>
-    </div>
-    <div class="cc">
-      <div class="ct">Cancellations by account manager</div><div class="cs">YTD attributed</div>
-      <div class="cw" style="height:220px;"><canvas id="c_ca_am"></canvas></div>
-    </div>
+    <div class="cc"><div class="ct">Cancellation reasons</div><div class="cs">YTD all entities</div><div class="cw" style="height:210px;"><canvas id="c_ca_reason"></canvas></div></div>
+    <div class="cc"><div class="ct">By account manager</div><div class="cs">YTD attributed</div><div class="cw" style="height:210px;"><canvas id="c_ca_am"></canvas></div></div>
   </div>
-  <p class="slabel" style="margin-top:1rem;"></p><p class="slabel">Cancellation by service — monthly detail</p>
-  <div class="cc">
-    <div class="tbl-wrap"><table class="dt">
-      <thead><tr><th>Service</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Total</th></tr></thead>
-      <tbody>
-        <tr><td>LSA</td><td class="td-neg">$7,975</td><td>$6,794</td><td>$3,277</td><td>$3,397</td><td>$5,294</td><td class="td-neg">$26,737</td></tr>
-        <tr><td>SEO</td><td class="td-neg">$8,399</td><td>$2,500</td><td>$2,599</td><td>$1,750</td><td>$5,437</td><td class="td-neg">$20,685</td></tr>
-        <tr><td>GBP</td><td class="td-neg">$6,305</td><td>$599</td><td>$3,093</td><td>$998</td><td>$3,173</td><td>$14,168</td></tr>
-        <tr><td>LBO</td><td>$3,996</td><td>$3,748</td><td>$1,749</td><td>$799</td><td>$3,496</td><td>$13,788</td></tr>
-        <tr><td>Hosting</td><td>$3,508</td><td>$1,046</td><td>$1,754</td><td>$1,959</td><td>$2,645</td><td>$10,912</td></tr>
-        <tr><td>PPC</td><td>$3,885</td><td>$1,250</td><td>$649</td><td>$0</td><td>$600</td><td>$6,384</td></tr>
-        <tr><td>Software (U360)</td><td>$813</td><td>$792</td><td>$1,071</td><td>$942</td><td>$1,193</td><td>$4,811</td></tr>
-        <tr><td>Social</td><td>$800</td><td>$0</td><td>$799</td><td>$0</td><td>$1,399</td><td>$2,998</td></tr>
-        <tr><td>Call</td><td>$428</td><td>$265</td><td>$100</td><td>$0</td><td>$480</td><td>$1,273</td></tr>
-        <tr><td>NoDig</td><td>$0</td><td>$279</td><td>$0</td><td>$0</td><td>$279</td><td>$558</td></tr>
-        <tr class="tot"><td>Total</td><td>$36,108</td><td>$17,273</td><td>$15,091</td><td>$9,845</td><td>$23,996</td><td>$102,312</td></tr>
-      </tbody>
-    </table></div>
-  </div>
+  <p class="slabel">Cancellation by service — monthly detail</p>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead><tr><th>Service</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Total</th></tr></thead>
+    <tbody>
+      <tr><td>LSA</td><td class="td-neg">$7,975</td><td>$6,794</td><td>$3,277</td><td>$3,397</td><td>$5,294</td><td class="td-neg">$26,737</td></tr>
+      <tr><td>SEO</td><td class="td-neg">$8,399</td><td>$2,500</td><td>$2,599</td><td>$1,750</td><td>$5,437</td><td class="td-neg">$20,685</td></tr>
+      <tr><td>GBP</td><td class="td-neg">$6,305</td><td>$599</td><td>$3,093</td><td>$998</td><td>$3,173</td><td>$14,168</td></tr>
+      <tr><td>LBO</td><td>$3,996</td><td>$3,748</td><td>$1,749</td><td>$799</td><td>$3,496</td><td>$13,788</td></tr>
+      <tr><td>Hosting</td><td>$3,508</td><td>$1,046</td><td>$1,754</td><td>$1,959</td><td>$2,645</td><td>$10,912</td></tr>
+      <tr><td>PPC</td><td>$3,885</td><td>$1,250</td><td>$649</td><td>$0</td><td>$600</td><td>$6,384</td></tr>
+      <tr><td>Software</td><td>$813</td><td>$792</td><td>$1,071</td><td>$942</td><td>$1,193</td><td>$4,811</td></tr>
+      <tr><td>Social</td><td>$800</td><td>$0</td><td>$799</td><td>$0</td><td>$1,399</td><td>$2,998</td></tr>
+      <tr><td>Call</td><td>$428</td><td>$265</td><td>$100</td><td>$0</td><td>$480</td><td>$1,273</td></tr>
+      <tr><td>NoDig</td><td>$0</td><td>$279</td><td>$0</td><td>$0</td><td>$279</td><td>$558</td></tr>
+      <tr class="tot"><td>Total</td><td>$36,108</td><td>$17,273</td><td>$15,091</td><td>$9,845</td><td>$23,996</td><td>$102,312</td></tr>
+    </tbody>
+  </table></div></div>
   <div class="ig">
-    <div class="ins good-ins"><div class="it">Strong Jan → Apr improvement</div>Cancellations fell from $36.1K in January to $9.8K in April — a 72.8% reduction over 4 months. A meaningful operational improvement.</div>
-    <div class="ins neg-ins"><div class="it">May reversal is a red flag</div>The May spike to $24K erased most of April's progress. If June's forecast of $57.6K materializes it would be the worst month in the dataset.</div>
-    <div class="ins warn-ins"><div class="it">In-House is the #1 reason</div>$36K YTD (35.2%) are clients bringing services in-house — a retention and value-demonstration problem.</div>
-    <div class="ins warn-ins"><div class="it">Changing Providers is #2</div>$32.8K YTD in clients switching competitors. Combined with In-House, these two account for 67.3% of all cancel value.</div>
-    <div class="ins neg-ins"><div class="it">LSA + SEO = 46% of cancel dollars</div>LSA ($26.7K) and SEO ($20.7K) together represent $47.4K of the $102.3K YTD total.</div>
-    <div class="ins info-ins"><div class="it">Veronica + Kelly = $41.3K combined</div>These two AMs account for 41% of YTD cancellations. Kelly's May figure of $12.6K warrants a portfolio review.</div>
+    <div class="ins good-ins"><div class="it">Strong Jan → Apr improvement</div>Cancellations fell from $36.1K → $9.8K in April — a 72.8% reduction over 4 months.</div>
+    <div class="ins neg-ins"><div class="it">May reversal is a red flag</div>Spike back to $24K erased April's progress. June forecast of $57.6K would be the worst month on record.</div>
+    <div class="ins warn-ins"><div class="it">In-House is #1 reason</div>$36K YTD (35.2%) — clients bringing services in-house. A retention and value-demonstration problem.</div>
+    <div class="ins warn-ins"><div class="it">Changing Providers is #2</div>$32.8K YTD switching to competitors. Together with In-House = 67.3% of all cancel value.</div>
+    <div class="ins neg-ins"><div class="it">LSA + SEO = 46% of cancel dollars</div>$47.4K of the $102.3K YTD total comes from the top two revenue services.</div>
+    <div class="ins info-ins"><div class="it">Veronica + Kelly = $41.3K</div>Two AMs account for 41% of YTD cancellations. Kelly's May figure of $12.6K warrants a portfolio review.</div>
   </div>
 </div>
 
 <!-- FORECAST -->
 <div id="pane-forecast" class="pane">
   <p class="slabel">Monthly recurring forecast — all entities</p>
-  <div class="mg">
+  <div class="mg3">
     <div class="mc"><div class="lbl">Jun forecast (combined)</div><div class="val neg">$299,476</div><div class="sub">Down from $341K in May</div></div>
     <div class="mc"><div class="lbl">Jun RTM forecast</div><div class="val neg">$279,269</div><div class="sub">From $319.9K in May</div></div>
     <div class="mc"><div class="lbl">Jun U360 forecast</div><div class="val neg">$15,081</div><div class="sub">Steady decline</div></div>
-    <div class="mc"><div class="lbl">Jun NoDig forecast</div><div class="val">$5,125</div><div class="sub">Stable-ish</div></div>
+    <div class="mc"><div class="lbl">Jun NoDig forecast</div><div class="val">$5,125</div><div class="sub">Stable</div></div>
     <div class="mc"><div class="lbl">Jun projected cancels</div><div class="val neg">$57,612</div><div class="sub">Highest projected month</div></div>
     <div class="mc"><div class="lbl">Revenue trend</div><div class="val neg">↓ Declining</div><div class="sub">5-month consistent drop</div></div>
   </div>
-  <div class="flag"><strong>⚠ June forecast signals accelerating decline</strong>The June combined forecast of $299,476 would be the first month below $300K — a 13% drop from May. The projected $57,612 in cancellations is 2.4× the May actual.</div>
+  <div class="flag"><strong>⚠ June forecast signals accelerating decline</strong>$299,476 would be the first month below $300K — a 13% drop from May. Projected cancellations of $57,612 are 2.4× the May actual.</div>
   <div class="cc">
-    <div class="ct">Recurring revenue forecast — RTM, Unify360 & NoDig</div><div class="cs">Actual Jan–May + June forecast</div>
+    <div class="ct">Recurring revenue forecast</div><div class="cs">Actuals Jan–May + June forecast</div>
     <div class="leg"><span><span class="ld" style="background:#FDA813;"></span>RTM</span><span><span class="ld" style="background:#0D7A8C;"></span>Unify360</span><span><span class="ld" style="background:#534AB7;"></span>NoDig</span></div>
-    <div class="cw" style="height:260px;"><canvas id="c_fc_bar"></canvas></div>
+    <div class="cw" style="height:250px;"><canvas id="c_fc_bar"></canvas></div>
   </div>
-  <p class="slabel" style="margin-top:1rem;"></p><p class="slabel">Forecast detail table</p>
-  <div class="cc">
-    <div class="tbl-wrap"><table class="dt">
-      <thead><tr><th>Month</th><th>RTM</th><th>Unify360</th><th>NoDig</th><th>Combined</th><th>Note</th></tr></thead>
-      <tbody>
-        <tr><td>Jan</td><td>$384,530</td><td>$21,046</td><td>$5,902</td><td class="td-warn">$411,478</td><td>Actual</td></tr>
-        <tr><td>Feb</td><td>$361,674</td><td>$20,185</td><td>$5,902</td><td class="td-warn">$387,761</td><td>Actual</td></tr>
-        <tr><td>Mar</td><td>$327,639</td><td>$18,273</td><td>$5,623</td><td class="td-warn">$351,535</td><td>Actual</td></tr>
-        <tr><td>Apr</td><td>$340,580</td><td>$18,011</td><td>$5,623</td><td class="td-warn">$364,214</td><td>Actual</td></tr>
-        <tr><td>May</td><td>$326,488</td><td>$16,871</td><td>$5,334</td><td class="td-warn">$348,693</td><td>Actual</td></tr>
-        <tr><td>Jun</td><td class="td-neg">$279,269</td><td class="td-neg">$15,081</td><td>$5,125</td><td class="td-neg">$299,476</td><td style="color:var(--warn);">Forecast</td></tr>
-      </tbody>
-    </table></div>
-  </div>
+  <p class="slabel">Forecast detail table</p>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead><tr><th>Month</th><th>RTM</th><th>Unify360</th><th>NoDig</th><th>Combined</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td>Jan</td><td>$384,530</td><td>$21,046</td><td>$5,902</td><td class="td-warn">$411,478</td><td>Actual</td></tr>
+      <tr><td>Feb</td><td>$361,674</td><td>$20,185</td><td>$5,902</td><td class="td-warn">$387,761</td><td>Actual</td></tr>
+      <tr><td>Mar</td><td>$327,639</td><td>$18,273</td><td>$5,623</td><td class="td-warn">$351,535</td><td>Actual</td></tr>
+      <tr><td>Apr</td><td>$340,580</td><td>$18,011</td><td>$5,623</td><td class="td-warn">$364,214</td><td>Actual</td></tr>
+      <tr><td>May</td><td>$326,488</td><td>$16,871</td><td>$5,334</td><td class="td-warn">$348,693</td><td>Actual</td></tr>
+      <tr><td>Jun</td><td class="td-neg">$279,269</td><td class="td-neg">$15,081</td><td>$5,125</td><td class="td-neg">$299,476</td><td style="color:var(--warn);">Forecast</td></tr>
+    </tbody>
+  </table></div></div>
   <div class="ig">
-    <div class="ins neg-ins"><div class="it">27% recurring decline in 6 months</div>RTM's recurring base dropped from $384.5K in January to a projected $279.3K in June — a $105K loss in 6 months.</div>
-    <div class="ins neg-ins"><div class="it">June cancels projected at $57.6K</div>Nearly 2.4× the May actual and the highest single-month cancellation figure in the entire dataset if it holds.</div>
-    <div class="ins warn-ins"><div class="it">First sub-$300K month projected</div>June combined forecast of $299,476 would be a psychological and operational threshold — first time below $300K in the tracked period.</div>
-    <div class="ins info-ins"><div class="it">U360 slow bleed</div>Unify360 recurring has declined every month from $21K → $15K. No new sales are offsetting the slow attrition.</div>
-    <div class="ins good-ins"><div class="it">NoDig holding steady</div>NoDig is remarkably stable at $5.1–5.9K across all 6 months with minimal cancellations.</div>
-    <div class="ins warn-ins"><div class="it">Urgent action needed on June</div>The forecast is model-based. Aggressive retention actions now — especially on at-risk accounts — can still change the June outcome.</div>
+    <div class="ins neg-ins"><div class="it">27% recurring decline in 6 months</div>RTM dropped from $384.5K → projected $279.3K in June — a $105K loss in recurring base.</div>
+    <div class="ins neg-ins"><div class="it">June cancels at $57.6K projected</div>Nearly 2.4× the May actual. Would be the highest single-month cancellation figure in the dataset.</div>
+    <div class="ins warn-ins"><div class="it">First sub-$300K month projected</div>June combined forecast of $299,476 is a key operational threshold — first time below $300K in tracked period.</div>
+    <div class="ins info-ins"><div class="it">U360 slow bleed</div>Unify360 recurring declined every month from $21K → $15K. No new sales offsetting the attrition.</div>
+    <div class="ins good-ins"><div class="it">NoDig holding steady</div>Stable at $5.1–5.9K across all 6 months with minimal cancellations.</div>
+    <div class="ins warn-ins"><div class="it">Urgent action needed on June</div>Aggressive retention on at-risk accounts now can still change the June outcome.</div>
   </div>
 </div>
 
 <!-- SALARY ANALYSIS -->
 <div id="pane-salary" class="pane">
   <p class="slabel">Salary feasibility analysis — June 2026</p>
-  <div class="grid-4">
+  <div class="mg4">
     <div class="mc"><div class="lbl">Monthly revenue</div><div class="val amb">$325,000</div><div class="sub">Company-wide baseline</div></div>
     <div class="mc"><div class="lbl">Monthly salary cost</div><div class="val neg">$199,374</div><div class="sub">Excl. ownership</div></div>
-    <div class="mc"><div class="lbl">Salary-to-revenue ratio</div><div class="val neg">61.3%</div><div class="sub">Danger zone (target: ≤40%)</div></div>
-    <div class="mc"><div class="lbl">Revenue-to-salary ratio</div><div class="val neg">1.63×</div><div class="sub">Min safe threshold: 2.0×</div></div>
+    <div class="mc"><div class="lbl">Salary-to-revenue</div><div class="val neg">61.3%</div><div class="sub">Danger zone (target ≤40%)</div></div>
+    <div class="mc"><div class="lbl">Revenue-to-salary</div><div class="val neg">1.63×</div><div class="sub">Min safe: 2.0×</div></div>
     <div class="mc"><div class="lbl">US payroll (YTD)</div><div class="val">$276,366</div><div class="sub">$55.3K/mo avg</div></div>
     <div class="mc"><div class="lbl">PH payroll (YTD)</div><div class="val">$541,444</div><div class="sub">$108.3K/mo avg</div></div>
     <div class="mc"><div class="lbl">Total payroll (YTD)</div><div class="val">$817,810</div><div class="sub">US + PH combined</div></div>
     <div class="mc"><div class="lbl">PH savings vs. US equiv.</div><div class="val pos">~3.2×</div><div class="sub">Labor arbitrage ratio</div></div>
   </div>
-  <div class="flag"><strong>No blanket salary increase is financially supportable at current revenue</strong>At 61.3% salary-to-revenue, every dollar of salary increase directly compresses margins. The only approved path is selective, attrition-funded increases — fully offset by the $9,852 in attrition savings.</div>
+  <div class="flag"><strong>No blanket salary increase is financially supportable</strong>At 61.3% salary-to-revenue, every dollar of salary increase compresses already thin margins. Only approved path: selective, attrition-funded increases offset by $9,852 in attrition savings.</div>
   <div class="two">
-    <div class="cc">
-      <div class="ct">Salary-to-revenue ratio — current vs. targets</div><div class="cs">Benchmarks and milestone thresholds</div>
-      <div class="cw" style="height:220px;"><canvas id="c_sl_ratio"></canvas></div>
-    </div>
-    <div class="cc">
-      <div class="ct">US vs. PH payroll split</div><div class="cs">YTD Jan–May 2026</div>
-      <div class="cw" style="height:220px;"><canvas id="c_sl_split"></canvas></div>
-    </div>
+    <div class="cc"><div class="ct">Salary-to-revenue ratio</div><div class="cs">Current vs. benchmarks</div><div class="cw" style="height:210px;"><canvas id="c_sl_ratio"></canvas></div></div>
+    <div class="cc"><div class="ct">US vs. PH payroll split</div><div class="cs">YTD Jan–May 2026</div><div class="cw" style="height:210px;"><canvas id="c_sl_split"></canvas></div></div>
   </div>
   <p class="slabel">Revenue milestones — salary increase triggers</p>
-  <div class="milestone"><div class="ms-head"><div class="ms-title">Milestone 1 — Selective increase only (attrition-funded)</div><div class="ms-badge reached">Current approved path</div></div><div class="ms-desc">$4,699.67 in selective increases fully covered by $9,852.33 in attrition savings. Cash-flow neutral.</div><div style="margin-top:.75rem;"><div class="prog-label"><span style="font-size:12px;color:var(--muted);">Attrition savings utilized</span><span style="font-size:12px;color:var(--pos);">47.7%</span></div><div class="prog-bar"><div class="prog-fill" style="width:47.7%;background:var(--pos);"></div></div></div></div>
-  <div class="milestone"><div class="ms-head"><div class="ms-title">Milestone 2 — Broader review supportable</div><div class="ms-badge close">$398,748/mo revenue target</div></div><div class="ms-desc">At $398,748/month recurring, salary-to-revenue drops to 50% — the minimum safe threshold.</div><div style="margin-top:.75rem;"><div class="prog-label"><span style="font-size:12px;color:var(--muted);">Current ($325K) vs. target ($398.7K)</span><span style="font-size:12px;color:var(--warn);">81.5%</span></div><div class="prog-bar"><div class="prog-fill" style="width:81.5%;background:var(--warn);"></div></div></div></div>
-  <div class="milestone"><div class="ms-head"><div class="ms-title">Milestone 3 — Ideal compensation structure</div><div class="ms-badge locked">$498,435/mo revenue target</div></div><div class="ms-desc">At $498,435/month, salary-to-revenue hits 40% — the industry-ideal ratio.</div><div style="margin-top:.75rem;"><div class="prog-label"><span style="font-size:12px;color:var(--muted);">Current ($325K) vs. ideal ($498.4K)</span><span style="font-size:12px;color:var(--neg);">65.2%</span></div><div class="prog-bar"><div class="prog-fill" style="width:65.2%;background:var(--neg);"></div></div></div></div>
-  <p class="slabel" style="margin-top:1.25rem;">Scenario analysis</p>
-  <div class="cc">
-    <div class="tbl-wrap"><table class="dt">
-      <thead><tr><th>Scenario</th><th>Salary cost</th><th>Salary % of revenue</th><th>Revenue-to-salary</th><th>Verdict</th></tr></thead>
-      <tbody>
-        <tr><td>Current (no increase)</td><td>$199,374</td><td class="td-neg">61.3%</td><td class="td-neg">1.63×</td><td class="td-neg">Unsustainable</td></tr>
-        <tr><td>+3% increase</td><td>$205,355</td><td class="td-neg">63.2%</td><td class="td-neg">1.58×</td><td class="td-neg">Worse</td></tr>
-        <tr><td>+5% increase</td><td>$209,343</td><td class="td-neg">64.4%</td><td class="td-neg">1.55×</td><td class="td-neg">Worse</td></tr>
-        <tr><td>+10% increase</td><td>$219,311</td><td class="td-neg">67.5%</td><td class="td-neg">1.48×</td><td class="td-neg">Significantly worse</td></tr>
-        <tr><td>Selective only (+$4.7K)</td><td>$204,074</td><td class="td-warn">62.8%</td><td class="td-warn">1.59×</td><td class="td-pos">✓ Approved (neutral)</td></tr>
-        <tr class="tot"><td>At $398.7K revenue (50% target)</td><td>$199,374</td><td class="td-warn">50.0%</td><td class="td-warn">2.00×</td><td class="td-warn">Milestone 2 threshold</td></tr>
-      </tbody>
-    </table></div>
-  </div>
+  <div class="milestone"><div class="ms-head"><div class="ms-title">Milestone 1 — Selective increase (attrition-funded)</div><div class="ms-badge reached">Current approved path</div></div><div class="ms-desc">$4,699.67 in selective increases covered by $9,852.33 in attrition savings. Cash-flow neutral.</div><div style="margin-top:.6rem;"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px;"><span>Attrition savings utilized</span><span style="color:var(--pos);">47.7%</span></div><div class="prog-bar"><div class="prog-fill" style="width:47.7%;background:var(--pos);"></div></div></div></div>
+  <div class="milestone"><div class="ms-head"><div class="ms-title">Milestone 2 — Broader review supportable</div><div class="ms-badge close">$398,748/mo target</div></div><div class="ms-desc">At $398,748/month recurring, salary-to-revenue drops to 50% — the minimum safe threshold.</div><div style="margin-top:.6rem;"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px;"><span>Current ($325K) vs. target ($398.7K)</span><span style="color:var(--warn);">81.5%</span></div><div class="prog-bar"><div class="prog-fill" style="width:81.5%;background:var(--warn);"></div></div></div></div>
+  <div class="milestone"><div class="ms-head"><div class="ms-title">Milestone 3 — Ideal compensation structure</div><div class="ms-badge locked">$498,435/mo target</div></div><div class="ms-desc">At $498,435/month, salary-to-revenue hits 40% — the industry-ideal ratio.</div><div style="margin-top:.6rem;"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px;"><span>Current ($325K) vs. ideal ($498.4K)</span><span style="color:var(--neg);">65.2%</span></div><div class="prog-bar"><div class="prog-fill" style="width:65.2%;background:var(--neg);"></div></div></div></div>
+  <p class="slabel" style="margin-top:1rem;">Scenario analysis</p>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead><tr><th>Scenario</th><th>Salary cost</th><th>% of revenue</th><th>Rev-to-sal</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr><td>Current</td><td>$199,374</td><td class="td-neg">61.3%</td><td class="td-neg">1.63×</td><td class="td-neg">Unsustainable</td></tr>
+      <tr><td>+3% increase</td><td>$205,355</td><td class="td-neg">63.2%</td><td class="td-neg">1.58×</td><td class="td-neg">Worse</td></tr>
+      <tr><td>+5% increase</td><td>$209,343</td><td class="td-neg">64.4%</td><td class="td-neg">1.55×</td><td class="td-neg">Worse</td></tr>
+      <tr><td>+10% increase</td><td>$219,311</td><td class="td-neg">67.5%</td><td class="td-neg">1.48×</td><td class="td-neg">Significantly worse</td></tr>
+      <tr><td>Selective (+$4.7K)</td><td>$204,074</td><td class="td-warn">62.8%</td><td class="td-warn">1.59×</td><td class="td-pos">✓ Approved</td></tr>
+      <tr class="tot"><td>At $398.7K revenue</td><td>$199,374</td><td class="td-warn">50.0%</td><td class="td-warn">2.00×</td><td class="td-warn">Milestone 2</td></tr>
+    </tbody>
+  </table></div></div>
   <div class="good-box"><strong>✓ The path forward is clear</strong>Revenue growth is the only sustainable lever. Closing the gap to Milestone 2 ($398.7K/mo) requires ~$73,748 in new monthly recurring — achievable through reduced cancellations and new sales.</div>
   <div class="ig">
-    <div class="ins neg-ins"><div class="it">61.3% ratio is in the danger zone</div>Industry standard is 35–45%. At 61.3%, RTM pays $0.61 of every revenue dollar in salaries — very little room for overhead, tools, and profit.</div>
-    <div class="ins warn-ins"><div class="it">No blanket increase is supportable</div>Even a modest 3% increase pushes the ratio to 63.2%. Any company-wide raise at current revenue makes the position measurably worse.</div>
-    <div class="ins good-ins"><div class="it">PH labor arbitrage is a key strength</div>PH payroll at a 3.2× savings ratio vs. US equivalent is the single biggest cost advantage. Protecting and growing the PH team is a direct margin lever.</div>
-    <div class="ins info-ins"><div class="it">Attrition savings fund selective increases</div>$9,852 in attrition savings creates room for $4,699 in targeted increases — cash-flow neutral and the only approved path right now.</div>
-    <div class="ins warn-ins"><div class="it">Milestone 2 needs $73.7K more monthly</div>The 50% threshold is 81.5% of the way there. Reducing cancellations by $15K/mo and adding $15K new sales closes nearly half that gap.</div>
-    <div class="ins info-ins"><div class="it">Milestone 3 is a medium-term goal</div>The 40% ideal ratio requires 53% more monthly revenue than today — tied to successful execution of the sales growth plan.</div>
+    <div class="ins neg-ins"><div class="it">61.3% is in the danger zone</div>Industry standard is 35–45%. RTM pays $0.61 of every revenue dollar in salaries — little room for overhead and profit.</div>
+    <div class="ins warn-ins"><div class="it">No blanket increase supportable</div>Even 3% pushes the ratio to 63.2%. Any company-wide raise at current revenue makes the position worse.</div>
+    <div class="ins good-ins"><div class="it">PH arbitrage is a key strength</div>PH payroll at 3.2× savings vs. US equivalent is the single biggest cost advantage in the business.</div>
+    <div class="ins info-ins"><div class="it">Attrition savings fund selective increases</div>$9,852 in savings creates room for $4,699 in targeted increases — cash-flow neutral and the only approved path.</div>
+    <div class="ins warn-ins"><div class="it">Milestone 2 needs $73.7K more monthly</div>81.5% of the way there. Cutting $15K in cancels + $15K new sales closes nearly half the gap.</div>
+    <div class="ins info-ins"><div class="it">Milestone 3 is medium-term</div>The 40% ideal ratio requires 53% more monthly revenue — tied to the sales growth plan execution.</div>
   </div>
 </div>
 
@@ -493,86 +413,61 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1.25rem 0;}
 
 <script>
 var months = ['Jan','Feb','Mar','Apr','May'];
-var gc = 'rgba(255,255,255,0.07)';
-var tc = '#8ba3b8';
-function k(v){ return '$' + (Math.abs(v)/1000).toFixed(0) + 'K'; }
-function baseOpts(yCb){
-  return {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { grid: { color: gc }, ticks: { color: tc } },
-      y: { grid: { color: gc }, ticks: { color: tc, callback: yCb || k } }
-    }
-  };
-}
-function hOpts(){
-  return {
-    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { grid: { color: gc }, ticks: { color: tc, callback: k } },
-      y: { grid: { color: gc }, ticks: { color: tc, font: { size: 11 } } }
-    }
-  };
-}
+var gc = 'rgba(255,255,255,0.07)', tc = '#8ba3b8';
+function k(v){ return '$'+(Math.abs(v)/1000).toFixed(0)+'K'; }
+function bo(yCb){ return {responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},ticks:{color:tc,callback:yCb||k}}}}; }
+function ho(){ return {indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc,callback:k}},y:{grid:{color:gc},ticks:{color:tc,font:{size:11}}}}}; }
 
-// RTM net table
-var rtmNew = [33526,28193,28671,35075,22524];
-var rtmCan = [35295,16202,14020,8903,22524];
-var tb = document.getElementById('rtmNetTable');
-var tN=0, tC=0;
+var rtmNew=[33526,28193,28671,35075,22524], rtmCan=[35295,16202,14020,8903,22524];
+var tb=document.getElementById('rtmNetTable'), tN=0, tC=0;
 for(var i=0;i<months.length;i++){
-  var net = rtmNew[i]-rtmCan[i]; tN+=rtmNew[i]; tC+=rtmCan[i];
-  tb.innerHTML += '<tr><td>'+months[i]+' 2026</td><td class="td-pos">$'+rtmNew[i].toLocaleString()+'</td><td class="td-neg">$'+rtmCan[i].toLocaleString()+'</td><td class="'+(net>=0?'td-pos':'td-neg')+'">'+(net>=0?'+':'')+' $'+Math.abs(net).toLocaleString()+'</td></tr>';
+  var net=rtmNew[i]-rtmCan[i]; tN+=rtmNew[i]; tC+=rtmCan[i];
+  tb.innerHTML+='<tr><td>'+months[i]+'</td><td class="td-pos">$'+rtmNew[i].toLocaleString()+'</td><td class="td-neg">$'+rtmCan[i].toLocaleString()+'</td><td class="'+(net>=0?'td-pos':'td-neg')+'">'+(net>=0?'+':'')+' $'+Math.abs(net).toLocaleString()+'</td></tr>';
 }
-var tNet = tN-tC;
-tb.innerHTML += '<tr class="tot"><td>Total</td><td class="td-pos">$'+tN.toLocaleString()+'</td><td class="td-neg">$'+tC.toLocaleString()+'</td><td class="'+(tNet>=0?'td-pos':'td-neg')+'">'+(tNet>=0?'+':'')+' $'+Math.abs(tNet).toLocaleString()+'</td></tr>';
+var tNet=tN-tC;
+tb.innerHTML+='<tr class="tot"><td>Total</td><td class="td-pos">$'+tN.toLocaleString()+'</td><td class="td-neg">$'+tC.toLocaleString()+'</td><td class="'+(tNet>=0?'td-pos':'td-neg')+'">'+(tNet>=0?'+':'')+' $'+Math.abs(tNet).toLocaleString()+'</td></tr>';
 
-var inited = {};
+var inited={};
 function initTab(name){
-  if(inited[name]) return;
-  inited[name] = true;
+  if(inited[name]) return; inited[name]=true;
   if(name==='overview'){
-    new Chart(document.getElementById('c_ov_rtm'),{type:'bar',data:{labels:months,datasets:[{data:[389314,376261,363863,375781,364956],backgroundColor:'#FDA813',borderRadius:3}]},options:baseOpts()});
-    new Chart(document.getElementById('c_ov_u360'),{type:'bar',data:{labels:months,datasets:[{data:[20582,20287,18110,17168,16222],backgroundColor:'#0D7A8C',borderRadius:3}]},options:baseOpts()});
-    new Chart(document.getElementById('c_ov_nodig'),{type:'bar',data:{labels:months,datasets:[{data:[5902,5822,5902,5902,5623],backgroundColor:'#534AB7',borderRadius:3}]},options:baseOpts()});
-    new Chart(document.getElementById('c_ov_nvc'),{type:'bar',data:{labels:months,datasets:[{label:'New',data:[12340,4730,13336,11381,8476],backgroundColor:'#2ec48a',borderRadius:3},{label:'Cancels',data:[36108,17273,15091,9845,23996],backgroundColor:'#f26b5b',borderRadius:3}]},options:baseOpts()});
+    new Chart(document.getElementById('c_ov_rtm'),{type:'bar',data:{labels:months,datasets:[{data:[389314,376261,363863,375781,364956],backgroundColor:'#FDA813',borderRadius:3}]},options:bo()});
+    new Chart(document.getElementById('c_ov_u360'),{type:'bar',data:{labels:months,datasets:[{data:[20582,20287,18110,17168,16222],backgroundColor:'#0D7A8C',borderRadius:3}]},options:bo()});
+    new Chart(document.getElementById('c_ov_nodig'),{type:'bar',data:{labels:months,datasets:[{data:[5902,5822,5902,5902,5623],backgroundColor:'#534AB7',borderRadius:3}]},options:bo()});
+    new Chart(document.getElementById('c_ov_nvc'),{type:'bar',data:{labels:months,datasets:[{label:'New',data:[12340,4730,13336,11381,8476],backgroundColor:'#2ec48a',borderRadius:3},{label:'Cancels',data:[36108,17273,15091,9845,23996],backgroundColor:'#f26b5b',borderRadius:3}]},options:bo()});
     new Chart(document.getElementById('c_ov_clients'),{type:'line',data:{labels:months,datasets:[{data:[246,235,232,224,217],borderColor:'#FDA813',backgroundColor:'rgba(253,168,19,0.1)',fill:true,tension:0.35,pointBackgroundColor:'#FDA813',pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},min:200,max:260,ticks:{color:tc}}}}});
   }
   if(name==='sales'){
-    new Chart(document.getElementById('c_s_rtm'),{type:'bar',data:{labels:months,datasets:[{label:'Sales',data:[389314,376261,363863,375781,364956],backgroundColor:'#FDA813',borderRadius:3},{label:'New',data:[33526,28193,28671,35075,22524],backgroundColor:'#2ec48a',borderRadius:3},{label:'Cancels',data:[35295,16202,14020,8903,22524],backgroundColor:'#f26b5b',borderRadius:3}]},options:baseOpts()});
-    new Chart(document.getElementById('c_s_u360'),{type:'bar',data:{labels:months,datasets:[{label:'Sales',data:[20582,20287,18110,17168,16222],backgroundColor:'#0D7A8C',borderRadius:3},{label:'Cancels',data:[813,792,1071,942,1193],backgroundColor:'#f26b5b',borderRadius:3}]},options:baseOpts()});
-    new Chart(document.getElementById('c_s_nodig'),{type:'bar',data:{labels:months,datasets:[{label:'Sales',data:[5902,5822,5902,5902,5623],backgroundColor:'#534AB7',borderRadius:3},{label:'Cancels',data:[0,279,0,0,279],backgroundColor:'#f26b5b',borderRadius:3}]},options:baseOpts()});
+    new Chart(document.getElementById('c_s_rtm'),{type:'bar',data:{labels:months,datasets:[{label:'Sales',data:[389314,376261,363863,375781,364956],backgroundColor:'#FDA813',borderRadius:3},{label:'New',data:[33526,28193,28671,35075,22524],backgroundColor:'#2ec48a',borderRadius:3},{label:'Cancels',data:[35295,16202,14020,8903,22524],backgroundColor:'#f26b5b',borderRadius:3}]},options:bo()});
+    new Chart(document.getElementById('c_s_u360'),{type:'bar',data:{labels:months,datasets:[{label:'Sales',data:[20582,20287,18110,17168,16222],backgroundColor:'#0D7A8C',borderRadius:3},{label:'Cancels',data:[813,792,1071,942,1193],backgroundColor:'#f26b5b',borderRadius:3}]},options:bo()});
+    new Chart(document.getElementById('c_s_nodig'),{type:'bar',data:{labels:months,datasets:[{label:'Sales',data:[5902,5822,5902,5902,5623],backgroundColor:'#534AB7',borderRadius:3},{label:'Cancels',data:[0,279,0,0,279],backgroundColor:'#f26b5b',borderRadius:3}]},options:bo()});
   }
   if(name==='services'){
-    new Chart(document.getElementById('c_sv_bar'),{type:'bar',data:{labels:['SEO','LSA','LBO','GBP','PPC','RTM Pkg','Social','Software','Design','Hosting','NoDig','Call','Yelp','Email','Apps'],datasets:[{data:[544724,372040,205085,199704,132949,118554,110670,92371,71932,51056,29151,26014,18531,10744,8172],backgroundColor:'#FDA813',borderRadius:3}]},options:hOpts()});
-    new Chart(document.getElementById('c_sv_donut'),{type:'doughnut',data:{labels:['SEO','LSA','LBO','GBP','PPC','RTM Pkg','Social','Other'],datasets:[{data:[544724,372040,205085,199704,132949,118554,110670,308071],backgroundColor:['#FDA813','#0D7A8C','#534AB7','#f26b5b','#2ec48a','#11a0b8','#8ba3b8','#3C3489'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{display:true,position:'right',labels:{color:tc,boxWidth:10,padding:8,font:{size:11}}},tooltip:{callbacks:{label:function(ctx){return ' $'+ctx.parsed.toLocaleString();}}}}}});
+    new Chart(document.getElementById('c_sv_bar'),{type:'bar',data:{labels:['SEO','LSA','LBO','GBP','PPC','RTM Pkg','Social','Software','Design','Hosting','NoDig','Call','Yelp','Email','Apps'],datasets:[{data:[544724,372040,205085,199704,132949,118554,110670,92371,71932,51056,29151,26014,18531,10744,8172],backgroundColor:'#FDA813',borderRadius:3}]},options:ho()});
+    new Chart(document.getElementById('c_sv_donut'),{type:'doughnut',data:{labels:['SEO','LSA','LBO','GBP','PPC','RTM Pkg','Social','Other'],datasets:[{data:[544724,372040,205085,199704,132949,118554,110670,308071],backgroundColor:['#FDA813','#0D7A8C','#534AB7','#f26b5b','#2ec48a','#11a0b8','#8ba3b8','#3C3489'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{display:true,position:'right',labels:{color:tc,boxWidth:10,padding:8,font:{size:10}}},tooltip:{callbacks:{label:function(ctx){return ' $'+ctx.parsed.toLocaleString();}}}}}});
   }
   if(name==='cancel'){
-    new Chart(document.getElementById('c_ca_trend'),{type:'bar',data:{labels:months,datasets:[{data:[36108,17273,15091,9845,23996],backgroundColor:['#f26b5b','#f26b5b','#f26b5b','#2ec48a','#f26b5b'],borderRadius:3}]},options:baseOpts()});
-    new Chart(document.getElementById('c_ca_svc'),{type:'bar',data:{labels:['LSA','SEO','GBP','LBO','Hosting','PPC','Software','Social','Call','NoDig'],datasets:[{data:[26737,20685,14168,13788,10912,6384,4811,2998,1273,558],backgroundColor:'#f26b5b',borderRadius:3}]},options:hOpts()});
-    new Chart(document.getElementById('c_ca_reason'),{type:'doughnut',data:{labels:['In-House','Chng. Provider','No Reason','Hardships','Performance','Non-Payment','Not In Use','Buy Out'],datasets:[{data:[36027,32836,5935,5160,1375,827,1095,799],backgroundColor:['#f26b5b','#FDA813','#534AB7','#0D7A8C','#2ec48a','#8ba3b8','#11a0b8','#3C3489'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{display:true,position:'right',labels:{color:tc,boxWidth:10,padding:7,font:{size:10}}},tooltip:{callbacks:{label:function(ctx){return ' $'+ctx.parsed.toLocaleString();}}}}}});
-    new Chart(document.getElementById('c_ca_am'),{type:'bar',data:{labels:['Veronica','Kelly','Riza','Jason','John','Madison','Melissa','Mabua','Fay'],datasets:[{data:[23848,18162,17643,11159,7643,7588,4106,1242,400],backgroundColor:'#f26b5b',borderRadius:3}]},options:hOpts()});
+    new Chart(document.getElementById('c_ca_trend'),{type:'bar',data:{labels:months,datasets:[{data:[36108,17273,15091,9845,23996],backgroundColor:['#f26b5b','#f26b5b','#f26b5b','#2ec48a','#f26b5b'],borderRadius:3}]},options:bo()});
+    new Chart(document.getElementById('c_ca_svc'),{type:'bar',data:{labels:['LSA','SEO','GBP','LBO','Hosting','PPC','Software','Social','Call','NoDig'],datasets:[{data:[26737,20685,14168,13788,10912,6384,4811,2998,1273,558],backgroundColor:'#f26b5b',borderRadius:3}]},options:ho()});
+    new Chart(document.getElementById('c_ca_reason'),{type:'doughnut',data:{labels:['In-House','Chng.Provider','No Reason','Hardships','Performance','Non-Payment','Not In Use','Buy Out'],datasets:[{data:[36027,32836,5935,5160,1375,827,1095,799],backgroundColor:['#f26b5b','#FDA813','#534AB7','#0D7A8C','#2ec48a','#8ba3b8','#11a0b8','#3C3489'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{display:true,position:'right',labels:{color:tc,boxWidth:10,padding:6,font:{size:10}}},tooltip:{callbacks:{label:function(ctx){return ' $'+ctx.parsed.toLocaleString();}}}}}});
+    new Chart(document.getElementById('c_ca_am'),{type:'bar',data:{labels:['Veronica','Kelly','Riza','Jason','John','Madison','Melissa','Mabua','Fay'],datasets:[{data:[23848,18162,17643,11159,7643,7588,4106,1242,400],backgroundColor:'#f26b5b',borderRadius:3}]},options:ho()});
   }
   if(name==='forecast'){
-    new Chart(document.getElementById('c_fc_bar'),{type:'bar',data:{labels:['Jan','Feb','Mar','Apr','May','Jun (F)'],datasets:[{label:'RTM',data:[384530,361674,327639,340580,326488,279269],backgroundColor:['#FDA813','#FDA813','#FDA813','#FDA813','#FDA813','rgba(253,168,19,0.45)'],borderRadius:3},{label:'Unify360',data:[21046,20185,18273,18011,16871,15081],backgroundColor:['#0D7A8C','#0D7A8C','#0D7A8C','#0D7A8C','#0D7A8C','rgba(13,122,140,0.45)'],borderRadius:3},{label:'NoDig',data:[5902,5902,5623,5623,5334,5125],backgroundColor:['#534AB7','#534AB7','#534AB7','#534AB7','#534AB7','rgba(83,74,183,0.45)'],borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,padding:12}}},scales:{x:{stacked:true,grid:{color:gc},ticks:{color:tc}},y:{stacked:true,grid:{color:gc},ticks:{color:tc,callback:k}}}}});
+    new Chart(document.getElementById('c_fc_bar'),{type:'bar',data:{labels:['Jan','Feb','Mar','Apr','May','Jun (F)'],datasets:[{label:'RTM',data:[384530,361674,327639,340580,326488,279269],backgroundColor:['#FDA813','#FDA813','#FDA813','#FDA813','#FDA813','rgba(253,168,19,0.45)'],borderRadius:3},{label:'Unify360',data:[21046,20185,18273,18011,16871,15081],backgroundColor:['#0D7A8C','#0D7A8C','#0D7A8C','#0D7A8C','#0D7A8C','rgba(13,122,140,0.45)'],borderRadius:3},{label:'NoDig',data:[5902,5902,5623,5623,5334,5125],backgroundColor:['#534AB7','#534AB7','#534AB7','#534AB7','#534AB7','rgba(83,74,183,0.45)'],borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,padding:10}}},scales:{x:{stacked:true,grid:{color:gc},ticks:{color:tc}},y:{stacked:true,grid:{color:gc},ticks:{color:tc,callback:k}}}}});
   }
   if(name==='salary'){
     new Chart(document.getElementById('c_sl_ratio'),{type:'bar',data:{labels:['Current','50% threshold','40% ideal','Industry avg'],datasets:[{data:[61.3,50,40,35],backgroundColor:['#f26b5b','#FDA813','#2ec48a','#0D7A8C'],borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},max:80,ticks:{color:tc,callback:function(v){return v+'%';}}}}}});
-    new Chart(document.getElementById('c_sl_split'),{type:'doughnut',data:{labels:['Philippines ($541K)','United States ($276K)'],datasets:[{data:[541444,276366],backgroundColor:['#0D7A8C','#FDA813'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{display:true,position:'right',labels:{color:tc,boxWidth:10,padding:10,font:{size:12}}},tooltip:{callbacks:{label:function(ctx){return ' $'+ctx.parsed.toLocaleString();}}}}}});
+    new Chart(document.getElementById('c_sl_split'),{type:'doughnut',data:{labels:['Philippines ($541K)','United States ($276K)'],datasets:[{data:[541444,276366],backgroundColor:['#0D7A8C','#FDA813'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{display:true,position:'right',labels:{color:tc,boxWidth:10,padding:10,font:{size:11}}},tooltip:{callbacks:{label:function(ctx){return ' $'+ctx.parsed.toLocaleString();}}}}}});
   }
 }
 
-function sw(name, el){
-  document.querySelectorAll('.pane').forEach(function(p){ p.classList.remove('active'); });
-  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+function sw(name,el){
+  document.querySelectorAll('.pane').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
   document.getElementById('pane-'+name).classList.add('active');
   el.classList.add('active');
-  setTimeout(function(){ initTab(name); }, 50);
+  setTimeout(function(){initTab(name);},50);
 }
-
-// Init overview immediately since it's already visible
 initTab('overview');
 </script>
 </body>
