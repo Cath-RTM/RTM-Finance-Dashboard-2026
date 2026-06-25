@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RTM — Sales & Operations Dashboard 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --navy:#042234; --navy2:#0a3550; --navy3:#0e4268;
+  --amber:#FDA813; --amber2:#c4830a;
+  --teal:#0D7A8C; --teal2:#11a0b8;
+  --white:#fff; --off:#f0f4f8;
+  --muted:#8ba3b8; --border:rgba(255,255,255,0.08);
+  --card:rgba(255,255,255,0.04); --cardh:rgba(255,255,255,0.07);
+  --pos:#2ec48a; --neg:#f26b5b; --warn:#FDA813;
+  --txt:#e8f0f7; --txt2:#8ba3b8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--navy);color:var(--txt);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;}
+.hdr{background:var(--navy2);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
+.hdr-brand{display:flex;align-items:center;gap:12px;}
+.hdr-bar{width:8px;height:28px;background:var(--amber);border-radius:2px;}
+.hdr-title{font-size:15px;font-weight:600;color:var(--white);letter-spacing:.01em;}
+.hdr-sub{font-size:12px;color:var(--muted);}
+.hdr-badge{background:rgba(253,168,19,.15);color:var(--amber);border:1px solid rgba(253,168,19,.3);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;letter-spacing:.04em;}
+.nav{background:var(--navy2);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;gap:4px;overflow-x:auto;}
+.tab{padding:10px 18px;font-size:13px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;user-select:none;white-space:nowrap;}
+.tab:hover{color:var(--txt);}
+.tab.active{color:var(--amber);border-bottom-color:var(--amber);font-weight:500;}
+.pane{display:none;padding:1.75rem 2rem;max-width:1200px;margin:0 auto;}
+.pane.active{display:block;}
+.slabel{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;}
+.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-bottom:1.75rem;}
+.mc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;transition:background .15s;}
+.mc:hover{background:var(--cardh);}
+.mc .lbl{font-size:11px;color:var(--muted);margin-bottom:5px;}
+.mc .val{font-size:21px;font-weight:600;color:var(--white);line-height:1.1;}
+.mc .sub{font-size:11px;color:var(--muted);margin-top:3px;}
+.val.pos{color:var(--pos)!important;}
+.val.neg{color:var(--neg)!important;}
+.val.amb{color:var(--amber)!important;}
+.val.teal{color:var(--teal2)!important;}
+.cc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;}
+.ct{font-size:13px;font-weight:500;color:var(--txt);margin-bottom:3px;}
+.cs{font-size:11px;color:var(--muted);margin-bottom:1rem;}
+.cw{position:relative;width:100%;}
+.leg{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin-bottom:.9rem;}
+.leg span{display:flex;align-items:center;gap:6px;}
+.ld{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;}
+@media(max-width:640px){.two{grid-template-columns:1fr;}}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;}
+@media(max-width:700px){.three{grid-template-columns:1fr;}}
+table.dt{width:100%;border-collapse:collapse;font-size:13px;}
+table.dt th{text-align:left;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;padding:8px 10px;border-bottom:1px solid var(--border);}
+table.dt td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--txt);}
+table.dt tr:hover td{background:var(--cardh);}
+table.dt tr:last-child td{border-bottom:none;}
+table.dt td:not(:first-child),table.dt th:not(:first-child){text-align:right;}
+table.dt .tot td{font-weight:600;border-top:1px solid var(--border);color:var(--amber);}
+.td-pos{color:var(--pos)!important;}
+.td-neg{color:var(--neg)!important;}
+.td-warn{color:var(--warn)!important;}
+.flag{background:rgba(242,107,91,.1);border:1px solid rgba(242,107,91,.3);border-radius:8px;padding:10px 14px;font-size:12px;color:#f9b4ac;margin-bottom:1.25rem;line-height:1.6;}
+.flag strong{font-weight:600;display:block;margin-bottom:3px;color:var(--neg);}
+.good-box{background:rgba(46,196,138,.08);border:1px solid rgba(46,196,138,.2);border-radius:8px;padding:10px 14px;font-size:12px;color:#a0e8ca;margin-bottom:1.25rem;line-height:1.6;}
+.good-box strong{font-weight:600;display:block;margin-bottom:3px;color:var(--pos);}
+.ig{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem;}
+.ins{border-radius:8px;padding:10px 13px;font-size:12px;line-height:1.55;border:1px solid transparent;}
+.ins .it{font-weight:600;margin-bottom:3px;font-size:13px;}
+.warn-ins{background:rgba(253,168,19,.08);border-color:rgba(253,168,19,.2);color:#f5d080;}
+.warn-ins .it{color:var(--amber);}
+.good-ins{background:rgba(46,196,138,.08);border-color:rgba(46,196,138,.2);color:#a0e8ca;}
+.good-ins .it{color:var(--pos);}
+.info-ins{background:rgba(13,122,140,.15);border-color:rgba(13,122,140,.3);color:#8dd4de;}
+.info-ins .it{color:var(--teal2);}
+.neg-ins{background:rgba(242,107,91,.08);border-color:rgba(242,107,91,.2);color:#f9b4ac;}
+.neg-ins .it{color:var(--neg);}
+.prog-wrap{margin-bottom:1rem;}
+.prog-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;}
+.prog-bar{height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:4px;}
+.milestone{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;margin-bottom:.75rem;}
+.ms-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;}
+.ms-title{font-size:13px;font-weight:500;}
+.ms-badge{font-size:11px;padding:2px 8px;border-radius:4px;font-weight:500;}
+.ms-badge.locked{background:rgba(242,107,91,.15);color:#f9b4ac;}
+.ms-badge.close{background:rgba(253,168,19,.15);color:var(--amber);}
+.ms-badge.reached{background:rgba(46,196,138,.15);color:var(--pos);}
+.ms-desc{font-size:12px;color:var(--muted);line-height:1.55;}
+hr.dv{border:none;border-top:1px solid var(--border);margin:1.5rem 0;}
+.footer{text-align:center;padding:1.5rem 2rem;font-size:11px;color:var(--muted);border-top:1px solid var(--border);margin-top:2rem;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-bar"></div>
+    <div>
+      <div class="hdr-title">RTM · Sales & Operations Dashboard</div>
+      <div class="hdr-sub">January – May 2026 · RTM, Unify360 & NoDig</div>
+    </div>
+  </div>
+  <div class="hdr-badge">YTD 2026</div>
+</div>
+
+<div class="nav">
+  <div class="tab active" onclick="sw('overview',this)">Overview</div>
+  <div class="tab" onclick="sw('sales',this)">Sales by Entity</div>
+  <div class="tab" onclick="sw('services',this)">Sales by Service</div>
+  <div class="tab" onclick="sw('cancel',this)">Cancellations</div>
+  <div class="tab" onclick="sw('forecast',this)">Forecast</div>
+  <div class="tab" onclick="sw('salary',this)">Salary Analysis</div>
+</div>
+
+<!-- OVERVIEW -->
+<div id="pane-overview" class="pane active">
+  <p class="slabel">Combined overview — all entities · Jan–May 2026</p>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.75rem;">
+    <div class="mc"><div class="lbl">Total sales (YTD)</div><div class="val amb">$1.992M</div><div class="sub">Avg $398.3K/mo</div></div>
+    <div class="mc"><div class="lbl">New sales (YTD)</div><div class="val pos">$149.1K</div><div class="sub">RTM + Unify</div></div>
+    <div class="mc"><div class="lbl">Cancellations (YTD)</div><div class="val neg">$102.3K</div><div class="sub">All entities</div></div>
+    <div class="mc"><div class="lbl">Net new vs. cancel</div><div class="val neg">-$52.0K</div><div class="sub">Recurring net loss</div></div>
+    <div class="mc"><div class="lbl">Active clients (May)</div><div class="val">217</div><div class="sub">Down from 246 in Jan</div></div>
+    <div class="mc"><div class="lbl">Clients cancelled (May)</div><div class="val neg">16</div><div class="sub">$23,996 in cancel value</div></div>
+    <div class="mc"><div class="lbl">Payroll (YTD)</div><div class="val">$817.8K</div><div class="sub">US + PH combined</div></div>
+    <div class="mc"><div class="lbl">Partnership commissions</div><div class="val teal">$10.7K</div><div class="sub">YTD all partners</div></div>
+  </div>
+  <div class="three">
+    <div class="cc" style="margin-bottom:0;">
+      <div class="ct">RTM</div><div class="cs" style="color:#FDA813;">$1.870M YTD · 93.9% of total</div>
+      <div class="cw" style="height:190px;"><canvas id="c_ov_rtm"></canvas></div>
+    </div>
+    <div class="cc" style="margin-bottom:0;">
+      <div class="ct">Unify360</div><div class="cs" style="color:#0D7A8C;">$92.4K YTD · 4.6% of total</div>
+      <div class="cw" style="height:190px;"><canvas id="c_ov_u360"></canvas></div>
+    </div>
+    <div class="cc" style="margin-bottom:0;">
+      <div class="ct">NoDig</div><div class="cs" style="color:#534AB7;">$29.2K YTD · 1.5% of total</div>
+      <div class="cw" style="height:190px;"><canvas id="c_ov_nodig"></canvas></div>
+    </div>
+  </div>
+  <div style="margin-bottom:1.25rem;"></div>
+  <div class="two">
+    <div class="cc" style="margin-bottom:0;">
+      <div class="ct">New sales vs. cancellations</div><div class="cs">Combined entities · monthly</div>
+      <div class="leg"><span><span class="ld" style="background:#2ec48a;"></span>New recurring</span><span><span class="ld" style="background:#f26b5b;"></span>Cancellations</span></div>
+      <div class="cw" style="height:210px;"><canvas id="c_ov_nvc"></canvas></div>
+    </div>
+    <div class="cc" style="margin-bottom:0;">
+      <div class="ct">Active client count</div><div class="cs">Month-end active clients</div>
+      <div class="cw" style="height:210px;"><canvas id="c_ov_clients"></canvas></div>
+    </div>
+  </div>
+  <div style="margin-bottom:1.25rem;"></div>
+  <div class="ig">
+    <div class="ins neg-ins"><div class="it">Net recurring deficit</div>YTD new recurring ($50.3K) vs. cancellations ($102.3K) = <strong>-$52K net loss</strong> in recurring revenue. April was the only profitable month (+$1.5K).</div>
+    <div class="ins warn-ins"><div class="it">Client attrition</div>Active clients dropped from 246 → 217 over 5 months — a loss of 29 clients (11.8%). At current pace, that's ~70 clients lost annually.</div>
+    <div class="ins good-ins"><div class="it">Cancellation improvement</div>Cancel dollars dropped sharply from $36.1K in Jan → $9.8K in Apr before spiking in May ($24K). March and April show real improvement.</div>
+    <div class="ins info-ins"><div class="it">NoDig is stable</div>NoDig runs a flat ~$5.9K/mo with near-zero cancellations. Small but reliable recurring contribution.</div>
+    <div class="ins warn-ins"><div class="it">RTM carries 93.9% of revenue</div>Heavy concentration in RTM. Any acceleration in cancellations or client loss directly threatens total revenue with no buffer.</div>
+    <div class="ins good-ins"><div class="it">April recovery signal</div>RTM bounced from $363.9K in March back to $375.8K in April — the one month where the trend reversed. Worth investigating what drove it.</div>
+  </div>
+</div>
+
+<!-- SALES BY ENTITY -->
+<div id="pane-sales" class="pane">
+  <p class="slabel">Sales by entity — detail</p>
+  <div class="three">
+    <div class="mc"><div class="lbl">RTM sales (YTD)</div><div class="val amb">$1.870M</div><div class="sub">93.9% of total</div></div>
+    <div class="mc"><div class="lbl">Unify360 sales (YTD)</div><div class="val teal">$92.4K</div><div class="sub">4.6% of total</div></div>
+    <div class="mc"><div class="lbl">NoDig sales (YTD)</div><div class="val">$29.2K</div><div class="sub">1.5% of total</div></div>
+  </div>
+  <div class="three">
+    <div class="cc">
+      <div class="ct">RTM</div><div class="cs">Sales, new sales & cancellations</div>
+      <div class="leg"><span><span class="ld" style="background:#FDA813;"></span>Sales</span><span><span class="ld" style="background:#2ec48a;"></span>New</span><span><span class="ld" style="background:#f26b5b;"></span>Cancels</span></div>
+      <div class="cw" style="height:200px;"><canvas id="c_s_rtm"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Unify360</div><div class="cs">Sales & cancellations</div>
+      <div class="leg"><span><span class="ld" style="background:#0D7A8C;"></span>Sales</span><span><span class="ld" style="background:#f26b5b;"></span>Cancels</span></div>
+      <div class="cw" style="height:200px;"><canvas id="c_s_u360"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">NoDig</div><div class="cs">Sales & cancellations</div>
+      <div class="leg"><span><span class="ld" style="background:#534AB7;"></span>Sales</span><span><span class="ld" style="background:#f26b5b;"></span>Cancels</span></div>
+      <div class="cw" style="height:200px;"><canvas id="c_s_nodig"></canvas></div>
+    </div>
+  </div>
+  <p class="slabel">Monthly sales table — all entities</p>
+  <div class="cc">
+    <table class="dt">
+      <thead><tr><th>Month</th><th>RTM</th><th>Unify360</th><th>NoDig</th><th>Total</th></tr></thead>
+      <tbody>
+        <tr><td>Jan 2026</td><td>$389,314</td><td>$20,582</td><td>$5,902</td><td class="td-warn">$415,798</td></tr>
+        <tr><td>Feb 2026</td><td>$376,261</td><td>$20,287</td><td>$5,822</td><td class="td-warn">$402,371</td></tr>
+        <tr><td>Mar 2026</td><td>$363,863</td><td>$18,110</td><td>$5,902</td><td class="td-warn">$387,875</td></tr>
+        <tr><td>Apr 2026</td><td>$375,781</td><td>$17,168</td><td>$5,902</td><td class="td-warn">$398,852</td></tr>
+        <tr><td>May 2026</td><td>$364,956</td><td>$16,222</td><td>$5,623</td><td class="td-warn">$386,801</td></tr>
+        <tr class="tot"><td>Total</td><td>$1,870,175</td><td>$92,371</td><td>$29,151</td><td>$1,991,697</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="slabel">RTM — new sales vs. cancellations</p>
+  <div class="cc"><table class="dt"><thead><tr><th>Month</th><th>New sales</th><th>Cancellations</th><th>Net</th></tr></thead><tbody id="rtmNetTable"></tbody></table></div>
+  <div class="ig">
+    <div class="ins neg-ins"><div class="it">RTM declining month-over-month</div>RTM dropped from $389.3K in January to $365K in May — a $24.4K or 6.3% slide. Steady erosion that compounds fast if unchecked.</div>
+    <div class="ins neg-ins"><div class="it">Unify360 in consistent decline</div>U360 has lost $4.4K/mo since January ($20.6K → $16.2K), a 21% drop in 5 months. No new sales are replacing the attrition.</div>
+    <div class="ins good-ins"><div class="it">NoDig is the stable anchor</div>NoDig runs a flat $5.6–5.9K every month with near-zero variance. Small but reliable — not declined at all over the period.</div>
+    <div class="ins warn-ins"><div class="it">RTM carries 93.9% of revenue</div>Heavy concentration in RTM. Any acceleration in cancellations directly threatens total revenue with no buffer from other entities.</div>
+    <div class="ins neg-ins"><div class="it">Net new is negative for RTM</div>RTM brought in $147.9K in new sales but lost $96.9K to cancellations — a net gain of only $51K over 5 months.</div>
+    <div class="ins good-ins"><div class="it">April showed a recovery signal</div>RTM bounced from $363.9K in March back to $375.8K in April — the one month where the trend reversed. Worth investigating.</div>
+  </div>
+</div>
+
+<!-- SALES BY SERVICE -->
+<div id="pane-services" class="pane">
+  <p class="slabel">Sales by service — YTD Jan–May 2026</p>
+  <div class="mg">
+    <div class="mc"><div class="lbl">Top service</div><div class="val" style="font-size:16px;">SEO</div><div class="sub">$544.7K YTD (27.3%)</div></div>
+    <div class="mc"><div class="lbl">2nd service</div><div class="val" style="font-size:16px;">LSA</div><div class="sub">$372.0K YTD (18.7%)</div></div>
+    <div class="mc"><div class="lbl">3rd service</div><div class="val" style="font-size:16px;">LBO</div><div class="sub">$205.1K YTD (10.3%)</div></div>
+    <div class="mc"><div class="lbl">4th service</div><div class="val" style="font-size:16px;">GBP</div><div class="sub">$199.7K YTD (10.0%)</div></div>
+  </div>
+  <div class="two">
+    <div class="cc">
+      <div class="ct">Revenue by service — YTD total</div><div class="cs">All services ranked</div>
+      <div class="cw" style="height:360px;"><canvas id="c_sv_bar"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Service revenue share</div><div class="cs">Top 8 services · YTD</div>
+      <div class="cw" style="height:360px;"><canvas id="c_sv_donut"></canvas></div>
+    </div>
+  </div>
+  <p class="slabel">Full service revenue table</p>
+  <div class="cc">
+    <table class="dt">
+      <thead><tr><th>Service</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Total</th><th>% share</th></tr></thead>
+      <tbody>
+        <tr><td>SEO</td><td>$106,400</td><td>$103,844</td><td>$113,857</td><td>$111,855</td><td>$108,770</td><td class="td-warn">$544,724</td><td>27.3%</td></tr>
+        <tr><td>LSA</td><td>$82,272</td><td>$76,525</td><td>$68,569</td><td>$76,311</td><td>$68,362</td><td class="td-warn">$372,040</td><td>18.7%</td></tr>
+        <tr><td>LBO</td><td>$47,020</td><td>$46,173</td><td>$38,251</td><td>$40,660</td><td>$32,981</td><td>$205,085</td><td>10.3%</td></tr>
+        <tr><td>GBP</td><td>$43,781</td><td>$42,793</td><td>$35,577</td><td>$39,630</td><td>$37,922</td><td>$199,704</td><td>10.0%</td></tr>
+        <tr><td>PPC</td><td>$25,117</td><td>$24,031</td><td>$26,749</td><td>$27,605</td><td>$29,447</td><td>$132,949</td><td>6.7%</td></tr>
+        <tr><td>RTM Package</td><td>$24,495</td><td>$21,892</td><td>$22,489</td><td>$20,739</td><td>$28,939</td><td>$118,554</td><td>6.0%</td></tr>
+        <tr><td>Social</td><td>$20,464</td><td>$22,363</td><td>$23,914</td><td>$22,914</td><td>$21,015</td><td>$110,670</td><td>5.6%</td></tr>
+        <tr><td>Software (U360)</td><td>$20,582</td><td>$20,287</td><td>$18,110</td><td>$17,168</td><td>$16,222</td><td>$92,371</td><td>4.6%</td></tr>
+        <tr><td>Design</td><td>$16,777</td><td>$16,443</td><td>$10,659</td><td>$11,054</td><td>$16,998</td><td>$71,932</td><td>3.6%</td></tr>
+        <tr><td>Hosting</td><td>$9,887</td><td>$10,165</td><td>$10,841</td><td>$12,249</td><td>$7,915</td><td>$51,056</td><td>2.6%</td></tr>
+        <tr><td>NoDig</td><td>$5,902</td><td>$5,822</td><td>$5,902</td><td>$5,902</td><td>$5,623</td><td>$29,151</td><td>1.5%</td></tr>
+        <tr><td>Call</td><td>$5,024</td><td>$4,756</td><td>$5,102</td><td>$5,680</td><td>$5,452</td><td>$26,014</td><td>1.3%</td></tr>
+        <tr><td>Yelp</td><td>$4,320</td><td>$4,219</td><td>$3,770</td><td>$3,111</td><td>$3,111</td><td>$18,531</td><td>0.9%</td></tr>
+        <tr><td>Email</td><td>$1,963</td><td>$1,463</td><td>$2,590</td><td>$2,179</td><td>$2,549</td><td>$10,744</td><td>0.5%</td></tr>
+        <tr><td>Apps</td><td>$1,794</td><td>$1,594</td><td>$1,495</td><td>$1,794</td><td>$1,495</td><td>$8,172</td><td>0.4%</td></tr>
+        <tr class="tot"><td>Total</td><td>$415,798</td><td>$402,371</td><td>$387,875</td><td>$398,852</td><td>$386,801</td><td>$1,991,697</td><td>100%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="ig">
+    <div class="ins warn-ins"><div class="it">SEO + LSA = 46% of total revenue</div>Two services account for nearly half of all revenue ($916.8K of $1.99M). Heavy concentration — if either sees a cancellation wave, the impact is outsized.</div>
+    <div class="ins neg-ins"><div class="it">LSA is declining fastest</div>LSA dropped from $82.3K in January to $68.4K in May — a $13.9K or 16.9% fall. The single largest dollar decline of any service.</div>
+    <div class="ins neg-ins"><div class="it">LBO also trending down</div>LBO fell from $47K in January to $33K in May — a $14K or 29.8% drop. Combined with LSA, these two account for most revenue erosion.</div>
+    <div class="ins good-ins"><div class="it">PPC is the only growing service</div>PPC grew every single month: $25.1K → $29.4K, a 17.2% increase over 5 months. The only service with consistent positive momentum.</div>
+    <div class="ins good-ins"><div class="it">SEO is holding steady</div>SEO revenue is relatively stable ($106.4K–$113.9K). The largest service and showing resilience compared to LSA and LBO.</div>
+    <div class="ins info-ins"><div class="it">RTM Package volatile</div>RTM Package jumped from $20.7K in April to $28.9K in May — the largest single-month swing of any service in the dataset.</div>
+  </div>
+</div>
+
+<!-- CANCELLATIONS -->
+<div id="pane-cancel" class="pane">
+  <p class="slabel">Cancellation analysis — Jan–May 2026</p>
+  <div class="mg">
+    <div class="mc"><div class="lbl">Total cancellations</div><div class="val neg">$102,312</div><div class="sub">All services YTD</div></div>
+    <div class="mc"><div class="lbl">Highest month</div><div class="val neg">$36,108</div><div class="sub">January</div></div>
+    <div class="mc"><div class="lbl">Lowest month</div><div class="val pos">$9,845</div><div class="sub">April</div></div>
+    <div class="mc"><div class="lbl">Top cancel reason</div><div class="val" style="font-size:15px;">In-House</div><div class="sub">$36,027 YTD</div></div>
+    <div class="mc"><div class="lbl">2nd cancel reason</div><div class="val" style="font-size:15px;">Chng. Provider</div><div class="sub">$32,836 YTD</div></div>
+    <div class="mc"><div class="lbl">Top cancel service</div><div class="val" style="font-size:15px;">LSA</div><div class="sub">$26,737 YTD</div></div>
+  </div>
+  <div class="flag"><strong>⚠ May spike after April improvement</strong>Cancellations dropped to a YTD low of $9,845 in April, then rebounded sharply to $23,996 in May. Monitor June closely — the forecast projects $57.6K.</div>
+  <div class="two">
+    <div class="cc">
+      <div class="ct">Cancellations by month</div><div class="cs">All entities combined</div>
+      <div class="cw" style="height:220px;"><canvas id="c_ca_trend"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Cancellations by service — YTD</div><div class="cs">Top services ranked</div>
+      <div class="cw" style="height:220px;"><canvas id="c_ca_svc"></canvas></div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="cc">
+      <div class="ct">Cancellation reason breakdown</div><div class="cs">YTD all entities</div>
+      <div class="cw" style="height:220px;"><canvas id="c_ca_reason"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Cancellations by account manager</div><div class="cs">YTD attributed</div>
+      <div class="cw" style="height:220px;"><canvas id="c_ca_am"></canvas></div>
+    </div>
+  </div>
+  <p class="slabel">Cancellation by service — monthly detail</p>
+  <div class="cc">
+    <table class="dt">
+      <thead><tr><th>Service</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Total</th></tr></thead>
+      <tbody>
+        <tr><td>LSA</td><td class="td-neg">$7,975</td><td>$6,794</td><td>$3,277</td><td>$3,397</td><td>$5,294</td><td class="td-neg">$26,737</td></tr>
+        <tr><td>SEO</td><td class="td-neg">$8,399</td><td>$2,500</td><td>$2,599</td><td>$1,750</td><td>$5,437</td><td class="td-neg">$20,685</td></tr>
+        <tr><td>GBP</td><td class="td-neg">$6,305</td><td>$599</td><td>$3,093</td><td>$998</td><td>$3,173</td><td>$14,168</td></tr>
+        <tr><td>LBO</td><td>$3,996</td><td>$3,748</td><td>$1,749</td><td>$799</td><td>$3,496</td><td>$13,788</td></tr>
+        <tr><td>Hosting</td><td>$3,508</td><td>$1,046</td><td>$1,754</td><td>$1,959</td><td>$2,645</td><td>$10,912</td></tr>
+        <tr><td>PPC</td><td>$3,885</td><td>$1,250</td><td>$649</td><td>$0</td><td>$600</td><td>$6,384</td></tr>
+        <tr><td>Software (U360)</td><td>$813</td><td>$792</td><td>$1,071</td><td>$942</td><td>$1,193</td><td>$4,811</td></tr>
+        <tr><td>Social</td><td>$800</td><td>$0</td><td>$799</td><td>$0</td><td>$1,399</td><td>$2,998</td></tr>
+        <tr><td>Call</td><td>$428</td><td>$265</td><td>$100</td><td>$0</td><td>$480</td><td>$1,273</td></tr>
+        <tr><td>NoDig</td><td>$0</td><td>$279</td><td>$0</td><td>$0</td><td>$279</td><td>$558</td></tr>
+        <tr class="tot"><td>Total</td><td>$36,108</td><td>$17,273</td><td>$15,091</td><td>$9,845</td><td>$23,996</td><td>$102,312</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="ig">
+    <div class="ins good-ins"><div class="it">Strong Jan → Apr improvement</div>Cancellations fell from $36.1K in January to $9.8K in April — a 72.8% reduction over 4 months. A meaningful operational improvement.</div>
+    <div class="ins neg-ins"><div class="it">May reversal is a red flag</div>The May spike to $24K erased most of April's progress. If June's forecast of $57.6K materializes it would be the worst month in the dataset.</div>
+    <div class="ins warn-ins"><div class="it">In-House is the #1 reason</div>$36K YTD (35.2%) are clients bringing services in-house — a retention and value-demonstration problem.</div>
+    <div class="ins warn-ins"><div class="it">Changing Providers is #2</div>$32.8K YTD in clients switching competitors. Combined with In-House, these two account for 67.3% of all cancel value.</div>
+    <div class="ins neg-ins"><div class="it">LSA + SEO = 46% of cancel dollars</div>LSA ($26.7K) and SEO ($20.7K) together represent $47.4K of the $102.3K YTD total.</div>
+    <div class="ins info-ins"><div class="it">Veronica + Kelly = $41.3K combined</div>These two AMs account for 41% of YTD cancellations. Kelly's May figure of $12.6K warrants a portfolio review.</div>
+  </div>
+</div>
+
+<!-- FORECAST -->
+<div id="pane-forecast" class="pane">
+  <p class="slabel">Monthly recurring forecast — all entities</p>
+  <div class="mg">
+    <div class="mc"><div class="lbl">Jun forecast (combined)</div><div class="val neg">$299,476</div><div class="sub">Down from $341K in May</div></div>
+    <div class="mc"><div class="lbl">Jun RTM forecast</div><div class="val neg">$279,269</div><div class="sub">From $319.9K in May</div></div>
+    <div class="mc"><div class="lbl">Jun U360 forecast</div><div class="val neg">$15,081</div><div class="sub">Steady decline</div></div>
+    <div class="mc"><div class="lbl">Jun NoDig forecast</div><div class="val">$5,125</div><div class="sub">Stable-ish</div></div>
+    <div class="mc"><div class="lbl">Jun projected cancels</div><div class="val neg">$57,612</div><div class="sub">Highest projected month</div></div>
+    <div class="mc"><div class="lbl">Revenue trend</div><div class="val neg">↓ Declining</div><div class="sub">5-month consistent drop</div></div>
+  </div>
+  <div class="flag"><strong>⚠ June forecast signals accelerating decline</strong>The June combined forecast of $299,476 would be the first month below $300K — a 13% drop from May. The projected $57,612 in cancellations is 2.4× the May actual.</div>
+  <div class="cc">
+    <div class="ct">Recurring revenue forecast — RTM, Unify360 & NoDig</div><div class="cs">Actual Jan–May + June forecast</div>
+    <div class="leg"><span><span class="ld" style="background:#FDA813;"></span>RTM</span><span><span class="ld" style="background:#0D7A8C;"></span>Unify360</span><span><span class="ld" style="background:#534AB7;"></span>NoDig</span></div>
+    <div class="cw" style="height:260px;"><canvas id="c_fc_bar"></canvas></div>
+  </div>
+  <p class="slabel">Forecast detail table</p>
+  <div class="cc">
+    <table class="dt">
+      <thead><tr><th>Month</th><th>RTM</th><th>Unify360</th><th>NoDig</th><th>Combined</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>Jan</td><td>$384,530</td><td>$21,046</td><td>$5,902</td><td class="td-warn">$411,478</td><td>Actual</td></tr>
+        <tr><td>Feb</td><td>$361,674</td><td>$20,185</td><td>$5,902</td><td class="td-warn">$387,761</td><td>Actual</td></tr>
+        <tr><td>Mar</td><td>$327,639</td><td>$18,273</td><td>$5,623</td><td class="td-warn">$351,535</td><td>Actual</td></tr>
+        <tr><td>Apr</td><td>$340,580</td><td>$18,011</td><td>$5,623</td><td class="td-warn">$364,214</td><td>Actual</td></tr>
+        <tr><td>May</td><td>$326,488</td><td>$16,871</td><td>$5,334</td><td class="td-warn">$348,693</td><td>Actual</td></tr>
+        <tr><td>Jun</td><td class="td-neg">$279,269</td><td class="td-neg">$15,081</td><td>$5,125</td><td class="td-neg">$299,476</td><td style="color:var(--warn);">Forecast</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="ig">
+    <div class="ins neg-ins"><div class="it">27% recurring decline in 6 months</div>RTM's recurring base dropped from $384.5K in January to a projected $279.3K in June — a $105K loss in 6 months.</div>
+    <div class="ins neg-ins"><div class="it">June cancels projected at $57.6K</div>Nearly 2.4× the May actual and the highest single-month cancellation figure in the entire dataset if it holds.</div>
+    <div class="ins warn-ins"><div class="it">First sub-$300K month projected</div>June combined forecast of $299,476 would be a psychological and operational threshold — first time below $300K in the tracked period.</div>
+    <div class="ins info-ins"><div class="it">U360 slow bleed</div>Unify360 recurring has declined every month from $21K → $15K. No new sales are offsetting the slow attrition.</div>
+    <div class="ins good-ins"><div class="it">NoDig holding steady</div>NoDig is remarkably stable at $5.1–5.9K across all 6 months with minimal cancellations.</div>
+    <div class="ins warn-ins"><div class="it">Urgent action needed on June</div>The forecast is model-based. Aggressive retention actions now — especially on at-risk accounts — can still change the June outcome.</div>
+  </div>
+</div>
+
+<!-- SALARY ANALYSIS -->
+<div id="pane-salary" class="pane">
+  <p class="slabel">Salary feasibility analysis — June 2026</p>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.75rem;">
+    <div class="mc"><div class="lbl">Monthly revenue</div><div class="val amb">$325,000</div><div class="sub">Company-wide baseline</div></div>
+    <div class="mc"><div class="lbl">Monthly salary cost</div><div class="val neg">$199,374</div><div class="sub">Excl. ownership</div></div>
+    <div class="mc"><div class="lbl">Salary-to-revenue ratio</div><div class="val neg">61.3%</div><div class="sub">Danger zone (target: ≤40%)</div></div>
+    <div class="mc"><div class="lbl">Revenue-to-salary ratio</div><div class="val neg">1.63×</div><div class="sub">Min safe threshold: 2.0×</div></div>
+    <div class="mc"><div class="lbl">US payroll (YTD)</div><div class="val">$276,366</div><div class="sub">$55.3K/mo avg</div></div>
+    <div class="mc"><div class="lbl">PH payroll (YTD)</div><div class="val">$541,444</div><div class="sub">$108.3K/mo avg</div></div>
+    <div class="mc"><div class="lbl">Total payroll (YTD)</div><div class="val">$817,810</div><div class="sub">US + PH combined</div></div>
+    <div class="mc"><div class="lbl">PH savings vs. US equiv.</div><div class="val pos">~3.2×</div><div class="sub">Labor arbitrage ratio</div></div>
+  </div>
+  <div class="flag"><strong>No blanket salary increase is financially supportable at current revenue</strong>At 61.3% salary-to-revenue, every dollar of salary increase directly compresses margins. The only approved path is selective, attrition-funded increases — fully offset by the $9,852 in attrition savings.</div>
+  <div class="two">
+    <div class="cc">
+      <div class="ct">Salary-to-revenue ratio — current vs. targets</div><div class="cs">Benchmarks and milestone thresholds</div>
+      <div class="cw" style="height:220px;"><canvas id="c_sl_ratio"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">US vs. PH payroll split</div><div class="cs">YTD Jan–May 2026</div>
+      <div class="cw" style="height:220px;"><canvas id="c_sl_split"></canvas></div>
+    </div>
+  </div>
+  <p class="slabel">Revenue milestones — salary increase triggers</p>
+  <div class="milestone"><div class="ms-head"><div class="ms-title">Milestone 1 — Selective increase only (attrition-funded)</div><div class="ms-badge reached">Current approved path</div></div><div class="ms-desc">$4,699.67 in selective increases fully covered by $9,852.33 in attrition savings. Cash-flow neutral.</div><div style="margin-top:.75rem;"><div class="prog-label"><span style="font-size:12px;color:var(--muted);">Attrition savings utilized</span><span style="font-size:12px;color:var(--pos);">47.7%</span></div><div class="prog-bar"><div class="prog-fill" style="width:47.7%;background:var(--pos);"></div></div></div></div>
+  <div class="milestone"><div class="ms-head"><div class="ms-title">Milestone 2 — Broader review supportable</div><div class="ms-badge close">$398,748/mo revenue target</div></div><div class="ms-desc">At $398,748/month recurring, salary-to-revenue drops to 50% — the minimum safe threshold.</div><div style="margin-top:.75rem;"><div class="prog-label"><span style="font-size:12px;color:var(--muted);">Current ($325K) vs. target ($398.7K)</span><span style="font-size:12px;color:var(--warn);">81.5%</span></div><div class="prog-bar"><div class="prog-fill" style="width:81.5%;background:var(--warn);"></div></div></div></div>
+  <div class="milestone"><div class="ms-head"><div class="ms-title">Milestone 3 — Ideal compensation structure</div><div class="ms-badge locked">$498,435/mo revenue target</div></div><div class="ms-desc">At $498,435/month, salary-to-revenue hits 40% — the industry-ideal ratio.</div><div style="margin-top:.75rem;"><div class="prog-label"><span style="font-size:12px;color:var(--muted);">Current ($325K) vs. ideal ($498.4K)</span><span style="font-size:12px;color:var(--neg);">65.2%</span></div><div class="prog-bar"><div class="prog-fill" style="width:65.2%;background:var(--neg);"></div></div></div></div>
+  <p class="slabel" style="margin-top:1.25rem;">Scenario analysis</p>
+  <div class="cc">
+    <table class="dt">
+      <thead><tr><th>Scenario</th><th>Salary cost</th><th>Salary % of revenue</th><th>Revenue-to-salary</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td>Current (no increase)</td><td>$199,374</td><td class="td-neg">61.3%</td><td class="td-neg">1.63×</td><td class="td-neg">Unsustainable</td></tr>
+        <tr><td>+3% increase</td><td>$205,355</td><td class="td-neg">63.2%</td><td class="td-neg">1.58×</td><td class="td-neg">Worse</td></tr>
+        <tr><td>+5% increase</td><td>$209,343</td><td class="td-neg">64.4%</td><td class="td-neg">1.55×</td><td class="td-neg">Worse</td></tr>
+        <tr><td>+10% increase</td><td>$219,311</td><td class="td-neg">67.5%</td><td class="td-neg">1.48×</td><td class="td-neg">Significantly worse</td></tr>
+        <tr><td>Selective only (+$4.7K)</td><td>$204,074</td><td class="td-warn">62.8%</td><td class="td-warn">1.59×</td><td class="td-pos">✓ Approved (neutral)</td></tr>
+        <tr class="tot"><td>At $398.7K revenue (50% target)</td><td>$199,374</td><td class="td-warn">50.0%</td><td class="td-warn">2.00×</td><td class="td-warn">Milestone 2 threshold</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="good-box"><strong>✓ The path forward is clear</strong>Revenue growth is the only sustainable lever. Closing the gap to Milestone 2 ($398.7K/mo) requires ~$73,748 in new monthly recurring — achievable through reduced cancellations and new sales.</div>
+  <div class="ig">
+    <div class="ins neg-ins"><div class="it">61.3% ratio is in the danger zone</div>Industry standard is 35–45%. At 61.3%, RTM pays $0.61 of every revenue dollar in salaries — very little room for overhead, tools, and profit.</div>
+    <div class="ins warn-ins"><div class="it">No blanket increase is supportable</div>Even a modest 3% increase pushes the ratio to 63.2%. Any company-wide raise at current revenue makes the position measurably worse.</div>
+    <div class="ins good-ins"><div class="it">PH labor arbitrage is a key strength</div>PH payroll at a 3.2× savings ratio vs. US equivalent is the single biggest cost advantage. Protecting and growing the PH team is a direct margin lever.</div>
+    <div class="ins info-ins"><div class="it">Attrition savings fund selective increases</div>$9,852 in attrition savings creates room for $4,699 in targeted increases — cash-flow neutral and the only approved path right now.</div>
+    <div class="ins warn-ins"><div class="it">Milestone 2 needs $73.7K more monthly</div>The 50% threshold is 81.5% of the way there. Reducing cancellations by $15K/mo and adding $15K new sales closes nearly half that gap.</div>
+    <div class="ins info-ins"><div class="it">Milestone 3 is a medium-term goal</div>The 40% ideal ratio requires 53% more monthly revenue than today — tied to successful execution of the sales growth plan.</div>
+  </div>
+</div>
+
+<div class="footer">RTM · Sales & Operations Dashboard · Jan–May 2026 · Source: Monthly Comparison Report + QB P&L + Salary Feasibility Analysis (June 2026)</div>
+
+<script>
+var months = ['Jan','Feb','Mar','Apr','May'];
+var gc = 'rgba(255,255,255,0.07)';
+var tc = '#8ba3b8';
+function k(v){ return '$' + (Math.abs(v)/1000).toFixed(0) + 'K'; }
+function baseOpts(yCb){
+  return {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: gc }, ticks: { color: tc } },
+      y: { grid: { color: gc }, ticks: { color: tc, callback: yCb || k } }
+    }
+  };
+}
+function hOpts(){
+  return {
+    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: gc }, ticks: { color: tc, callback: k } },
+      y: { grid: { color: gc }, ticks: { color: tc, font: { size: 11 } } }
+    }
+  };
+}
+
+// RTM net table
+var rtmNew = [33526,28193,28671,35075,22524];
+var rtmCan = [35295,16202,14020,8903,22524];
+var tb = document.getElementById('rtmNetTable');
+var tN=0, tC=0;
+for(var i=0;i<months.length;i++){
+  var net = rtmNew[i]-rtmCan[i]; tN+=rtmNew[i]; tC+=rtmCan[i];
+  tb.innerHTML += '<tr><td>'+months[i]+' 2026</td><td class="td-pos">$'+rtmNew[i].toLocaleString()+'</td><td class="td-neg">$'+rtmCan[i].toLocaleString()+'</td><td class="'+(net>=0?'td-pos':'td-neg')+'">'+(net>=0?'+':'')+' $'+Math.abs(net).toLocaleString()+'</td></tr>';
+}
+var tNet = tN-tC;
+tb.innerHTML += '<tr class="tot"><td>Total</td><td class="td-pos">$'+tN.toLocaleString()+'</td><td class="td-neg">$'+tC.toLocaleString()+'</td><td class="'+(tNet>=0?'td-pos':'td-neg')+'">'+(tNet>=0?'+':'')+' $'+Math.abs(tNet).toLocaleString()+'</td></tr>';
+
+var inited = {};
+function initTab(name){
+  if(inited[name]) return;
+  inited[name] = true;
+  if(name==='overview'){
+    new Chart(document.getElementById('c_ov_rtm'),{type:'bar',data:{labels:months,datasets:[{data:[389314,376261,363863,375781,364956],backgroundColor:'#FDA813',borderRadius:3}]},options:baseOpts()});
+    new Chart(document.getElementById('c_ov_u360'),{type:'bar',data:{labels:months,datasets:[{data:[20582,20287,18110,17168,16222],backgroundColor:'#0D7A8C',borderRadius:3}]},options:baseOpts()});
+    new Chart(document.getElementById('c_ov_nodig'),{type:'bar',data:{labels:months,datasets:[{data:[5902,5822,5902,5902,5623],backgroundColor:'#534AB7',borderRadius:3}]},options:baseOpts()});
+    new Chart(document.getElementById('c_ov_nvc'),{type:'bar',data:{labels:months,datasets:[{label:'New',data:[12340,4730,13336,11381,8476],backgroundColor:'#2ec48a',borderRadius:3},{label:'Cancels',data:[36108,17273,15091,9845,23996],backgroundColor:'#f26b5b',borderRadius:3}]},options:baseOpts()});
+    new Chart(document.getElementById('c_ov_clients'),{type:'line',data:{labels:months,datasets:[{data:[246,235,232,224,217],borderColor:'#FDA813',backgroundColor:'rgba(253,168,19,0.1)',fill:true,tension:0.35,pointBackgroundColor:'#FDA813',pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},min:200,max:260,ticks:{color:tc}}}}});
+  }
+  if(name==='sales'){
+    new Chart(document.getElementById('c_s_rtm'),{type:'bar',data:{labels:months,datasets:[{label:'Sales',data:[389314,376261,363863,375781,364956],backgroundColor:'#FDA813',borderRadius:3},{label:'New',data:[33526,28193,28671,35075,22524],backgroundColor:'#2ec48a',borderRadius:3},{label:'Cancels',data:[35295,16202,14020,8903,22524],backgroundColor:'#f26b5b',borderRadius:3}]},options:baseOpts()});
+    new Chart(document.getElementById('c_s_u360'),{type:'bar',data:{labels:months,datasets:[{label:'Sales',data:[20582,20287,18110,17168,16222],backgroundColor:'#0D7A8C',borderRadius:3},{label:'Cancels',data:[813,792,1071,942,1193],backgroundColor:'#f26b5b',borderRadius:3}]},options:baseOpts()});
+    new Chart(document.getElementById('c_s_nodig'),{type:'bar',data:{labels:months,datasets:[{label:'Sales',data:[5902,5822,5902,5902,5623],backgroundColor:'#534AB7',borderRadius:3},{label:'Cancels',data:[0,279,0,0,279],backgroundColor:'#f26b5b',borderRadius:3}]},options:baseOpts()});
+  }
+  if(name==='services'){
+    new Chart(document.getElementById('c_sv_bar'),{type:'bar',data:{labels:['SEO','LSA','LBO','GBP','PPC','RTM Pkg','Social','Software','Design','Hosting','NoDig','Call','Yelp','Email','Apps'],datasets:[{data:[544724,372040,205085,199704,132949,118554,110670,92371,71932,51056,29151,26014,18531,10744,8172],backgroundColor:'#FDA813',borderRadius:3}]},options:hOpts()});
+    new Chart(document.getElementById('c_sv_donut'),{type:'doughnut',data:{labels:['SEO','LSA','LBO','GBP','PPC','RTM Pkg','Social','Other'],datasets:[{data:[544724,372040,205085,199704,132949,118554,110670,308071],backgroundColor:['#FDA813','#0D7A8C','#534AB7','#f26b5b','#2ec48a','#11a0b8','#8ba3b8','#3C3489'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{display:true,position:'right',labels:{color:tc,boxWidth:10,padding:8,font:{size:11}}},tooltip:{callbacks:{label:function(ctx){return ' $'+ctx.parsed.toLocaleString();}}}}}});
+  }
+  if(name==='cancel'){
+    new Chart(document.getElementById('c_ca_trend'),{type:'bar',data:{labels:months,datasets:[{data:[36108,17273,15091,9845,23996],backgroundColor:['#f26b5b','#f26b5b','#f26b5b','#2ec48a','#f26b5b'],borderRadius:3}]},options:baseOpts()});
+    new Chart(document.getElementById('c_ca_svc'),{type:'bar',data:{labels:['LSA','SEO','GBP','LBO','Hosting','PPC','Software','Social','Call','NoDig'],datasets:[{data:[26737,20685,14168,13788,10912,6384,4811,2998,1273,558],backgroundColor:'#f26b5b',borderRadius:3}]},options:hOpts()});
+    new Chart(document.getElementById('c_ca_reason'),{type:'doughnut',data:{labels:['In-House','Chng. Provider','No Reason','Hardships','Performance','Non-Payment','Not In Use','Buy Out'],datasets:[{data:[36027,32836,5935,5160,1375,827,1095,799],backgroundColor:['#f26b5b','#FDA813','#534AB7','#0D7A8C','#2ec48a','#8ba3b8','#11a0b8','#3C3489'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{display:true,position:'right',labels:{color:tc,boxWidth:10,padding:7,font:{size:10}}},tooltip:{callbacks:{label:function(ctx){return ' $'+ctx.parsed.toLocaleString();}}}}}});
+    new Chart(document.getElementById('c_ca_am'),{type:'bar',data:{labels:['Veronica','Kelly','Riza','Jason','John','Madison','Melissa','Mabua','Fay'],datasets:[{data:[23848,18162,17643,11159,7643,7588,4106,1242,400],backgroundColor:'#f26b5b',borderRadius:3}]},options:hOpts()});
+  }
+  if(name==='forecast'){
+    new Chart(document.getElementById('c_fc_bar'),{type:'bar',data:{labels:['Jan','Feb','Mar','Apr','May','Jun (F)'],datasets:[{label:'RTM',data:[384530,361674,327639,340580,326488,279269],backgroundColor:['#FDA813','#FDA813','#FDA813','#FDA813','#FDA813','rgba(253,168,19,0.45)'],borderRadius:3},{label:'Unify360',data:[21046,20185,18273,18011,16871,15081],backgroundColor:['#0D7A8C','#0D7A8C','#0D7A8C','#0D7A8C','#0D7A8C','rgba(13,122,140,0.45)'],borderRadius:3},{label:'NoDig',data:[5902,5902,5623,5623,5334,5125],backgroundColor:['#534AB7','#534AB7','#534AB7','#534AB7','#534AB7','rgba(83,74,183,0.45)'],borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,padding:12}}},scales:{x:{stacked:true,grid:{color:gc},ticks:{color:tc}},y:{stacked:true,grid:{color:gc},ticks:{color:tc,callback:k}}}}});
+  }
+  if(name==='salary'){
+    new Chart(document.getElementById('c_sl_ratio'),{type:'bar',data:{labels:['Current','50% threshold','40% ideal','Industry avg'],datasets:[{data:[61.3,50,40,35],backgroundColor:['#f26b5b','#FDA813','#2ec48a','#0D7A8C'],borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},max:80,ticks:{color:tc,callback:function(v){return v+'%';}}}}}});
+    new Chart(document.getElementById('c_sl_split'),{type:'doughnut',data:{labels:['Philippines ($541K)','United States ($276K)'],datasets:[{data:[541444,276366],backgroundColor:['#0D7A8C','#FDA813'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{display:true,position:'right',labels:{color:tc,boxWidth:10,padding:10,font:{size:12}}},tooltip:{callbacks:{label:function(ctx){return ' $'+ctx.parsed.toLocaleString();}}}}}});
+  }
+}
+
+function sw(name, el){
+  document.querySelectorAll('.pane').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById('pane-'+name).classList.add('active');
+  el.classList.add('active');
+  setTimeout(function(){ initTab(name); }, 50);
+}
+
+// Init overview immediately since it's already visible
+initTab('overview');
+</script>
+</body>
+</html>
