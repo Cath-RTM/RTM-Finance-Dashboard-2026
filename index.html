@@ -107,6 +107,14 @@ table.dt .tot td{font-weight:600;border-top:1px solid var(--border);color:var(--
 .ms-badge.reached{background:rgba(46,196,138,.15);color:var(--pos);}
 .ms-desc{font-size:11px;color:var(--muted);line-height:1.5;}
 
+
+.am-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;transition:all .15s;}
+.am-btn:hover{background:var(--cardh);color:var(--txt);}
+.am-btn.active{background:rgba(253,168,19,.15);border-color:rgba(253,168,19,.4);color:var(--amber);font-weight:500;}
+
+.am-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;transition:all .15s;}
+.am-btn:hover{background:var(--cardh);color:var(--txt);}
+.am-btn.active{background:rgba(253,168,19,.15);border-color:rgba(253,168,19,.4);color:var(--amber);font-weight:500;}
 .footer{text-align:center;padding:1.25rem 1rem;font-size:11px;color:var(--muted);border-top:1px solid var(--border);margin-top:1.5rem;}
 
 /* TABLET 580px+ */
@@ -289,7 +297,9 @@ table.dt .tot td{font-weight:600;border-top:1px solid var(--border);color:var(--
     <div class="mc"><div class="lbl">2nd cancel reason</div><div class="val" style="font-size:14px;">Chng. Provider</div><div class="sub">$32,836 YTD</div></div>
     <div class="mc"><div class="lbl">Top cancel service</div><div class="val" style="font-size:14px;">LSA</div><div class="sub">$26,737 YTD</div></div>
   </div>
+
   <div class="flag"><strong>⚠ May spike after April improvement</strong>Cancellations dropped to $9,845 in April then rebounded to $23,996 in May. June forecast projects $57.6K — the highest in the dataset.</div>
+
   <div class="two">
     <div class="cc"><div class="ct">Cancellations by month</div><div class="cs">All entities combined</div><div class="cw" style="height:210px;"><canvas id="c_ca_trend"></canvas></div></div>
     <div class="cc"><div class="ct">By service — YTD</div><div class="cs">Top services ranked</div><div class="cw" style="height:210px;"><canvas id="c_ca_svc"></canvas></div></div>
@@ -298,6 +308,7 @@ table.dt .tot td{font-weight:600;border-top:1px solid var(--border);color:var(--
     <div class="cc"><div class="ct">Cancellation reasons</div><div class="cs">YTD all entities</div><div class="cw" style="height:210px;"><canvas id="c_ca_reason"></canvas></div></div>
     <div class="cc"><div class="ct">By account manager</div><div class="cs">YTD attributed</div><div class="cw" style="height:210px;"><canvas id="c_ca_am"></canvas></div></div>
   </div>
+
   <p class="slabel">Cancellation by service — monthly detail</p>
   <div class="cc"><div class="tscroll"><table class="dt">
     <thead><tr><th>Service</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Total</th></tr></thead>
@@ -315,13 +326,68 @@ table.dt .tot td{font-weight:600;border-top:1px solid var(--border);color:var(--
       <tr class="tot"><td>Total</td><td>$36,108</td><td>$17,273</td><td>$15,091</td><td>$9,845</td><td>$23,996</td><td>$102,312</td></tr>
     </tbody>
   </table></div></div>
+
+  <!-- ── AM BREAKDOWN ── -->
+  <hr style="border:none;border-top:1px solid var(--border);margin:1.25rem 0;">
+  <p class="slabel">Cancellations by account manager — detail</p>
+
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1rem;">
+    <button class="am-btn active" onclick="showAM('all',this)">All AMs</button>
+    <button class="am-btn" onclick="showAM('Veronica',this)">Veronica</button>
+    <button class="am-btn" onclick="showAM('Kelly',this)">Kelly</button>
+    <button class="am-btn" onclick="showAM('Riza',this)">Riza</button>
+    <button class="am-btn" onclick="showAM('Jason',this)">Jason</button>
+    <button class="am-btn" onclick="showAM('Ann',this)">Ann</button>
+    <button class="am-btn" onclick="showAM('John',this)">John</button>
+    <button class="am-btn" onclick="showAM('Madison',this)">Madison</button>
+    <button class="am-btn" onclick="showAM('Melissa',this)">Melissa</button>
+    <button class="am-btn" onclick="showAM('Mabua',this)">Mabua</button>
+    <button class="am-btn" onclick="showAM('Fay',this)">Fay</button>
+  </div>
+
+  <div id="amCards" class="mg3" style="margin-bottom:1rem;"></div>
+
+  <div class="two">
+    <div class="cc">
+      <div class="ct">Cancellations by service</div>
+      <div class="cs" id="amSvcSub">All AMs · YTD Jan–May 2026</div>
+      <div class="cw" style="height:220px;"><canvas id="c_am_svc"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Cancellations by reason</div>
+      <div class="cs" id="amReasonSub">All AMs · YTD Jan–May 2026</div>
+      <div class="cw" style="height:220px;"><canvas id="c_am_reason"></canvas></div>
+    </div>
+  </div>
+
+  <div class="cc">
+    <div class="ct">Monthly cancellation trend by AM</div>
+    <div class="cs" id="amMonthSub">All AMs stacked · Jan–May 2026</div>
+    <div class="leg">
+      <span><span class="ld" style="background:#FDA813;"></span>Veronica</span>
+      <span><span class="ld" style="background:#f26b5b;"></span>Kelly</span>
+      <span><span class="ld" style="background:#0D7A8C;"></span>Riza</span>
+      <span><span class="ld" style="background:#2ec48a;"></span>Jason</span>
+      <span><span class="ld" style="background:#534AB7;"></span>Ann</span>
+      <span><span class="ld" style="background:#11a0b8;"></span>John</span>
+      <span><span class="ld" style="background:#8ba3b8;"></span>Others</span>
+    </div>
+    <div class="cw" style="height:230px;"><canvas id="c_am_monthly"></canvas></div>
+  </div>
+
+  <p class="slabel" id="amTableLabel">AM cancellation detail — all</p>
+  <div class="cc"><div class="tscroll"><table class="dt" id="amDetailTable">
+    <thead><tr><th>AM</th><th>LSA</th><th>SEO</th><th>GBP</th><th>LBO</th><th>PPC</th><th>Hosting</th><th>Software</th><th>Social</th><th>Call</th><th>NoDig</th><th>Total</th></tr></thead>
+    <tbody id="amDetailBody"></tbody>
+  </table></div></div>
+
   <div class="ig">
     <div class="ins good-ins"><div class="it">Strong Jan → Apr improvement</div>Cancellations fell from $36.1K → $9.8K in April — a 72.8% reduction over 4 months.</div>
-    <div class="ins neg-ins"><div class="it">May reversal is a red flag</div>Spike back to $24K erased April's progress. June forecast of $57.6K would be the worst month on record.</div>
+    <div class="ins neg-ins"><div class="it">May reversal is a red flag</div>Spike back to $24K erased April's progress. June forecast of $57.6K would be worst month on record.</div>
     <div class="ins warn-ins"><div class="it">In-House is #1 reason</div>$36K YTD (35.2%) — clients bringing services in-house. A retention and value-demonstration problem.</div>
-    <div class="ins warn-ins"><div class="it">Changing Providers is #2</div>$32.8K YTD switching to competitors. Together with In-House = 67.3% of all cancel value.</div>
+    <div class="ins warn-ins"><div class="it">Changing Providers is #2</div>$32.8K YTD. Together with In-House = 67.3% of all cancel value.</div>
     <div class="ins neg-ins"><div class="it">LSA + SEO = 46% of cancel dollars</div>$47.4K of the $102.3K YTD total comes from the top two revenue services.</div>
-    <div class="ins info-ins"><div class="it">Veronica + Kelly = $41.3K</div>Two AMs account for 41% of YTD cancellations. Kelly's May figure of $12.6K warrants a portfolio review.</div>
+    <div class="ins info-ins"><div class="it">Veronica + Kelly = $37.7K</div>Two AMs account for 36.9% of YTD cancellations. Kelly's May spike of $12.6K warrants a review.</div>
   </div>
 </div>
 
@@ -447,6 +513,7 @@ function initTab(name){
     new Chart(document.getElementById('c_sv_donut'),{type:'doughnut',data:{labels:['SEO','LSA','LBO','GBP','PPC','RTM Pkg','Social','Other'],datasets:[{data:[544724,372040,205085,199704,132949,118554,110670,308071],backgroundColor:['#FDA813','#0D7A8C','#534AB7','#f26b5b','#2ec48a','#11a0b8','#8ba3b8','#3C3489'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{display:true,position:'right',labels:{color:tc,boxWidth:10,padding:8,font:{size:10}}},tooltip:{callbacks:{label:function(ctx){return ' $'+ctx.parsed.toLocaleString();}}}}}});
   }
   if(name==='cancel'){
+    if(!amInited2){ amInited2=true; setTimeout(function(){ buildAMCards('all'); buildAMCharts('all'); }, 80); }
     new Chart(document.getElementById('c_ca_trend'),{type:'bar',data:{labels:months,datasets:[{data:[36108,17273,15091,9845,23996],backgroundColor:['#f26b5b','#f26b5b','#f26b5b','#2ec48a','#f26b5b'],borderRadius:3}]},options:bo()});
     new Chart(document.getElementById('c_ca_svc'),{type:'bar',data:{labels:['LSA','SEO','GBP','LBO','Hosting','PPC','Software','Social','Call','NoDig'],datasets:[{data:[26737,20685,14168,13788,10912,6384,4811,2998,1273,558],backgroundColor:'#f26b5b',borderRadius:3}]},options:ho()});
     new Chart(document.getElementById('c_ca_reason'),{type:'doughnut',data:{labels:['In-House','Chng.Provider','No Reason','Hardships','Performance','Non-Payment','Not In Use','Buy Out'],datasets:[{data:[36027,32836,5935,5160,1375,827,1095,799],backgroundColor:['#f26b5b','#FDA813','#534AB7','#0D7A8C','#2ec48a','#8ba3b8','#11a0b8','#3C3489'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{display:true,position:'right',labels:{color:tc,boxWidth:10,padding:6,font:{size:10}}},tooltip:{callbacks:{label:function(ctx){return ' $'+ctx.parsed.toLocaleString();}}}}}});
@@ -459,6 +526,122 @@ function initTab(name){
     new Chart(document.getElementById('c_sl_ratio'),{type:'bar',data:{labels:['Current','50% threshold','40% ideal','Industry avg'],datasets:[{data:[61.3,50,40,35],backgroundColor:['#f26b5b','#FDA813','#2ec48a','#0D7A8C'],borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},max:80,ticks:{color:tc,callback:function(v){return v+'%';}}}}}});
     new Chart(document.getElementById('c_sl_split'),{type:'doughnut',data:{labels:['Philippines ($541K)','United States ($276K)'],datasets:[{data:[541444,276366],backgroundColor:['#0D7A8C','#FDA813'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{display:true,position:'right',labels:{color:tc,boxWidth:10,padding:10,font:{size:11}}},tooltip:{callbacks:{label:function(ctx){return ' $'+ctx.parsed.toLocaleString();}}}}}});
   }
+}
+
+
+// ══════════════ AM BREAKDOWN JS ══════════════
+var amData = {
+  all: {
+    totals: {Veronica:19585.5,Kelly:18162,Riza:17343.99,Jason:15492,Ann:11248,John:7940,Madison:6791,Melissa:4106,Fay:699,Mabua:646},
+    svc: {LSA:26736.5,SEO:20685,GBP:14167.5,LBO:13788,HOSTING:10911.99,PPC:6384,SOFTWARE:4810.5,SOCIAL:2998,CALL:1273,NODIG:558},
+    reason: {'In-House':36026.5,'Changing Providers':32406.99,'Performance':19335,'No Reason':5935,'Hardships':5160,'Service Not In Use':1095,'Non-Payment':827,'Buy Out Contract':799,'Communication':429},
+    monthly: {
+      Veronica:[12154.5,299,3689,49,3394],Kelly:[598,3111,299,1526,12628],
+      Riza:[3626,299,4644,3396,5378.99],Jason:[6561,898,4582,3451,0],
+      Ann:[5026,5197,429,596,0],John:[1449,6491,0,0,0],
+      Madison:[3996,0,299,398,2098],Melissa:[2528,0,1149,429,0],
+      Mabua:[169,279,0,0,198],Fay:[0,699,0,0,0]
+    }
+  },
+  Veronica:{svc:{LSA:9171.5,GBP:7898.5,SOFTWARE:1389.5,HOSTING:1126},reason:{'In-House':13122.5,'Changing Providers':6414,'Performance':49},monthly:[12154.5,299,3689,49,3394]},
+  Kelly:{svc:{SEO:4437,LSA:3495,GBP:2096,HOSTING:2912,LBO:1598,PPC:1650,SOCIAL:899,SOFTWARE:595,CALL:480},reason:{'Changing Providers':6816,'No Reason':5159,'Hardships':3111,'In-House':2647,'Communication':429},monthly:[598,3111,299,1526,12628]},
+  Riza:{svc:{LSA:6396,SEO:3150,GBP:2476,HOSTING:2104.99,PPC:900,LBO:899,SOFTWARE:496,SOCIAL:299,CALL:344,NODIG:279},reason:{'In-House':8357,'Changing Providers':6832.99,'Performance':1357,'Hardships':299,'Service Not In Use':199},monthly:[3626,299,4644,3396,5378.99]},
+  Jason:{svc:{PPC:3635,LBO:3296,SEO:3199,HOSTING:1510,GBP:1198,LSA:1279,SOCIAL:700,CALL:199,SOFTWARE:476},reason:{'In-House':5757,'Performance':5460,'Changing Providers':2349,'Buy Out Contract':799,'Non-Payment':528,'Service Not In Use':599},monthly:[6561,898,4582,3451,0]},
+  Ann:{svc:{SEO:5000,LBO:2499,HOSTING:1157,SOFTWARE:695,LSA:998,GBP:499,SOCIAL:300,CALL:100},reason:{'Performance':7155,'Changing Providers':2044,'Hardships':1750,'In-House':299},monthly:[5026,5197,429,596,0]},
+  John:{svc:{LSA:4098,LBO:1749,SEO:1399,SOFTWARE:495,HOSTING:149,CALL:50},reason:{'In-House':5444,'Changing Providers':2199,'Service Not In Use':297},monthly:[1449,6491,0,0,0]},
+  Madison:{svc:{SEO:2000,LBO:1998,SOCIAL:800,HOSTING:897,LSA:799,SOFTWARE:297},reason:{'Performance':3697,'Changing Providers':2795,'No Reason':299},monthly:[3996,0,299,398,2098]},
+  Melissa:{svc:{SEO:1500,LBO:1749,HOSTING:458,PPC:199,CALL:100,LSA:100},reason:{'Changing Providers':2957,'Performance':1149},monthly:[2528,0,1149,429,0]},
+  Mabua:{svc:{NODIG:279,SOFTWARE:367},reason:{'No Reason':477,'Performance':169},monthly:[169,279,0,0,198]},
+  Fay:{svc:{LSA:400,HOSTING:299},reason:{'In-House':400,'Non-Payment':299},monthly:[0,699,0,0,0]}
+};
+var amSvcTable = {
+  Veronica:[9171.5,0,7898.5,0,0,1126,1389.5,0,0,0],
+  Kelly:[3495,4437,2096,1598,1650,2912,595,899,480,0],
+  Riza:[6396,3150,2476,899,900,2104.99,496,299,344,279],
+  Jason:[1279,3199,1198,3296,3635,1510,476,700,199,0],
+  Ann:[998,5000,499,2499,0,1157,695,300,100,0],
+  John:[4098,1399,0,1749,0,149,495,0,50,0],
+  Madison:[799,2000,0,1998,0,897,297,800,0,0],
+  Melissa:[100,1500,0,1749,199,458,0,0,100,0],
+  Mabua:[0,0,0,0,0,0,367,0,0,279],
+  Fay:[400,0,0,0,0,299,0,0,0,0]
+};
+var amChartSvc=null,amChartReason=null,amChartMonthly=null,amInited2=false;
+var amMonths=['Jan','Feb','Mar','Apr','May'];
+var amColors={Veronica:'#FDA813',Kelly:'#f26b5b',Riza:'#0D7A8C',Jason:'#2ec48a',Ann:'#534AB7',John:'#11a0b8',Madison:'#8ba3b8',Melissa:'#c4830a',Mabua:'#3C3489',Fay:'#e8a87c'};
+
+function buildAMCards(am){
+  var wrap=document.getElementById('amCards');
+  if(!wrap)return;
+  wrap.innerHTML='';
+  if(am==='all'){
+    Object.keys(amData.all.totals).forEach(function(a){
+      wrap.innerHTML+='<div class="mc"><div class="lbl">'+a+'</div><div class="val neg" style="font-size:16px;">$'+Math.round(amData.all.totals[a]).toLocaleString()+'</div><div class="sub">YTD cancellations</div></div>';
+    });
+  } else {
+    var d=amData[am],total=Object.values(d.svc).reduce(function(a,b){return a+b;},0);
+    var topSvc=Object.entries(d.svc).sort(function(a,b){return b[1]-a[1];})[0];
+    var topReason=Object.entries(d.reason).sort(function(a,b){return b[1]-a[1];})[0];
+    wrap.innerHTML='<div class="mc"><div class="lbl">Total YTD</div><div class="val neg" style="font-size:18px;">$'+Math.round(total).toLocaleString()+'</div><div class="sub">Jan-May 2026</div></div>'
+      +'<div class="mc"><div class="lbl">Top service</div><div class="val" style="font-size:15px;">'+topSvc[0]+'</div><div class="sub">$'+Math.round(topSvc[1]).toLocaleString()+'</div></div>'
+      +'<div class="mc"><div class="lbl">Top reason</div><div class="val" style="font-size:13px;">'+topReason[0]+'</div><div class="sub">$'+Math.round(topReason[1]).toLocaleString()+'</div></div>';
+  }
+}
+
+function buildAMCharts(am){
+  var gc='rgba(255,255,255,0.07)',tc='#8ba3b8';
+  var svcD=(am==='all'?amData.all.svc:amData[am].svc);
+  var rsnD=(am==='all'?amData.all.reason:amData[am].reason);
+  var lbl=(am==='all'?'All AMs':am)+' - YTD';
+  var el;
+  el=document.getElementById('amSvcSub');if(el)el.textContent=lbl;
+  el=document.getElementById('amReasonSub');if(el)el.textContent=lbl;
+  el=document.getElementById('amMonthSub');if(el)el.textContent=(am==='all'?'All AMs stacked':am)+' - Jan-May 2026';
+  el=document.getElementById('amTableLabel');if(el)el.textContent='AM detail - '+(am==='all'?'all':am);
+  if(amChartSvc){amChartSvc.destroy();amChartSvc=null;}
+  if(amChartReason){amChartReason.destroy();amChartReason=null;}
+  if(amChartMonthly){amChartMonthly.destroy();amChartMonthly=null;}
+  var svcKeys=Object.keys(svcD).filter(function(k){return svcD[k]>0;});
+  var c1=document.getElementById('c_am_svc');
+  if(c1){amChartSvc=new Chart(c1,{type:'bar',data:{labels:svcKeys,datasets:[{data:svcKeys.map(function(k){return svcD[k];}),backgroundColor:'#f26b5b',borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},minBarLength:4,scales:{x:{grid:{color:gc},ticks:{color:tc,callback:function(v){return '$'+(v/1000).toFixed(0)+'K';}}},y:{grid:{color:gc},ticks:{color:tc,font:{size:11}}}}}});}
+  var rKeys=Object.keys(rsnD).filter(function(k){return rsnD[k]>0;});
+  var rColors=['#f26b5b','#FDA813','#534AB7','#0D7A8C','#2ec48a','#8ba3b8','#11a0b8','#3C3489','#e8a87c'];
+  var c2=document.getElementById('c_am_reason');
+  if(c2){amChartReason=new Chart(c2,{type:'doughnut',data:{labels:rKeys,datasets:[{data:rKeys.map(function(k){return rsnD[k];}),backgroundColor:rColors,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{display:true,position:'right',labels:{color:tc,boxWidth:10,padding:6,font:{size:10}}},tooltip:{callbacks:{label:function(ctx){return ' $'+ctx.parsed.toLocaleString();}}}}}});}
+  var c3=document.getElementById('c_am_monthly');
+  if(c3){
+    if(am==='all'){
+      amChartMonthly=new Chart(c3,{type:'bar',data:{labels:amMonths,datasets:Object.keys(amData.all.monthly).map(function(a){return{label:a,data:amData.all.monthly[a],backgroundColor:amColors[a]||'#888',borderRadius:2};})},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{stacked:true,grid:{color:gc},ticks:{color:tc}},y:{stacked:true,grid:{color:gc},ticks:{color:tc,callback:function(v){return '$'+(v/1000).toFixed(0)+'K';}}}}}}); 
+    } else {
+      amChartMonthly=new Chart(c3,{type:'bar',data:{labels:amMonths,datasets:[{data:amData[am].monthly,backgroundColor:'#f26b5b',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},ticks:{color:tc,callback:function(v){return '$'+(v/1000).toFixed(0)+'K';}}}}}}); 
+    }
+  }
+  buildAMTable(am);
+}
+
+function buildAMTable(am){
+  var tbody=document.getElementById('amDetailBody');
+  if(!tbody)return;
+  tbody.innerHTML='';
+  var list=am==='all'?Object.keys(amSvcTable):[am];
+  var ct=[0,0,0,0,0,0,0,0,0,0];
+  list.forEach(function(a){
+    var r=amSvcTable[a]||[0,0,0,0,0,0,0,0,0,0];
+    var tot=r.reduce(function(s,v){return s+v;},0);
+    r.forEach(function(v,i){ct[i]+=v;});
+    tbody.innerHTML+='<tr><td style="font-weight:500;">'+a+'</td>'+r.map(function(v){return v>0?'<td class="td-neg">$'+Math.round(v).toLocaleString()+'</td>':'<td style="color:var(--muted);">-</td>';}).join('')+'<td class="td-neg" style="font-weight:600;">$'+Math.round(tot).toLocaleString()+'</td></tr>';
+  });
+  if(am==='all'){
+    var gt=ct.reduce(function(s,v){return s+v;},0);
+    tbody.innerHTML+='<tr class="tot"><td>Total</td>'+ct.map(function(v){return v>0?'<td style="font-weight:600;color:var(--amber);">$'+Math.round(v).toLocaleString()+'</td>':'<td style="color:var(--muted);">-</td>';}).join('')+'<td>$'+Math.round(gt).toLocaleString()+'</td></tr>';
+  }
+}
+
+function showAM(am,el){
+  document.querySelectorAll('.am-btn').forEach(function(b){b.classList.remove('active');});
+  el.classList.add('active');
+  buildAMCards(am);
+  buildAMCharts(am);
 }
 
 function sw(name,el){
