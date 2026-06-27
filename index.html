@@ -87,9 +87,9 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
 <div class="tab" onclick="sw(this,'cancel')">Cancellations</div>
 <div class="tab" onclick="sw(this,'billing')">Billing Activity</div>
 <div class="tab" onclick="sw(this,'forecast')">Forecast</div>
-<div class="tab" onclick="sw(this,'ebitda')">EBITDA Report</div>
 <div class="tab" onclick="sw(this,'opex')">Operational Expense</div>
 <div class="tab" onclick="sw(this,'salary')">Salary Analysis</div>
+<div class="tab" onclick="sw(this,'ebitda')">EBITDA Report</div>
 </div>
 
 <div id="pane-overview" class="pane active">
@@ -1729,7 +1729,7 @@ function buildSvcDrill(svc) {
 
 // Per-department overhead (no ownership) from PH_Team_Payroll_Breakdown_.xlsx
 var deptOverhead = [
-  {dept:'Executive',       count:5,  monthly:90141.01, type:'Overhead'},
+  {dept:'Executive',       count:3,  monthly:32641.01, type:'Overhead'},
   {dept:'Account Manager', count:9,  monthly:14917.00, type:'Overhead'},
   {dept:'Design',          count:6,  monthly:15487.00, type:'Direct'},
   {dept:'Software',        count:4,  monthly:12249.00, type:'Direct'},
@@ -1786,7 +1786,7 @@ var svcAllocation = [
 
 // Department detail: payroll + tools combined (for dept buttons)
 var deptDetail = {
-  'Executive':        {payroll:90141.01, tools:0,       headcount:5,  type:'Overhead', toolsList:[]},
+  'Executive':        {payroll:32641.01, tools:0,       headcount:3,  type:'Overhead', toolsList:[]},
   'Account Manager':  {payroll:14917.00, tools:761.53,  headcount:9,  type:'Overhead', toolsList:[{n:'CLAUDE',v:25.00},{n:'FASTVPN',v:2.88},{n:'GOOGLE SUITE',v:168.00},{n:'HUBSTAFF',v:87.00},{n:'SLACK',v:8.75},{n:'TEAMWORK DESK',v:210.00},{n:'TEAMWORK.COM',v:259.90}]},
   'Design':           {payroll:15487.00, tools:439.96,  headcount:6,  type:'Direct',   toolsList:[{n:'BEAVER BUILDER',v:33.25},{n:'ELEMENTOR',v:5.00},{n:'GOOGLE SUITE',v:100.80},{n:'HUBSTAFF',v:51.60},{n:'LASTPASS',v:7.00},{n:'POWERPACK',v:4.95},{n:'SHUTTERSTOCK',v:9.67},{n:'TEAMWORK DESK',v:63.00},{n:'TEAMWORK.COM',v:155.94},{n:'WOOCOMMERCE PLUGIN',v:25.34},{n:'FIGMA',v:84.64},{n:'WESHOP/SEEDANCE',v:12.99}]},
   'Software':         {payroll:12249.00, tools:1692.23, headcount:4,  type:'Direct',   toolsList:[{n:'SOFTWARE DEV tools',v:1530.63},{n:'SOFTWARE SUPPORT tools',v:161.60}]},
