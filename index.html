@@ -83,11 +83,12 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
 <div class="nav">
 <div class="tab active" onclick="sw(this,'overview')">Overview</div>
 <div class="tab" onclick="sw(this,'sales')">Sales by Entity</div>
-<div class="tab" onclick="sw(this,'services')">By Service</div>
+<div class="tab" onclick="sw(this,'services')">Sales by Service</div>
 <div class="tab" onclick="sw(this,'cancel')">Cancellations</div>
-<div class="tab" onclick="sw(this,'forecast')">Forecast</div>
 <div class="tab" onclick="sw(this,'billing')">Billing Activity</div>
+<div class="tab" onclick="sw(this,'forecast')">Forecast</div>
 <div class="tab" onclick="sw(this,'ebitda')">EBITDA Report</div>
+<div class="tab" onclick="sw(this,'opex')">Operational Expense</div>
 <div class="tab" onclick="sw(this,'salary')">Salary Analysis</div>
 </div>
 
@@ -253,6 +254,44 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
     <tr><td>Apps</td><td>$1,794</td><td>$1,594</td><td>$1,495</td><td>$1,794</td><td>$1,495</td><td>$8,172</td><td>0.4%</td></tr>
     <tr class="tot"><td>Total</td><td>$415,798</td><td>$402,371</td><td>$387,875</td><td>$398,852</td><td>$386,801</td><td>$1,991,697</td><td>100%</td></tr>
   </tbody></table></div></div>
+
+  <hr class="dv">
+  <p class="slabel">Campaign detail by service</p>
+  <div class="btn-row" id="svcDrillBtnRow">
+    <button class="btn active" onclick="showSvcDrill('SEO',this)">SEO</button>
+    <button class="btn" onclick="showSvcDrill('LSA',this)">LSA</button>
+    <button class="btn" onclick="showSvcDrill('LBO',this)">LBO</button>
+    <button class="btn" onclick="showSvcDrill('GBP',this)">GBP</button>
+    <button class="btn" onclick="showSvcDrill('PPC',this)">PPC</button>
+    <button class="btn" onclick="showSvcDrill('RTM Package',this)">RTM Package</button>
+    <button class="btn" onclick="showSvcDrill('Social',this)">Social</button>
+    <button class="btn" onclick="showSvcDrill('Software',this)">Software</button>
+    <button class="btn" onclick="showSvcDrill('Design',this)">Design</button>
+    <button class="btn" onclick="showSvcDrill('Hosting',this)">Hosting</button>
+    <button class="btn" onclick="showSvcDrill('NoDig',this)">NoDig</button>
+    <button class="btn" onclick="showSvcDrill('Call',this)">Call</button>
+    <button class="btn" onclick="showSvcDrill('Yelp',this)">Yelp</button>
+    <button class="btn" onclick="showSvcDrill('Email',this)">Email</button>
+    <button class="btn" onclick="showSvcDrill('Apps',this)">Apps</button>
+  </div>
+
+  <div id="svcDrillCards" class="mg3" style="margin-bottom:1rem;"></div>
+
+  <div class="two">
+    <div class="cc">
+      <div class="ct">Monthly revenue — all campaigns</div>
+      <div class="cs">Combined paid value for selected service</div>
+      <div class="cw" style="height:190px;"><canvas id="c_svd_monthly"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Top campaigns</div>
+      <div class="cs">By paid revenue · Jan–May 2026</div>
+      <div class="tscroll"><table class="dt">
+        <thead><tr><th>Campaign</th><th>AM</th><th>Jan/Feb/Mar/Apr/May</th><th>Total</th></tr></thead>
+        <tbody id="svcDrillTableBody"></tbody>
+      </table></div>
+    </div>
+  </div>
   <div class="ig">
     <div class="ins warn-ins"><div class="it">SEO + LSA = 46% of revenue</div>Two services account for nearly half of all revenue. Heavy concentration risk.</div>
     <div class="ins neg-ins"><div class="it">LSA declining fastest</div>Dropped from $82.3K→$68.4K in May — a $13.9K or 16.9% fall.</div>
@@ -853,8 +892,131 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
 </body>
 </html>
 
+<!-- OPERATIONAL EXPENSE -->
+<div id="pane-opex" class="pane">
+  <p class="slabel">Operational expense overview &mdash; Jan&ndash;Jun 2026</p>
+  <div id="opexKpis" class="mg3" style="margin-bottom:1rem;"></div>
+
+  <!-- Payroll trend + Dept overhead -->
+  <div class="two">
+    <div class="cc">
+      <div class="ct">Monthly payroll &mdash; PH vs. US</div>
+      <div class="cs">Actual Jan&ndash;May &middot; Jun projected</div>
+      <div class="leg">
+        <span><span class="ld" style="background:#0D7A8C;"></span>Philippines</span>
+        <span><span class="ld" style="background:#FDA813;"></span>United States</span>
+      </div>
+      <div class="cw" style="height:230px;"><canvas id="c_opex_payroll"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">Payroll by department (reference)</div>
+      <div class="cs">Monthly rate &mdash; no ownership allocation</div>
+      <div class="cw" style="height:230px;"><canvas id="c_opex_dept"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Per dept overhead reference table -->
+  <p class="slabel">Per-department overhead cost &mdash; reference (no ownership)</p>
+  <div class="good-box">
+    <strong>&#9432; Reference data</strong>
+    Sourced from <em>Per Department Overhead Cost (No Ownership)</em> sheet in PH_Team_Payroll_Breakdown_.xlsx. Figures represent current monthly salary rates per department. Excludes executive ownership compensation. Total headcount: 77 across 17 departments.
+  </div>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead><tr><th>Department</th><th style="text-align:center;">Headcount</th><th>Monthly Rate</th><th>Hourly Rate</th></tr></thead>
+    <tbody id="opexOverheadBody"></tbody>
+  </table></div></div>
+
+  <!-- Tools cost chart + detail -->
+  <hr class="dv">
+  <p class="slabel">Department tools expense &mdash; monthly allocation</p>
+  <div class="good-box">
+    <strong>&#9432; Monthly cost allocation only</strong>
+    Annual tools are divided by 12. Stripe excluded (pass-through). Discontinued tools excluded. Shared tools (e.g. Google Suite, Hubstaff) show the department&rsquo;s allocated portion based on seat count. Source: Department_Tools_and_Access.xlsx.
+  </div>
+
+  <div class="cc">
+    <div class="ct">Monthly tools cost by department</div>
+    <div class="cs">Allocated monthly cost per department</div>
+    <div class="cw" style="height:260px;"><canvas id="c_opex_tools_dept"></canvas></div>
+  </div>
+
+  <!-- Service allocation table -->
+  <hr class="dv">
+  <p class="slabel">Expense allocation per service &mdash; payroll, overhead &amp; tools</p>
+  <div class="good-box">
+    <strong>&#9432; Source: RTM_Dept_Expense_Allocation_by_Service.xlsx</strong>
+    Overhead ($3,825.20/service) split equally across all 15 services. Payroll allocated by department tags per service. Tools allocated by dept ÷ services supported.
+  </div>
+  <div class="cc"><div class="tscroll"><table class="dt" id="svcAllocTable">
+    <thead><tr><th>Service</th><th>Supporting Dept(s)</th><th>Direct Payroll</th><th>Overhead</th><th>Tools</th><th>Total</th></tr></thead>
+    <tbody id="svcAllocBody"></tbody>
+  </table></div></div>
+
+  <!-- Department selector: payroll + tools combined -->
+  <hr class="dv">
+  <p class="slabel">Department breakdown &mdash; payroll &amp; tools</p>
+  <div class="btn-row" id="opexDeptBtnRow">
+    <button class="btn active" onclick="showOpexDept('Account Manager',this)">AM</button>
+    <button class="btn" onclick="showOpexDept('Billing',this)">Billing</button>
+    <button class="btn" onclick="showOpexDept('Content',this)">Content</button>
+    <button class="btn" onclick="showOpexDept('Design',this)">Design</button>
+    <button class="btn" onclick="showOpexDept('Executive',this)">Executive</button>
+    <button class="btn" onclick="showOpexDept('HR',this)">HR</button>
+    <button class="btn" onclick="showOpexDept('IT',this)">IT</button>
+    <button class="btn" onclick="showOpexDept('LSA',this)">LSA</button>
+    <button class="btn" onclick="showOpexDept('Marketing',this)">Marketing</button>
+    <button class="btn" onclick="showOpexDept('Media',this)">Media</button>
+    <button class="btn" onclick="showOpexDept('Off Page',this)">Off Page</button>
+    <button class="btn" onclick="showOpexDept('ON Page',this)">ON Page</button>
+    <button class="btn" onclick="showOpexDept('Operations',this)">Operations</button>
+    <button class="btn" onclick="showOpexDept('PPC',this)">PPC</button>
+    <button class="btn" onclick="showOpexDept('Recording',this)">Recording</button>
+    <button class="btn" onclick="showOpexDept('Reporting',this)">Reporting</button>
+    <button class="btn" onclick="showOpexDept('Sales',this)">Sales</button>
+    <button class="btn" onclick="showOpexDept('Social',this)">Social</button>
+    <button class="btn" onclick="showOpexDept('Software',this)">Software Dev</button>
+    <button class="btn" onclick="showOpexDept('Software Support',this)">Software Support</button>
+  </div>
+
+  <div id="opexDeptCards" class="mg3" style="margin-bottom:1rem;"></div>
+
+  <div class="two">
+    <div class="cc">
+      <div class="ct">Cost split &mdash; payroll vs. tools</div>
+      <div class="cs" id="opexDeptSplitSub">Account Manager</div>
+      <div class="cw" style="height:200px;"><canvas id="c_opex_dept_split"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct" id="opexDeptToolsLabel">Account Manager &mdash; tools breakdown</div>
+      <div class="cs">Monthly cost allocation per tool</div>
+      <div class="tscroll"><table class="dt">
+        <thead><tr><th>Tool</th><th>Monthly Allocation</th></tr></thead>
+        <tbody id="opexDeptToolsBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="ig">
+    <div class="ins neg-ins"><div class="it">Payroll declining 15.8% Jan&ndash;Jun</div>Total payroll dropped from $171.7K (Jan) to projected $144.9K (Jun) — attrition-managed headcount reduction.</div>
+    <div class="ins warn-ins"><div class="it">Executive dept = 23.4% of overhead</div>At $32.6K/mo, executive overhead is the single largest department cost, driven by US-based leadership salaries.</div>
+    <div class="ins info-ins"><div class="it">PH payroll = 65.3% of total payroll</div>PH team at $641.8K YTD vs. US at $320.9K — the 3.2&times; labor arbitrage ratio is a key cost advantage.</div>
+    <div class="ins good-ins"><div class="it">Tools cost well-controlled</div>Total monthly tools allocation across all departments is modest relative to payroll. SEO ($2,265) and IT ($1,913) have the highest tools spend reflecting infrastructure and specialized software needs.</div>
+    <div class="ins info-ins"><div class="it">OFF Page = 10 headcount, lean cost</div>Largest PH team by headcount at $6,669/mo — highly cost-efficient per head at $667 average.</div>
+    <div class="ins warn-ins"><div class="it">Design overhead elevated</div>At $15,487/mo, Design is the second-highest department cost, driven by the US-based Creative Arts Director ($9,167/mo).</div>
+  </div>
+</div>
+
+
 <div class="footer">RTM &middot; Sales &amp; Operations Dashboard &middot; Jan&ndash;May 2026</div>
-<script>
+<script>var opexInited = false;
+var opexCharts = {};
+var opexPayroll = {
+  months: ['Jan','Feb','Mar','Apr','May','Jun (P)'],
+  us:     [59958.67, 58123.86, 56288.38, 54901.63, 47093.81, 44569.28],
+  ph:     [111785.45, 112501.29, 109449.00, 103647.36, 104061.19, 100310.48],
+  total:  [171744.12, 170625.15, 165737.38, 158548.99, 151155.00, 144879.76]
+};
+
 var ebData = {"summary":{"rtm":{"sales":[4251321,6156734,6080759,5556988,1903129],"opex":[2754154,3730558,4396622,4111610,1162006],"ebitda":[1562992,2517568,1853316,1611813,741123],"margin":[36.8,40.9,30.5,29.0,38.9]},"u360":{"sales":[422306,393430,282829,374433,117288],"opex":[553028,1389699,1103565,616508,119287],"ebitda":[-113162,-935714,-775676,-216063,-1998],"margin":[-26.8,-237.9,-274.3,-57.7,-1.7]},"comb":{"sales":[4673627,6550163,6363588,5931422,2020417],"opex":[3307182,5120257,5500188,4728118,1281293],"ebitda":[1449829,1581854,1077640,1395750,739125],"margin":[31.0,24.2,16.9,23.5,36.6]},"years":["2022","2023","2024","2025","2026 YTD"]},"rtm":{"2022":{"months":["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"],"sales":[214220,195332,165885,173791,188551,139323,66438,18853,3005,3369,1369,3081184],"opex":[203414,194825,202287,226445,205217,221427,238483,220960,234763,270052,260520,275762],"ebitda":[35668,21191,-16197,-23511,4013,-61105,-141692,-180259,-209113,-235688,-238151,2607836]},"2023":{"months":["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"],"sales":[515042,491860,498714,509824,490723,515935,499801,548729,543232,535266,503571,504037],"opex":[318957,282910,297419,346565,297294,315510,341880,297952,290694,409707,230146,301525],"ebitda":[235068,244036,236943,223399,230761,242535,211159,283502,284249,171724,304928,-150736]},"2024":{"months":["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"],"sales":[484284,521567,539196,483679,546638,468551,512839,475731,453939,466404,468730,659202],"opex":[368207,324662,336055,350956,377018,359487,339740,328137,305865,330284,314359,661853],"ebitda":[181746,246374,255226,178855,217787,153921,209215,179528,177858,165653,184850,-297698]},"2025":{"months":["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"],"sales":[457862,396038,458107,431227,550539,493440,507363,459842,505322,528503,380631,388115],"opex":[320931,333545,344532,328516,466842,355219,391953,333097,327058,329195,279653,301069],"ebitda":[175635,108422,152328,140233,162964,183154,164078,159600,199791,216469,119311,-170173]},"2026":{"months":["JAN","FEB","MAR","APR","MAY"],"sales":[395853,324772,392071,449814,340619],"opex":[195717,240770,235540,288364,201616],"ebitda":[212006,96521,167544,172311,92099]}},"u360":{"2022":{"months":["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"],"sales":[89365,101539,164035,148897,176131,241826,334163,406279,386046,391391,461148,-2478515],"opex":[21301,25902,26500,33768,33429,34050,26288,28144,47167,50389,46808,179282],"ebitda":[68378,75949,137806,115422,142976,208132,308244,378518,339260,341378,417028,-2646254]},"2023":{"months":["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"],"sales":[-6807,-18515,37612,-14723,26400,35357,14826,28527,27658,14595,-5154,253654],"opex":[48697,91419,65309,75778,84405,104999,80827,63078,79891,159877,125876,409543],"ebitda":[-46406,-96917,-15900,-78674,-46562,-57814,-54197,-25155,-41318,-131520,-112966,-228286]},"2024":{"months":["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"],"sales":[1672,2157,4327,6477,8335,27883,42887,43015,39397,43302,36342,27035],"opex":[132675,166788,108359,92242,87716,76915,83618,69188,62167,74224,58929,90744],"ebitda":[-109959,-145849,-85492,-66971,-63070,-32510,-24535,-14007,-12172,-20648,-12166,-188295]},"2025":{"months":["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"],"sales":[37258,29415,34596,30347,35110,28524,34599,30520,30057,33563,24543,25900],"opex":[66595,59020,66164,59154,68385,63016,64195,57528,41385,24383,12123,34560],"ebitda":[-15932,-17470,-19603,-16817,-21314,-22088,-17213,-16360,-5342,11688,14912,-90524]},"2026":{"months":["JAN","FEB","MAR","APR","MAY"],"sales":[24939,22579,25182,24318,20271],"opex":[21937,12370,36405,23296,25279],"ebitda":[5463,12609,-8841,3395,-5008]}},"comb_2022":{"months":["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"],"sales":[303585,296871,329920,322688,364682,381149,400601,425132,389051,394760,462517,602669],"opex":[224715,220727,228787,260213,238646,255477,264771,249104,281930,320441,307328,455044],"ebitda":[104046,97140,121609,91911,146989,147027,166552,198259,130147,105690,178877,-38418]},"comb_2023":{"months":["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"],"sales":[508235,473345,536326,495101,517123,551292,514627,577256,570890,549861,498417,757691],"opex":[367654,374329,362728,422343,381699,420509,422707,361030,370585,569584,356022,711068],"ebitda":[188662,147119,221043,144725,184199,184721,156962,258347,242931,40204,191962,-379022]},"comb_2024":{"months":["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"],"sales":[485956,523724,543523,490156,554973,496434,555726,518746,493336,509706,505072,686237],"opex":[500882,491450,444414,443198,464734,436402,423358,397325,368032,404508,373288,752597],"ebitda":[71787,100525,169734,111884,154717,121411,184680,165521,165686,145005,172684,-485993]},"comb_2025":{"months":["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"],"sales":[495120,425453,492703,461574,585649,521964,541962,490362,535379,562066,405174,414015],"opex":[387526,392565,410696,387670,535227,418235,456148,390625,368443,353578,291776,335629],"ebitda":[159703,90952,132725,123416,141650,161066,146865,143240,194449,228157,134223,-260697]},"comb_2026":{"months":["JAN","FEB","MAR","APR","MAY"],"sales":[420792,347351,417253,474132,360890],"opex":[217654,253140,271945,311660,226895],"ebitda":[217469,109130,158703,175706,87091]}};
 
 var moData_JAN = {"st":{"paid":413854.35,"cancelled":36107.5,"outstanding":1944.0,"paid_cmp":245,"cancelled_cmp":21,"outstanding_cmp":3},"r":[{"c":"StraightShooterPlumbing.com","a":"Melissa","k":"CALL, DESIGN, EMAIL, GBP, LBO, LSA, PPC, RTM PACKAGE, SEO, SOCIAL, SOFTWARE","s":"Paid","v":19518.0},{"c":"Goldstarplumbingaz.com","a":"Melissa","k":"APPS, CALL, GBP, LSA, PPC, SEO, SOCIAL, SOFTWARE","s":"Paid","v":15277.0},{"c":"PPM.us","a":"Madison","k":"CALL, DESIGN, LBO, PPC, SEO, SOCIAL","s":"Paid","v":10864.0},{"c":"Eielectrical.com","a":"Kelly","k":"CALL, GBP, LBO, LSA, PPC, SEO, SOCIAL, SOFTWARE","s":"Paid","v":8875.0},{"c":"Prideplumbingphc.com","a":"Melissa","k":"CALL, DESIGN, GBP, LBO, LSA, PPC, SEO, SOCIAL, SOFTWARE, YELP","s":"Paid","v":8225.25},{"c":"Airprosusa.com(1)","a":"Veronica","k":"GBP, LSA, SOFTWARE","s":"Paid","v":8166.0},{"c":"Deltronelectricfl.com","a":"Melissa","k":"CALL, EMAIL, GBP, HOSTING, LBO, LSA, PPC, SEO, SOCIAL, SOFTWARE","s":"Paid","v":7874.0},{"c":"Airforceheatingandair.com(1)","a":"Veronica","k":"GBP, LSA, SOFTWARE","s":"Cancelled","v":6860.1},{"c":"Bullseyeplumbing.com","a":"Kelly","k":"CALL, DESIGN, GBP, LBO, LSA, PPC, SEO, SOCIAL, SOFTWARE","s":"Paid","v":6449.0},{"c":"Yourbellplumbing.com","a":"Veronica","k":"GBP, LSA, NODIG, PPC, SEO, SOCIAL, SOFTWARE","s":"Paid","v":6423.0},{"c":"Tridentplumbingllc.com","a":"Kelly","k":"CALL, GBP, LBO, LSA, NODIG, SEO, SOCIAL, SOFTWARE, YELP","s":"Paid","v":6344.0},{"c":"CallOptionOne.com","a":"Kelly","k":"CALL, LBO, LSA, PPC, SEO, SOFTWARE","s":"Paid","v":6294.0},{"c":"Pricebustersplumbing.com","a":"Melissa","k":"APPS, CALL, HOSTING, LBO, LSA, NODIG, PPC, SEO, SOCIAL, SOFTWARE, YELP","s":"Paid","v":6271.0},{"c":"Rapidashresponse.com","a":"Jason","k":"RTM PACKAGE","s":"Paid","v":6100.0},{"c":"Calljackrabbit.com(1)","a":"Veronica","k":"GBP, LBO, LSA, SOFTWARE","s":"Paid","v":6036.0},{"c":"ActionRoofing.com","a":"Veronica","k":"GBP, LSA, SOFTWARE","s":"Paid","v":5937.6},{"c":"Drainsbyjames.com","a":"Jason","k":"CALL, LBO, LSA, NODIG, PPC, SEO, SOCIAL, SOFTWARE","s":"Paid","v":5616.0},{"c":"1800heaters.com","a":"Jason","k":"CALL, HOSTING, LBO, PPC, SEO, SOFTWARE","s":"Paid","v":5576.0},{"c":"QDIHVAC.com","a":"Madison","k":"DESIGN, LBO, LSA, SEO, SOCIAL, SOFTWARE","s":"Paid","v":5174.5},{"c":"Thepipedoctorplumbing.com","a":"Madison","k":"CALL, LBO, LSA, NODIG, PPC, SEO, SOFTWARE","s":"Paid","v":5010.0},{"c":"OneCallLegal.com","a":"Kelly","k":"CALL, DESIGN, GBP, PPC, SEO, SOCIAL","s":"Paid","v":5000.0},{"c":"Jnrplumbing.com","a":"Jason","k":"CALL, HOSTING, LBO, PPC, SEO, SOCIAL, SOFTWARE","s":"Paid","v":4927.0},{"c":"CarlsAir.com","a":"Kelly","k":"CALL, GBP, HOSTING, LSA, PPC, SOFTWARE","s":"Paid","v":4923.0},{"c":"CMHeating.com(1)","a":"Veronica","k":"GBP, LSA, SOFTWARE","s":"Cancelled","v":4766.4},{"c":"Kinseyplumbing.com","a":"Riza","k":"CALL, GBP, LSA, SOFTWARE","s":"Paid","v":4758.0},{"c":"SpeedyRooter.com","a":"Riza","k":"GBP, LBO, LSA, PPC, SEO, SOFTWARE","s":"Paid","v":4646.0},{"c":"Gofarrellplumbing.com","a":"Riza","k":"CALL, LBO, LSA, SEO, SOCIAL, SOFTWARE","s":"Paid","v":4146.0},{"c":"Valleycitymechanical.com","a":"Madison","k":"GBP, LBO, LSA, PPC, SEO, SOFTWARE","s":"Paid","v":4146.0},{"c":"Calltoptech.com","a":"John","k":"GBP, LSA, SOFTWARE","s":"Paid","v":3897.0},{"c":"Farmingtonvalleyplumbing.com","a":"Jason","k":"GBP, LSA, SEO, SOFTWARE","s":"Paid","v":3846.0},{"c":"Prosewerrepair.com","a":"Veronica","k":"CALL, LBO, PPC, SEO, SOCIAL","s":"Cancelled","v":3833.0},{"c":"SewerSurgeons.com","a":"Riza","k":"CALL, LBO, LSA, NODIG, PPC, SEO, SOCIAL","s":"Paid","v":3742.1},{"c":"DrainAndWater.com","a":"Madison","k":"HOSTING, LBO, LSA, SEO, SOCIAL, SOFTWARE","s":"Cancelled","v":3697.0},{"c":"RooterExpSC.com","a":"Fay","k":"CALL, DESIGN, GBP, LSA, SEO, SOFTWARE","s":"Paid","v":3695.0},{"c":"MadeSimpleHeatingAndAir.com","a":"Kelly","k":"APPS, LSA, RTM PACKAGE","s":"Paid","v":3649.0},{"c":"Peerlessplumbingrepipes.com","a":"Madison","k":"GBP, LBO, LSA, NODIG, SEO, SOCIAL, SOFTWARE","s":"Paid","v":3597.0},{"c":"PipersDrainRepair.com","a":"Veronica","k":"RTM PACKAGE","s":"Paid","v":3500.0},{"c":"Onesourcehomeservice.com(1)","a":"Veronica","k":"GBP, LSA","s":"Paid","v":3495.0},{"c":"Callonthedouble.com","a":"Kelly","k":"CALL, GBP, LSA, SEO, SOFTWARE","s":"Paid","v":3347.0},{"c":"DallasPlumbing.com(1)","a":"Veronica","k":"GBP, LSA, SOFTWARE","s":"Paid","v":3290.0},{"c":"FluidDynamicsPlumbing.com","a":"Veronica","k":"CALL, GBP, LSA, PPC, SEO, SOFTWARE","s":"Paid","v":3200.0},{"c":"CallAroundTheClock.com","a":"Veronica","k":"GBP, LSA, SOFTWARE","s":"Paid","v":3197.0},{"c":"LeakDetectionSP.com","a":"Ann","k":"CALL, DESIGN, GBP, PPC, SEO","s":"Paid","v":3134.0},{"c":"TitanRoofingFL.com","a":"Fay","k":"DESIGN, GBP, LSA, SEO, SOCIAL, SOFTWARE","s":"Paid","v":3097.0},{"c":"Pureflowplumbing.com","a":"Kelly","k":"GBP, LBO, LSA, PPC, SEO, SOFTWARE","s":"Paid","v":2998.0},{"c":"Readysepticllc.com","a":"Kelly","k":"GBP, LSA, PPC, SEO, SOFTWARE","s":"Paid","v":2948.0},{"c":"Callfastair.com","a":"Ann","k":"APPS, LSA, SOFTWARE, YELP","s":"Paid","v":2912.0},{"c":"Sewerprodrains.com","a":"Fay","k":"LBO, LSA, SEO","s":"Paid","v":2898.0},{"c":"Ramplumbingaz.com","a":"Riza","k":"GBP, LBO, LSA, NODIG, PPC, SEO, YELP","s":"Paid","v":2856.0},{"c":"PrimelineProducts.com","a":"Jason","k":"CALL, NODIG, SEO, SOCIAL","s":"Paid","v":2799.0},{"c":"Sweetsservices.com","a":"Ann","k":"CALL, LBO, NODIG, SEO, SOFTWARE","s":"Paid","v":2749.0},{"c":"TrenchFree.com","a":"Ann","k":"HOSTING, LBO, SEO, SOCIAL","s":"Cancelled","v":2728.0},{"c":"TJMPlumbingHeating.com","a":"Veronica","k":"LSA, RTM PACKAGE","s":"Paid","v":2700.0},{"c":"Diamondautoglassflagstaff.com","a":"Madison","k":"SEO, SOCIAL, SOFTWARE","s":"Paid","v":2698.0},{"c":"Powermoveselectric.biz","a":"Kelly","k":"APPS, GBP, LBO, LSA, PPC, SEO, SOFTWARE","s":"Paid","v":2695.0},{"c":"ArizonaSewerSolution.com","a":"Jason","k":"CALL, GBP, SEO","s":"Paid","v":2664.0},{"c":"Sloansseptic.net","a":"Fay","k":"HOSTING, LBO, SEO, SOFTWARE","s":"Paid","v":2616.75},{"c":"CLeeServices.com","a":"John","k":"CALL, LSA, NODIG, SEO, SOFTWARE","s":"Paid","v":2597.0},{"c":"Rdhplumbingspecialist.com","a":"Jason","k":"CALL, GBP, HOSTING, LBO, NODIG, PPC, SEO","s":"Paid","v":2549.99},{"c":"Calljacknjill.com","a":"John","k":"LSA, SOFTWARE, YELP","s":"Paid","v":2546.0},{"c":"Accuratebackflow.com","a":"Melissa","k":"HOSTING, LBO, SEO","s":"Cancelled","v":2528.0},{"c":"Locklearplumbing.com","a":"Riza","k":"GBP, LSA","s":"Cancelled","v":2399.0},{"c":"ClearlineSewerRepair.com","a":"Jason","k":"GBP, LSA, NODIG, SEO, SOFTWARE","s":"Paid","v":2398.0},{"c":"Nepipe.com","a":"Ann","k":"DESIGN, GBP, HOSTING, SEO, SOCIAL, SOFTWARE","s":"Paid","v":2398.0},{"c":"Inhouseplumbingcompany.com","a":"Ann","k":"CALL, GBP, HOSTING, PPC, SEO, SOFTWARE","s":"Paid","v":2296.0},{"c":"ProvidencePlumbing.com","a":"Kelly","k":"LSA, RTM PACKAGE","s":"Paid","v":2200.0},{"c":"Atlasplumbinglv.com","a":"John","k":"GBP, LBO, LSA, SOCIAL, SOFTWARE","s":"Paid","v":2197.0},{"c":"Localplumbingandseptic.com","a":"Fay","k":"CALL, LSA, SEO, SOFTWARE","s":"Paid","v":2164.0},{"c":"PontiusCollision.com","a":"Veronica","k":"GBP, LSA","s":"Paid","v":2149.0},{"c":"Forestrymulchingpro.com","a":"John","k":"DESIGN, HOSTING, LBO","s":"Paid","v":2131.0},{"c":"Plumbtechmt.com","a":"John","k":"LSA, SOFTWARE","s":"Paid","v":2094.0},{"c":"Draingenieplumbing.com(1)","a":"Veronica","k":"GBP, LSA, SOFTWARE","s":"Paid","v":2091.0},{"c":"Slbpipesolutions.com","a":"Riza","k":"LBO, NODIG, SEO, SOFTWARE","s":"Paid","v":2024.0},{"c":"PrimePlumbingInc.com","a":"Jason","k":"PPC","s":"Cancelled","v":2000.0},{"c":"PatriotRooter.com","a":"Ann","k":"CALL, GBP, SEO","s":"Cancelled","v":1999.0},{"c":"Allianceplumbingco.com","a":"Riza","k":"CALL, LBO, SEO","s":"Paid","v":1999.0},{"c":"HealthcareSolutionsTeam-Brandon.com","a":"Kelly","k":"PPC, SEO, SOCIAL","s":"Paid","v":1900.0},{"c":"Allisonsplumbingheatingandac.com","a":"Ann","k":"LBO, LSA, PPC, SOFTWARE","s":"Paid","v":1897.0},{"c":"Alliedplumbingandpumps.com","a":"Ann","k":"HOSTING, LBO, LSA, SOFTWARE","s":"Paid","v":1877.0},{"c":"Semperfiheatingcooling.com","a":"Jason","k":"LSA","s":"Paid","v":1870.0},{"c":"Abbiesplumbing.com","a":"Ann","k":"GBP, LSA","s":"Paid","v":1848.0},{"c":"Thermoformliner.com","a":"Fay","k":"HOSTING, SEO","s":"Paid","v":1826.0},{"c":"Mywestcoast.church","a":"Madison","k":"DESIGN","s":"Paid","v":1822.0},{"c":"Readyrooter4you.com","a":"Kelly","k":"EMAIL, LSA, SOFTWARE","s":"Paid","v":1796.0},{"c":"Mycomforthounds.com","a":"Jason","k":"LBO, SEO, SOFTWARE","s":"Paid","v":1776.0},{"c":"AdvancedDrainsAndUndergroundSolutions.com","a":"Ann","k":"CALL, LBO, NODIG, SEO","s":"Paid","v":1750.0},{"c":"Ejplumbing.com","a":"Madison","k":"SEO","s":"Paid","v":1750.0},{"c":"HydrojetDrainService.com","a":"Jason","k":"DESIGN, SEO","s":"Paid","v":1749.0},{"c":"Thenorthridgeplumber.com","a":"Riza","k":"CALL, GBP, PPC, SEO, SOCIAL, SOFTWARE","s":"Paid","v":1698.0},{"c":"Discountdraincleanlv.com","a":"Riza","k":"CALL, GBP, HOSTING, NODIG, SEO, SOCIAL, SOFTWARE","s":"Paid","v":1697.0},{"c":"Keeleysplumbing.com","a":"Riza","k":"SEO, SOFTWARE","s":"Paid","v":1679.0},{"c":"Theplumbersfl.com","a":"John","k":"CALL, LSA, SEO","s":"Paid","v":1649.0},{"c":"Lasvegassepticservice.com","a":"John","k":"GBP, HOSTING, SEO, SOCIAL","s":"Paid","v":1645.0},{"c":"Advantagetrenchless.net","a":"Ann","k":"CALL, SEO","s":"Paid","v":1600.0},{"c":"Theplumbersplumber.com","a":"Riza","k":"CALL, GBP, SEO, SOFTWARE","s":"Paid","v":1598.0},{"c":"Barronplumbingandheating.com","a":"Riza","k":"GBP, SEO, SOFTWARE","s":"Paid","v":1595.0},{"c":"Capstone-Plumbing.com","a":"Ann","k":"HOSTING, LBO, SOCIAL","s":"Paid","v":1578.0},{"c":"Reveallongevity.com","a":"Kelly","k":"CALL, SEO, SOCIAL","s":"Paid","v":1550.0},{"c":"Bluewaveheatingandair.com","a":"John","k":"HOSTING, LBO, LSA","s":"Paid","v":1547.0},{"c":"WestLAAutoBody.com","a":"Ann","k":"LSA, YELP","s":"Paid","v":1508.0},{"c":"Bioremedies.net","a":"Ann","k":"RTM PACKAGE","s":"Paid","v":1500.0},{"c":"Nuflowstlouis.com","a":"John","k":"SEO","s":"Paid","v":1495.0},{"c":"Skeenplumbinggas.com","a":"Riza","k":"SEO, SOFTWARE","s":"Paid","v":1495.0},{"c":"Sunshineplumb.com","a":"Madison","k":"DESIGN","s":"Paid","v":1495.0},{"c":"Haloturf.com","a":"John","k":"CALL, SEO","s":"Cancelled","v":1449.0},{"c":"PlanBAirConditioning.com","a":"Fay","k":"HOSTING, LBO, PPC, SOFTWARE","s":"Paid","v":1447.0},{"c":"Legacysewerpros.com","a":"Ann","k":"LBO, YELP","s":"Paid","v":1398.0},{"c":"Toprankplumbing.com","a":"Jason","k":"LBO, YELP","s":"Paid","v":1398.0},{"c":"TalentHVAC.com","a":"Ann","k":"LBO, LSA, SOFTWARE","s":"Paid","v":1349.0},{"c":"CardwellHVACNJ.com","a":"Ann","k":"GBP, LSA, SOFTWARE","s":"Paid","v":1298.0},{"c":"DadsPlumbingNV.com","a":"Jason","k":"GBP, LSA","s":"Paid","v":1298.0},{"c":"CanyonHillsPlumbing.com","a":"Kelly","k":"GBP, LSA, NODIG, SOFTWARE","s":"Paid","v":1287.0},{"c":"CustomBrickPavers.com","a":"Fay","k":"GBP, HOSTING, SOFTWARE","s":"Outstanding","v":1247.0},{"c":"Westpeaktrenchlessandplumbing.com","a":"Jason","k":"GBP, HOSTING, LSA, PPC, SOFTWARE","s":"Paid","v":1247.0},{"c":"StrategicCoatings.com","a":"Ann","k":"LBO, SOFTWARE","s":"Paid","v":1198.0},{"c":"SpringGrovePlumbing.com","a":"Jason","k":"GBP, LSA, SOFTWARE","s":"Paid","v":1196.0},{"c":"Adriaticaire.com","a":"Melissa","k":"CALL, LBO, LSA, PPC","s":"Paid","v":1149.0},{"c":"Thepipemedic.com","a":"Riza","k":"SEO, SOFTWARE","s":"Paid","v":1149.0},{"c":"Hurlimanheating.com","a":"John","k":"GBP, LSA, SOFTWARE","s":"Paid","v":1099.0},{"c":"Locklearplumbing.com","a":"Riza","k":"SEO, SOFTWARE","s":"Paid","v":1099.0},{"c":"Servworxplumbing.com","a":"John","k":"LBO, SOFTWARE","s":"Paid","v":1098.0},{"c":"NewAgeHeatingAndAir.com","a":"John","k":"CALL, GBP, LSA, PPC","s":"Paid","v":1097.0},{"c":"ET-Plumbing.com","a":"Jason","k":"CALL, SEO","s":"Paid","v":1050.0},{"c":"Cr3america.com/northern-michigan","a":"Fay","k":"GBP, SOFTWARE","s":"Paid","v":1017.0},{"c":"Plumbingdoc.net","a":"Fay","k":"SEO","s":"Paid","v":1000.0},{"c":"PriceBustersPlumbing.com","a":"Melissa","k":"LBO","s":"Paid","v":999.0},{"c":"Advancedwaterheating.com","a":"Jason","k":"GBP, LSA, SOFTWARE","s":"Paid","v":998.0},{"c":"KingdomWarriors.co","a":"Ann","k":"DESIGN","s":"Paid","v":998.0},{"c":"Hightechacfl.com","a":"Jason","k":"GBP, LSA, SOFTWARE","s":"Paid","v":962.0},{"c":"Premiersewerseptic.com","a":"Ann","k":"GBP, PPC, SOFTWARE","s":"Paid","v":950.0},{"c":"Usapiperepair.com","a":"Ann","k":"SEO","s":"Paid","v":900.0},{"c":"P3PlumbingAZ.com","a":"Ann","k":"GBP, LSA, SOFTWARE","s":"Paid","v":898.0},{"c":"Wooleytrenchless.com","a":"Fay","k":"NODIG, SOCIAL","s":"Paid","v":898.0},{"c":"ORAdvancedRoofing.com","a":"Kelly","k":"GBP, LSA, SOFTWARE","s":"Paid","v":897.0},{"c":"RevealVitality.com","a":"Kelly","k":"GBP, SOCIAL, SOFTWARE","s":"Paid","v":897.0},{"c":"Diamondautoglassflagstaff.com","a":"Madison","k":"SOCIAL, YELP","s":"Transition","v":848.0},{"c":"Mcplumbing.com","a":"Jason","k":"LBO","s":"Paid","v":799.0},{"c":"Moondancevacationhomes.com","a":"Riza","k":"DESIGN, HOSTING, PPC, SOFTWARE","s":"Paid","v":798.0},{"c":"Santanhealthandwellness.com","a":"Kelly","k":"GBP, SOFTWARE","s":"Paid","v":798.0},{"c":"BFPlumbingBayArea.com","a":"John","k":"LSA, SOFTWARE","s":"Paid","v":797.0},{"c":"Patriothomesusa.com","a":"Fay","k":"DESIGN, HOSTING, SEO","s":"Paid","v":754.0},{"c":"Haloturf.com","a":"John","k":"LBO","s":"Paid","v":750.0},{"c":"Justcallaloha.com","a":"Jason","k":"LBO","s":"Paid","v":750.0},{"c":"Premiersewerseptic.com","a":"Ann","k":"LBO","s":"Transition","v":750.0},{"c":"Discountdraincleanlv.com","a":"Riza","k":"LBO","s":"Transition","v":700.0},{"c":"ValueGlass.com","a":"Ann","k":"PPC, SOCIAL","s":"Paid","v":699.0},{"c":"Callclimateheroes.com","a":"John","k":"LSA, SOFTWARE","s":"Paid","v":698.0},{"c":"SewerSurgeons.com","a":"Riza","k":"CALL, PPC","s":"Cancelled","v":629.0},{"c":"Pestwisellc.com","a":"Ann","k":"SEO, SOFTWARE","s":"Paid","v":599.0},{"c":"PlumberNearMeRVA.com","a":"Riza","k":"LSA","s":"Paid","v":599.0},{"c":"Thedrainkingllc.com","a":"Fay","k":"GBP","s":"Paid","v":599.0},{"c":"Theheatandairguy.com","a":"Ann","k":"LSA, SOFTWARE","s":"Paid","v":599.0},{"c":"Callcartersplumbing.com","a":"Ann","k":"SOFTWARE","s":"Paid","v":596.0},{"c":"Bluewaterleakdetection.net","a":"Riza","k":"DESIGN","s":"Paid","v":570.0},{"c":"FreightTrainElectric.com","a":"Veronica","k":"DESIGN, HOSTING, SOFTWARE","s":"Paid","v":549.0},{"c":"Calgaryheatpump.ca","a":"Veronica","k":"HOSTING","s":"Cancelled","v":528.0},{"c":"Ipsplumber.com","a":"Melissa","k":"SOCIAL","s":"Paid","v":500.0},{"c":"A1SewerAndDrain.net","a":"Fay","k":"DESIGN","s":"Paid","v":499.0},{"c":"CR3America.com/Coastal-Carolina","a":"John","k":"GBP, LSA","s":"Paid","v":499.0},{"c":"SeattlePipeSolutions.com","a":"Melissa","k":"DESIGN","s":"Paid","v":499.0},{"c":"Todayshomeservicesnow.com","a":"Jason","k":"LBO","s":"Paid","v":499.0},{"c":"TrenchlessTucson.com","a":"Fay","k":"DESIGN","s":"Paid","v":499.0},{"c":"Trictools.com","a":"Fay","k":"HOSTING","s":"Paid","v":499.0},{"c":"Essentialheatandac.com","a":"John","k":"LSA, SOFTWARE","s":"Paid","v":498.0},{"c":"Ppsgenerators.com","a":"Veronica","k":"GBP","s":"Paid","v":498.0},{"c":"Deltronelectricfl.com","a":"Melissa","k":"APPS, YELP","s":"Reallocation","v":498.0},{"c":"Tonytheplumbercompany.com","a":"Fay","k":"HOSTING, SOFTWARE","s":"Paid","v":450.0},{"c":"Prosewerrepair.com","a":"Veronica","k":"CALL, LSA","s":"Paid","v":449.0},{"c":"Erplumbing.com","a":"Riza","k":"NODIG, SEO","s":"Paid","v":448.0},{"c":"BradleyPlumbers.com","a":"Jason","k":"HOSTING","s":"Cancelled","v":429.0},{"c":"AlliedTrenchless.com","a":"Ann","k":"HOSTING","s":"Paid","v":429.0},{"c":"IntegrityEnvironmentalLLC.com","a":"Riza","k":"HOSTING","s":"Paid","v":429.0},{"c":"Piperightplumb.com","a":"Melissa","k":"HOSTING","s":"Paid","v":429.0},{"c":"SalonsAtBellaSuites.com","a":"Jason","k":"HOSTING","s":"Paid","v":429.0},{"c":"Strictlysewersinc.com","a":"Jason","k":"HOSTING","s":"Paid","v":429.0},{"c":"TrilElectricLLC.com","a":"Fay","k":"HOSTING","s":"Paid","v":429.0},{"c":"Wellbrookplumbing.ca","a":"Ann","k":"HOSTING","s":"Paid","v":429.0},{"c":"ATLPlumbingCompany.com","a":"John","k":"PPC, SOCIAL","s":"Paid","v":400.0},{"c":"ProactiveDoor.com","a":"Fay","k":"LSA","s":"Paid","v":400.0},{"c":"CleenoraMaidsAndCleaningServices.com","a":"Ann","k":"LSA","s":"Outstanding","v":399.0},{"c":"ASFContractingLLC.com","a":"John","k":"LSA","s":"Paid","v":399.0},{"c":"Bathworksmi.com","a":"John","k":"LSA","s":"Paid","v":399.0},{"c":"Boboates.com","a":"Ann","k":"LSA, SOFTWARE","s":"Paid","v":399.0},{"c":"Eliteairsystemsnv.com","a":"John","k":"LSA, SOFTWARE","s":"Paid","v":399.0},{"c":"HVACNearMe.com","a":"Riza","k":"LSA","s":"Paid","v":399.0},{"c":"HostAndHomeCleaners.com","a":"Jason","k":"LSA","s":"Paid","v":399.0},{"c":"Teamcomfortpro.com","a":"Jason","k":"LSA, SOFTWARE","s":"Paid","v":399.0},{"c":"The5StarPlumbing.com","a":"Riza","k":"LSA","s":"Paid","v":399.0},{"c":"Cichyswaterandsewer.com","a":"Ann","k":"DESIGN","s":"Paid","v":398.0},{"c":"Kingsplumbingbermuda.com","a":"Kelly","k":"HOSTING, SOFTWARE","s":"Paid","v":348.0},{"c":"Mrrooter.com/southern-mass","a":"Jason","k":"SOFTWARE","s":"Paid","v":348.0},{"c":"Schlueterplumbing.com","a":"Kelly","k":"LSA, NODIG","s":"Paid","v":328.0},{"c":"Americanphc.com","a":"Madison","k":"HOSTING","s":"Cancelled","v":299.0},{"c":"Hallcoac.com","a":"Ann","k":"HOSTING","s":"Cancelled","v":299.0},{"c":"Hewattroofing.com","a":"Riza","k":"HOSTING","s":"Cancelled","v":299.0},{"c":"In-linerenewalsolutions.com","a":"Riza","k":"HOSTING","s":"Cancelled","v":299.0},{"c":"LincolnAir.com","a":"Kelly","k":"HOSTING","s":"Cancelled","v":299.0},{"c":"Mcplumbing.com","a":"Jason","k":"HOSTING","s":"Cancelled","v":299.0},{"c":"Powrmole.com","a":"Kelly","k":"HOSTING","s":"Cancelled","v":299.0},{"c":"BeisPlumbing.com","a":"Mabua","k":"SOFTWARE","s":"Paid","v":299.0},{"c":"Ippsolutions.com","a":"Kelly","k":"NODIG","s":"Paid","v":299.0},{"c":"Rapidflowinc.com","a":"Madison","k":"SOFTWARE","s":"Paid","v":299.0},{"c":"SimplyAirConditioningAndHeating.com","a":"Mabua","k":"SOFTWARE","s":"Paid","v":299.0},{"c":"Spartantool.com","a":"Kelly","k":"NODIG","s":"Paid","v":299.0},{"c":"Sptohio.com","a":"Madison","k":"DESIGN","s":"Paid","v":299.0},{"c":"Premieroftn.com","a":"Mabua","k":"SOFTWARE","s":"Outstanding","v":298.0},{"c":"Andersonplumbing.biz","a":"Ann","k":"NODIG","s":"Paid","v":279.0},{"c":"Goldstarhomeservicesaz.com","a":"Melissa","k":"NODIG","s":"Paid","v":279.0},{"c":"Rockymountainsewerpros.com","a":"Kelly","k":"NODIG","s":"Paid","v":279.0},{"c":"Thompsonfamilyplumbing.com","a":"Mabua","k":"NODIG","s":"Paid","v":279.0},{"c":"Trenchless-pipesolutions.com","a":"Jason","k":"NODIG","s":"Paid","v":279.0},{"c":"FluidDynamicsPlumbing.com","a":"Veronica","k":"YELP","s":"Reallocation","v":260.0},{"c":"ToughTurfFL.com","a":"Riza","k":"PPC","s":"Paid","v":250.0},{"c":"Thedrainkingllc.com","a":"Fay","k":"SOCIAL","s":"Transition","v":250.0},{"c":"AssociatedPlumbing.com","a":"Fay","k":"DESIGN","s":"Paid","v":249.0},{"c":"GoPureFlow.com","a":"John","k":"DESIGN","s":"Paid","v":249.0},{"c":"PioneerValleyGroundsManagement.com","a":"Fay","k":"DESIGN","s":"Paid","v":249.0},{"c":"855gotclog.com","a":"Mabua","k":"SOFTWARE","s":"Paid","v":199.0},{"c":"Asheville-Plumber.com","a":"Jason","k":"HOSTING","s":"Paid","v":199.0},{"c":"Knightdraincleaning.com","a":"Fay","k":"NODIG","s":"Paid","v":199.0},{"c":"Olympicplumbing.com","a":"Jason","k":"NODIG","s":"Paid","v":199.0},{"c":"Servicefanaticsinc.com","a":"Riza","k":"LSA, SOFTWARE","s":"Paid","v":199.0},{"c":"Speedyrooter.com","a":"Riza","k":"NODIG","s":"Paid","v":199.0},{"c":"Supermarcoplumbing.com","a":"Fay","k":"HOSTING","s":"Paid","v":199.0},{"c":"Valtorc.com","a":"Riza","k":"HOSTING","s":"Paid","v":199.0},{"c":"Birosseptic.com","a":"Mabua","k":"SOFTWARE","s":"Paid","v":198.0},{"c":"Myguyplumbingnj.com","a":"Ann","k":"SOFTWARE","s":"Paid","v":198.0},{"c":"Budgetsewer.com","a":"Melissa","k":"HOSTING","s":"Paid","v":196.0},{"c":"Farrellpower.com","a":"Melissa","k":"SOFTWARE","s":"Paid","v":179.0},{"c":"SewerAndDrainChampion.com","a":"Jason","k":"HOSTING","s":"Paid","v":179.0},{"c":"Todaysexteriors.com","a":"Jason","k":"HOSTING","s":"Paid","v":179.0},{"c":"Allstarplumbinglc.com","a":"Mabua","k":"SOFTWARE","s":"Cancelled","v":169.0},{"c":"503capitalpartners.com","a":"Jason","k":"HOSTING","s":"Paid","v":149.0},{"c":"Boiseplasticsurgerymd.com","a":"Mabua","k":"SOFTWARE","s":"Paid","v":149.0},{"c":"Irontreeaz.com","a":"Melissa","k":"HOSTING","s":"Paid","v":149.0},{"c":"Klausandsons.com","a":"Mabua","k":"SOFTWARE","s":"Paid","v":149.0},{"c":"Lgplumbingfl.com","a":"Riza","k":"HOSTING","s":"Paid","v":149.0},{"c":"Mcdonaldplumbing.com","a":"Mabua","k":"SOFTWARE","s":"Paid","v":149.0},{"c":"Redstarelectric.net","a":"Mabua","k":"SOFTWARE","s":"Paid","v":149.0},{"c":"Rossmanplumbing.com","a":"Riza","k":"HOSTING","s":"Paid","v":149.0},{"c":"Sanderscoynercade.com","a":"Fay","k":"HOSTING","s":"Paid","v":149.0},{"c":"StevesAir.com","a":"Mabua","k":"SOFTWARE","s":"Paid","v":149.0},{"c":"Swerling.com","a":"Mabua","k":"SOFTWARE","s":"Paid","v":149.0},{"c":"Thedraindoctorcovina.com","a":"Riza","k":"SOFTWARE","s":"Paid","v":149.0},{"c":"Williamsandsonsservices.com","a":"Mabua","k":"SOFTWARE","s":"Paid","v":149.0},{"c":"Supercover.com","a":"John","k":"HOSTING, NODIG","s":"Paid","v":138.95},{"c":"Ssisealingsystems.com","a":"Fay","k":"DESIGN","s":"Paid","v":129.0},{"c":"Callpinendandy.com","a":"Ann","k":"HOSTING, SOFTWARE","s":"Paid","v":124.0},{"c":"BradleyPlumbers.com","a":"Jason","k":"SOFTWARE","s":"Paid","v":99.0},{"c":"Pplatlanta.com","a":"Kelly","k":"NODIG","s":"Paid","v":99.0},{"c":"Qualitysewercleaning.com","a":"Jason","k":"NODIG","s":"Paid","v":99.0},{"c":"RegalPlumbingServices.com","a":"Mabua","k":"SOFTWARE","s":"Paid","v":99.0},{"c":"Thomasplumbingnc.com","a":"Mabua","k":"NODIG","s":"Paid","v":99.0},{"c":"Unihdd.com","a":"Kelly","k":"NODIG","s":"Paid","v":99.0},{"c":"Franksrepairplumbing.com","a":"Kelly","k":"SOFTWARE","s":"Paid","v":79.0},{"c":"Nuflowak.com","a":"Ann","k":"HOSTING","s":"Paid","v":50.0},{"c":"Dairy-Resources.com","a":"Jason","k":"HOSTING","s":"Paid","v":49.0},{"c":"Jtv-rehab.com","a":"Fay","k":"HOSTING","s":"Paid","v":40.0},{"c":"Jtvcipp.com","a":"Fay","k":"HOSTING","s":"Paid","v":40.0},{"c":"Jtvrehab.com","a":"Fay","k":"HOSTING","s":"Paid","v":40.0},{"c":"Latourwilsonseptic.com","a":"Fay","k":"HOSTING","s":"Paid","v":40.0},{"c":"Unitedsurvey.org","a":"Riza","k":"HOSTING","s":"Paid","v":40.0},{"c":"Seweranddrainliners.com","a":"Fay","k":"HOSTING, NODIG","s":"Paid","v":39.99},{"c":"Todayshomeservicenow.com","a":"Jason","k":"HOSTING","s":"Paid","v":39.99},{"c":"Southerntrenchless.com","a":"John","k":"HOSTING","s":"Paid","v":39.95},{"c":"Harris-cleaners.net","a":"Fay","k":"HOSTING","s":"Paid","v":38.75},{"c":"Harriscleaners.net","a":"Fay","k":"HOSTING","s":"Paid","v":38.75},{"c":"Lenoirlawfirm.com","a":"John","k":"HOSTING","s":"Paid","v":29.0},{"c":"Pipesurgeons.com","a":"Fay","k":"HOSTING","s":"Paid","v":25.95},{"c":"Delaneysplumbingaz.com","a":"Fay","k":"HOSTING","s":"Paid","v":19.99},{"c":"Baysewer.com","a":"Melissa","k":"HOSTING","s":"Paid","v":19.95},{"c":"Professionaldrainservicesofsne.com","a":"Fay","k":"HOSTING","s":"Paid","v":19.95},{"c":"Trenchlessequipment.com","a":"Fay","k":"HOSTING","s":"Paid","v":19.95},{"c":"Nwtrenchless.org","a":"Kelly","k":"EMAIL, NODIG","s":"Paid","v":14.99},{"c":"Nodigteam.com","a":"Riza","k":"NODIG","s":"Paid","v":0.0}]};
@@ -996,6 +1158,7 @@ function initTab(name) {
 
   if (name === 'billing') { setTimeout(function() { initBilling(); }, 80); }
   if (name === 'ebitda') { setTimeout(function() { initEbitda(); }, 80); }
+  if (name === 'opex') { setTimeout(function() { if(!opexInited){opexInited=true;initOpex();} }, 80); }
 }
 
 window.addEventListener('DOMContentLoaded', function() { initTab('overview'); });
@@ -1478,6 +1641,338 @@ function buildCancelServiceDetail(svc) {
       tb.innerHTML += '<tr><td style="font-size:12px;font-weight:500;">'+r.c+'</td><td style="color:var(--muted);">'+r.a+'</td><td style="color:var(--muted);">'+r.r+'</td><td class="td-neg" style="text-align:right;">$'+r.v.toLocaleString()+'</td></tr>';
     });
   }
+}
+
+
+// ── SALES BY SERVICE DRILL-DOWN ──
+var svcDrillData = {
+  'SEO':         { total:527806, campaigns:[{c:'Tridentplumbingllc.com',a:'Kelly',v:16250,m:[3250,3250,3250,3250,3250]},{c:'PPM.us',a:'Madison',v:16250,m:[3250,3250,3250,3250,3250]},{c:'QDIHVAC.com',a:'Madison',v:13812,m:[2762,2762,2762,2762,2762]},{c:'OneCallLegal.com',a:'Kelly',v:13348,m:[3037,3437,3437,3437,0]},{c:'Eielectrical.com',a:'Kelly',v:13000,m:[3250,3250,3250,3250,3250]},{c:'ArizonaSewerSolution.com',a:'Jason',v:10000,m:[2000,2000,2000,2000,2000]},{c:'PrimelineProducts.com',a:'Jason',v:10000,m:[2000,2000,2000,2000,2000]},{c:'Prideplumbingphc.com',a:'Melissa',v:10000,m:[2000,2000,2000,2000,2000]},{c:'Thepipedoctorplumbing.com',a:'Madison',v:10000,m:[2000,2000,2000,2000,2000]},{c:'SpeedyRooter.com',a:'Riza',v:10000,m:[2000,2000,2000,2000,2000]}] },
+  'LSA':         { total:360468, campaigns:[{c:'Goldstarplumbingaz.com',a:'Melissa',v:25071,m:[5798,5798,5598,3280,4597]},{c:'CallOptionOne.com',a:'Kelly',v:12992,m:[2498,2498,2498,2498,3000]},{c:'Prideplumbingphc.com',a:'Melissa',v:10930,m:[1996,2796,2396,2146,1596]},{c:'ActionRoofing.com',a:'Veronica',v:9900,m:[2747,2747,4406,4826,0]},{c:'Drainsbyjames.com',a:'Jason',v:9495,m:[1899,1899,1899,1899,1899]},{c:'Kinseyplumbing.com',a:'Riza',v:9096,m:[2799,3399,2898,0,0]},{c:'CallAroundTheClock.com',a:'Veronica',v:8395,m:[2500,1497,999,3399,0]},{c:'Deltronelectricfl.com',a:'Melissa',v:7895,m:[1499,1499,1499,1499,1899]},{c:'Greenhomepest.com',a:'Veronica',v:6940,m:[0,1798,798,2347,1997]},{c:'StraightShooterPlumbing.com',a:'Melissa',v:6795,m:[2799,1998,1998,1998,1998]}] },
+  'LBO':         { total:204335, campaigns:[{c:'Deltronelectricfl.com',a:'Melissa',v:8745,m:[1749,1749,1749,1749,1749]},{c:'Prideplumbingphc.com',a:'Melissa',v:7995,m:[1749,1749,1749,1749,999]},{c:'Thepipedoctorplumbing.com',a:'Madison',v:7090,m:[1498,1398,1398,1398,1398]},{c:'CallOptionOne.com',a:'Kelly',v:6392,m:[1598,1598,1598,1598,0]},{c:'PPM.us',a:'Madison',v:6245,m:[999,999,999,2249,999]},{c:'StraightShooterPlumbing.com',a:'Melissa',v:5994,m:[1998,1998,1998,1998,1998]},{c:'Pricebustersplumbing.com',a:'Kelly',v:5246,m:[999,999,999,3248,1998]},{c:'Jnrplumbing.com',a:'Jason',v:4995,m:[999,999,999,999,999]},{c:'1800heaters.com',a:'Jason',v:4995,m:[999,999,999,999,999]},{c:'Peerlessplumbingrepipes.com',a:'Madison',v:4995,m:[999,999,999,999,999]}] },
+  'GBP':         { total:186066, campaigns:[{c:'Goldstarplumbingaz.com',a:'Melissa',v:10980,m:[2196,2196,2196,2196,2196]},{c:'Airprosusa.com(1)',a:'Veronica',v:10758,m:[4980,4980,798,0,0]},{c:'Onesourcehomeservice.com(1)',a:'Veronica',v:9287,m:[2097,2097,2097,1498,1498]},{c:'ActionRoofing.com',a:'Veronica',v:9079,m:[2860,2860,3358,3358,0]},{c:'Calljackrabbit.com(1)',a:'Veronica',v:6180,m:[1893,1893,2394,0,0]},{c:'Kinseyplumbing.com',a:'Riza',v:6087,m:[1497,1497,1497,1497,99]},{c:'Tridentplumbingllc.com',a:'Kelly',v:5990,m:[798,1298,1298,1298,1298]},{c:'DallasPlumbing.com(1)',a:'Veronica',v:4188,m:[2094,2094,0,0,0]},{c:'Eielectrical.com',a:'Kelly',v:3596,m:[899,899,899,899,899]},{c:'Hightechacfl.com',a:'Jason',v:3495,m:[699,699,699,699,699]}] },
+  'PPC':         { total:132949, campaigns:[{c:'PPM.us',a:'Madison',v:13100,m:[2800,2575,2575,2575,2575]},{c:'Yourbellplumbing.com',a:'Veronica',v:10575,m:[2475,2700,2700,2700,2700]},{c:'1800heaters.com',a:'Jason',v:8500,m:[1700,1700,1700,1700,1700]},{c:'Goldstarplumbingaz.com',a:'Melissa',v:7735,m:[1547,1547,1547,1547,1547]},{c:'Jnrplumbing.com',a:'Jason',v:7500,m:[1500,1500,1500,1500,1500]},{c:'StraightShooterPlumbing.com',a:'Melissa',v:5000,m:[2000,1500,1500,1500,1500]},{c:'Bullseyeplumbing.com',a:'Kelly',v:4632,m:[1032,1200,1200,1200,1200]},{c:'Tridentplumbingllc.com',a:'Kelly',v:4200,m:[0,0,1900,1150,1150]},{c:'Eielectrical.com',a:'Kelly',v:3907,m:[832,1025,1025,1025,1025]},{c:'Thepipedoctorplumbing.com',a:'Madison',v:3750,m:[750,750,750,750,750]}] },
+  'RTM Package': { total:118554, campaigns:[{c:'MadeSimpleHeatingAndAir.com',a:'Kelly',v:15750,m:[3150,3150,3150,3150,3150]},{c:'Rapidashresponse.com',a:'Jason',v:15300,m:[6100,2300,2300,2300,2300]},{c:'PipersDrainRepair.com',a:'Veronica',v:14000,m:[3500,3500,3500,3500,3500]},{c:'StraightShooterPlumbing.com',a:'Melissa',v:13735,m:[5745,3995,3995,3995,3995]},{c:'TJMPlumbingHeating.com',a:'Veronica',v:8800,m:[2500,2500,1900,1900,1900]},{c:'LegendaryService.com',a:'Madison',v:8200,m:[0,0,0,0,8200]},{c:'ProvidencePlumbing.com',a:'Kelly',v:8000,m:[2000,2000,2000,2000,2000]},{c:'Bioremedies.net',a:'Madison',v:6000,m:[1500,1500,1500,1500,1500]},{c:'CR3America.com/N-Charlotte',a:'Jason',v:5341,m:[0,0,2947,1197,1197]},{c:'StraightShooterPlumbing.com',a:'Kelly',v:7990,m:[5745,3995,3995,3995,3995]}] },
+  'Social':      { total:110820, campaigns:[{c:'Goldstarplumbingaz.com',a:'Melissa',v:12490,m:[2498,2498,2498,2498,2498]},{c:'Deltronelectricfl.com',a:'Melissa',v:7500,m:[1500,1500,1500,1500,1500]},{c:'Eielectrical.com',a:'Kelly',v:6396,m:[1599,1599,1599,1599,1599]},{c:'Tridentplumbingllc.com',a:'Kelly',v:6096,m:[400,1799,1299,1299,1299]},{c:'StraightShooterPlumbing.com',a:'Melissa',v:5394,m:[1798,1798,1798,1798,1798]},{c:'QDIHVAC.com',a:'Madison',v:4495,m:[899,899,899,899,899]},{c:'Diamondautoglassflagstaff.com',a:'Madison',v:4495,m:[899,899,899,899,899]},{c:'Drainsbyjames.com',a:'Jason',v:4250,m:[850,850,850,850,850]},{c:'StraightShooterPlumbing.com',a:'Kelly',v:3596,m:[1798,1798,1798,1798,1798]},{c:'Prideplumbingphc.com',a:'Melissa',v:3095,m:[1049,549,549,399,549]}] },
+  'Software':    { total:90782,  campaigns:[{c:'Prideplumbingphc.com',a:'Melissa',v:2186,m:[497,497,497,497,198]},{c:'Goldstarplumbingaz.com',a:'Melissa',v:1980,m:[396,396,396,396,396]},{c:'Kinseyplumbing.com',a:'Riza',v:1881,m:[297,396,396,396,396]},{c:'Mrrooter.com/southern-mass',a:'Jason',v:1740,m:[348,348,348,348,348]},{c:'Airprosusa.com(1)',a:'Veronica',v:1584,m:[792,792,0,0,0]},{c:'Sweetsservices.com',a:'Veronica',v:1497,m:[499,499,499,499,0]},{c:'SimplyAirConditioningAndHeating.com',a:'Mabua',v:1495,m:[299,299,299,299,299]},{c:'Rapidflowinc.com',a:'Madison',v:1495,m:[299,299,299,299,299]},{c:'Diamondautoglassflagstaff.com',a:'Madison',v:1495,m:[299,299,299,299,299]},{c:'1800heaters.com',a:'Jason',v:1495,m:[299,299,299,299,299]}] },
+  'Design':      { total:85434,  campaigns:[{c:'LBSProAdvanced.com',a:'John',v:16215,m:[0,0,492,0,16215]},{c:'CR3America.com',a:'Madison',v:5350,m:[0,0,0,0,5350]},{c:'DrainCleaningNearMeRVA.com',a:'Riza',v:4999,m:[0,0,0,0,4999]},{c:'503capitalpartners.com',a:'Jason',v:4500,m:[0,4500,0,0,0]},{c:'PPM.us',a:'Madison',v:3663,m:[3366,0,0,297,0]},{c:'UseAvid.com',a:'Riza',v:3000,m:[0,0,0,2500,500]},{c:'SpeedyRooter.com',a:'Riza',v:2995,m:[0,0,0,2995,0]},{c:'OneCallLegal.com',a:'Kelly',v:2796,m:[699,699,699,699,0]},{c:'AllGritPlumbing.com',a:'Madison',v:2500,m:[0,2500,0,0,0]},{c:'SeattlePipeSolutions.com',a:'Melissa',v:2495,m:[499,499,499,499,499]}] },
+  'Hosting':     { total:50758,  campaigns:[{c:'Trictools.com',a:'Madison',v:1996,m:[499,499,499,499,499]},{c:'Asheville-Plumber.com',a:'Jason',v:995,m:[199,199,199,199,199]},{c:'Valtorc.com',a:'Riza',v:995,m:[199,199,199,199,199]},{c:'Budgetsewer.com',a:'Melissa',v:980,m:[196,196,196,196,196]},{c:'SewerAndDrainChampion.com',a:'Jason',v:927,m:[179,179,211,179,179]},{c:'P3PlumbingAZ.com',a:'Madison',v:869,m:[0,0,471,199,199]},{c:'Supermarcoplumbing.com',a:'Madison',v:796,m:[199,199,199,199,199]},{c:'Irontreeaz.com',a:'Melissa',v:745,m:[149,149,149,149,149]},{c:'Lgplumbingfl.com',a:'Riza',v:745,m:[149,149,149,149,149]},{c:'Cleaningsolutions.delaval.com',a:'Riza',v:858,m:[0,0,0,858,0]}] },
+  'NoDig':       { total:27736,  campaigns:[{c:'Ippsolutions.com',a:'Kelly',v:1495,m:[299,299,299,299,299]},{c:'PrimelineProducts.com',a:'Jason',v:1495,m:[299,299,299,299,299]},{c:'SewerSurgeons.com',a:'Riza',v:1395,m:[279,279,279,279,279]},{c:'Goldstarhomeservicesaz.com',a:'Melissa',v:1395,m:[279,279,279,279,279]},{c:'Rockymountainsewerpros.com',a:'Kelly',v:1395,m:[279,279,279,279,279]},{c:'Schlueterplumbing.com',a:'Kelly',v:1395,m:[279,279,279,279,279]},{c:'Trenchless-pipesolutions.com',a:'Jason',v:1395,m:[279,279,279,279,279]},{c:'Spartantool.com',a:'Kelly',v:1196,m:[299,299,299,299,299]},{c:'Andersonplumbing.biz',a:'Madison',v:1116,m:[279,279,279,279,279]},{c:'Ramplumbingaz.com',a:'Riza',v:1116,m:[279,279,279,279,0]}] },
+  'Call':        { total:26014,  campaigns:[{c:'Goldstarplumbingaz.com',a:'Melissa',v:2625,m:[543,524,537,479,542]},{c:'Eielectrical.com',a:'Kelly',v:1788,m:[447,447,447,447,447]},{c:'Jnrplumbing.com',a:'Jason',v:1650,m:[330,330,330,330,330]},{c:'PPM.us',a:'Madison',v:995,m:[199,199,199,199,199]},{c:'StraightShooterPlumbing.com',a:'Melissa',v:990,m:[330,330,330,330,330]},{c:'Bullseyeplumbing.com',a:'Kelly',v:958,m:[241,237,230,250,233]},{c:'Prideplumbingphc.com',a:'Melissa',v:886,m:[165,185,165,186,185]},{c:'ArizonaSewerSolution.com',a:'Jason',v:825,m:[165,165,165,165,165]},{c:'Thepipedoctorplumbing.com',a:'Madison',v:825,m:[165,165,165,165,165]},{c:'1800heaters.com',a:'Jason',v:745,m:[149,149,149,149,149]}] },
+  'Yelp':        { total:18531,  campaigns:[{c:'Toprankplumbing.com',a:'Jason',v:2995,m:[599,599,599,599,599]},{c:'Callfastair.com',a:'Jason',v:2072,m:[518,518,518,518,518]},{c:'Farmingtonvalleyplumbing.com',a:'Jason',v:1846,m:[0,649,399,399,399]},{c:'Pricebustersplumbing.com',a:'Kelly',v:1794,m:[598,598,598,598,598]},{c:'Calljacknjill.com',a:'Veronica',v:1197,m:[399,399,399,399,399]},{c:'Legacysewerpros.com',a:'Jason',v:1197,m:[399,399,399,399,399]},{c:'Pricebustersplumbing.com',a:'Melissa',v:1196,m:[598,598,598,598,598]},{c:'Prideplumbingphc.com',a:'Melissa',v:995,m:[199,199,199,199,199]},{c:'WestLAAutoBody.com',a:'Jason',v:1318,m:[909,659,659,0,0]},{c:'WestLAAutoBody.com',a:'Ann',v:909,m:[909,659,659,0,0]}] },
+  'Email':       { total:8348,   campaigns:[{c:'Readyrooter4you.com',a:'Kelly',v:3594,m:[1198,1198,1198,0,0]},{c:'LBSProAdvanced.com',a:'Kelly',v:1228,m:[0,0,1228,0,888]},{c:'Deltronelectricfl.com',a:'Melissa',v:947,m:[250,250,149,149,149]},{c:'Onesourcehomeservice.com(1)',a:'Veronica',v:598,m:[0,0,0,299,299]},{c:'StraightShooterPlumbing.com',a:'Melissa',v:500,m:[500,0,0,0,0]},{c:'Piperightplumb.com',a:'Melissa',v:359,m:[0,0,0,359,0]},{c:'Vinsonconstruction.com',a:'Riza',v:159,m:[0,0,0,159,0]},{c:'Nwtrenchless.org',a:'Kelly',v:60,m:[15,15,15,15,15]}] },
+  'Apps':        { total:8172,   campaigns:[{c:'Callfastair.com',a:'Jason',v:2392,m:[598,598,598,598,598]},{c:'MadeSimpleHeatingAndAir.com',a:'Kelly',v:1495,m:[299,299,299,299,299]},{c:'Powermoveselectric.biz',a:'Kelly',v:1196,m:[299,299,299,299,299]},{c:'Pricebustersplumbing.com',a:'Kelly',v:897,m:[299,299,299,299,299]},{c:'Goldstarplumbingaz.com',a:'Melissa',v:697,m:[299,99,0,299,0]},{c:'Powermoveselectric.biz',a:'Jason',v:299,m:[299,299,299,299,299]}] }
+};
+
+var svcDrillColors = {
+  'SEO':'#FDA813','LSA':'#0D7A8C','LBO':'#534AB7','GBP':'#f26b5b',
+  'PPC':'#2ec48a','RTM Package':'#11a0b8','Social':'#8ba3b8',
+  'Software':'#c4830a','Design':'#3C3489','Hosting':'#e8a87c',
+  'NoDig':'#FDA813','Call':'#0D7A8C','Yelp':'#f26b5b',
+  'Email':'#2ec48a','Apps':'#534AB7'
+};
+
+var svcDrillChart = null;
+var curSvcDrill = 'SEO';
+
+function showSvcDrill(svc, el) {
+  document.querySelectorAll('#svcDrillBtnRow .btn').forEach(function(b) { b.classList.remove('active'); });
+  if (el) el.classList.add('active');
+  curSvcDrill = svc;
+  buildSvcDrill(svc);
+}
+
+function buildSvcDrill(svc) {
+  var d = svcDrillData[svc];
+  if (!d) return;
+  var col = svcDrillColors[svc] || '#FDA813';
+
+  // KPI cards
+  var w = document.getElementById('svcDrillCards');
+  if (w) {
+    var top = d.campaigns[0];
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">Total paid (YTD)</div><div class="val amb" style="font-size:17px;">$' + d.total.toLocaleString() + '</div><div class="sub">Jan\u2013May 2026</div></div>'
+    + '<div class="mc"><div class="lbl">Campaigns</div><div class="val" style="font-size:17px;">' + d.campaigns.length + '</div><div class="sub">Shown (top 10)</div></div>'
+    + '<div class="mc"><div class="lbl">Top campaign</div><div class="val" style="font-size:13px;">' + (top ? top.c : '\u2014') + '</div><div class="sub">' + (top ? 'AM: ' + top.a + ' \u00b7 $' + top.v.toLocaleString() : '') + '</div></div>';
+  }
+
+  // Monthly trend bar
+  if (svcDrillChart) { svcDrillChart.destroy(); svcDrillChart = null; }
+  var c = document.getElementById('c_svd_monthly');
+  if (c) {
+    var monthly = [0,0,0,0,0];
+    d.campaigns.forEach(function(r) { r.m.forEach(function(v,i){ monthly[i]+=v; }); });
+    svcDrillChart = new Chart(c, {
+      type: 'bar',
+      data: { labels: ['Jan','Feb','Mar','Apr','May'], datasets: [{ data: monthly, backgroundColor: col, borderRadius: 3 }] },
+      options: bo()
+    });
+  }
+
+  // Campaign table
+  var tb = document.getElementById('svcDrillTableBody');
+  if (tb) {
+    tb.innerHTML = '';
+    d.campaigns.forEach(function(r) {
+      tb.innerHTML += '<tr>'
+        + '<td style="font-size:12px;font-weight:500;">' + r.c + '</td>'
+        + '<td style="color:var(--muted);">' + r.a + '</td>'
+        + '<td>' + r.m.map(function(v){ return v>0?'$'+v.toLocaleString():'\u2014'; }).join(' / ') + '</td>'
+        + '<td class="td-warn" style="text-align:right;font-weight:600;">$' + r.v.toLocaleString() + '</td>'
+        + '</tr>';
+    });
+  }
+}
+
+
+// ── OPERATIONAL EXPENSE TAB ──
+
+// Per-department overhead (no ownership) from PH_Team_Payroll_Breakdown_.xlsx
+var deptOverhead = [
+  {dept:'Executive',       count:5,  monthly:90141.01, type:'Overhead'},
+  {dept:'Account Manager', count:9,  monthly:14917.00, type:'Overhead'},
+  {dept:'Design',          count:6,  monthly:15487.00, type:'Direct'},
+  {dept:'Software',        count:4,  monthly:12249.00, type:'Direct'},
+  {dept:'LSA',             count:21, monthly:18416.00, type:'Direct'},
+  {dept:'SEO (ON+OFF Page)',count:19,monthly:17539.00, type:'Direct'},
+  {dept:'PPC',             count:3,  monthly:7200.00,  type:'Direct'},
+  {dept:'Content',         count:6,  monthly:6910.00,  type:'Direct'},
+  {dept:'ON Page',         count:5,  monthly:7150.00,  type:'Direct'},
+  {dept:'OFF Page',        count:14, monthly:9769.00,  type:'Direct'},
+  {dept:'Social Media',    count:2,  monthly:5804.00,  type:'Direct'},
+  {dept:'Operations',      count:2,  monthly:5600.00,  type:'Overhead'},
+  {dept:'Billing',         count:2,  monthly:1720.00,  type:'Overhead'},
+  {dept:'Sales',           count:1,  monthly:2500.00,  type:'Overhead'},
+  {dept:'IT',              count:1,  monthly:1636.00,  type:'Direct'}
+];
+
+// Tools by department (Tools Reference sheet — authoritative)
+var deptTools = [
+  {dept:'Account Manager', total:761.53,  tools:[{n:'CLAUDE',v:25.00},{n:'FASTVPN',v:2.88},{n:'GOOGLE SUITE',v:168.00},{n:'HUBSTAFF',v:87.00},{n:'SLACK',v:8.75},{n:'TEAMWORK DESK',v:210.00},{n:'TEAMWORK.COM',v:259.90}]},
+  {dept:'Billing',         total:384.98,  tools:[{n:'EMAILMEFORM',v:240.00},{n:'GOOGLE SUITE',v:33.60},{n:'HUBSTAFF',v:17.40},{n:'TEAMWORK DESK',v:42.00},{n:'TEAMWORK.COM',v:51.98}]},
+  {dept:'Content',         total:354.94,  tools:[{n:'CLAUDE.AI',v:25.00},{n:'GOOGLE SUITE',v:100.80},{n:'HUBSTAFF',v:52.20},{n:'TEAMWORK DESK',v:21.00},{n:'TEAMWORK.COM',v:155.94}]},
+  {dept:'Design',          total:439.96,  tools:[{n:'BEAVER BUILDER',v:33.25},{n:'ELEMENTOR',v:5.00},{n:'GOOGLE SUITE',v:100.80},{n:'HUBSTAFF',v:51.60},{n:'LASTPASS',v:7.00},{n:'POWERPACK',v:4.95},{n:'SHUTTERSTOCK',v:9.67},{n:'TEAMWORK DESK',v:63.00},{n:'TEAMWORK.COM',v:155.94},{n:'WOOCOMMERCE PLUGIN',v:25.34},{n:'FIGMA',v:84.64},{n:'WESHOP/SEEDANCE',v:12.99}]},
+  {dept:'HR',              total:72.49,   tools:[{n:'GOOGLE SUITE',v:16.80},{n:'HUBSTAFF',v:8.70},{n:'TEAMWORK DESK',v:21.00},{n:'TEAMWORK.COM',v:25.99}]},
+  {dept:'IT',              total:638.43,  tools:[{n:'CLOUDFLARE',v:25.00},{n:'GOOGLE SUITE',v:16.80},{n:'HUBSTAFF',v:8.70},{n:'KINSTA',v:1265.00},{n:'INMOTIONHOSTING',v:499.94},{n:'LASTPASS',v:7.00},{n:'SITEGROUND',v:9.58},{n:'TEAMWORK DESK',v:21.00},{n:'TEAMWORK.COM',v:25.99},{n:'UPTIMEROBOT',v:34.00},{n:'n8n (AWS)',v:50.00}]},
+  {dept:'LSA',             total:1593.79, tools:[{n:'CLAUDE',v:50.00},{n:'EXPRESSVPN (alloc)',v:9.75},{n:'FASTVPN (alloc)',v:3.00},{n:'GOOGLE SUITE',v:352.80},{n:'HUBSTAFF',v:182.70},{n:'SLACK',v:8.75},{n:'TEAMWORK DESK',v:441.00},{n:'TEAMWORK.COM',v:545.79}]},
+  {dept:'Marketing',       total:144.83,  tools:[{n:'ANYMAILFINDER',v:89.00},{n:'CONSTANT CONTACT',v:35.00},{n:'GOODY (alloc)',v:20.83},{n:'AFFILIATEWP (alloc)',v:16.63},{n:'APIFY',v:39.00},{n:'MAKE.COM',v:18.82},{n:'PAGEPIXELS',v:16.99},{n:'SALESHANDY',v:39.00}]},
+  {dept:'Operations',      total:391.53,  tools:[{n:'CLAUDE',v:75.00},{n:'GOOGLE SUITE',v:67.52},{n:'HUBSTAFF',v:34.80},{n:'SLACK',v:26.25},{n:'TEAMWORK DESK',v:84.00},{n:'TEAMWORK.COM',v:103.96}]},
+  {dept:'PPC',             total:389.96,  tools:[{n:'CHATGPT',v:20.00},{n:'CLAUDE',v:100.00},{n:'GOOGLE SUITE',v:67.20},{n:'HUBSTAFF',v:34.80},{n:'TEAMWORK DESK',v:84.00},{n:'TEAMWORK.COM',v:103.96},{n:'CLICKCEASE (alloc)',v:103.17}]},
+  {dept:'Sales',           total:652.36,  tools:[{n:'APOLLO.IO (alloc)',v:49.00},{n:'CLAUDE',v:25.00},{n:'FIREFLIES (alloc)',v:10.11},{n:'GOOGLE SUITE',v:16.80},{n:'HIGHLEVEL',v:10.00},{n:'HIGHLEVEL INC.',v:297.00},{n:'HUBSTAFF',v:8.70},{n:'KRISP (alloc)',v:15.00},{n:'PANDADOC',v:85.00},{n:'OPENAI',v:30.01},{n:'SINCH MAILGUN',v:35.00},{n:'SLACK',v:8.75},{n:'TEAMWORK DESK',v:21.00},{n:'TEAMWORK.COM',v:25.99},{n:'ELEVENLABS',v:5.00},{n:'VAPI',v:10.00},{n:'SAKARI',v:45.00}]},
+  {dept:'SEO',             total:2264.57, tools:[{n:'BRIGHTLOCAL (×2)',v:362.50},{n:'CANVA (alloc)',v:40.99},{n:'CLAUDE',v:50.00},{n:'GMPEVERYWHERE',v:30.00},{n:'GOOGLE SUITE',v:319.20},{n:'GUMROAD GEOIMGR',v:9.90},{n:'HUBSTAFF',v:165.30},{n:'LASTPASS',v:7.00},{n:'SCREAMING FROG',v:23.25},{n:'SEMRUSH',v:353.95},{n:'SHUTTERSTOCK',v:9.67},{n:'TEAMWORK DESK',v:399.00},{n:'TEAMWORK.COM',v:493.81},{n:'ACTIVECAMPAIGN',v:500.00},{n:'GUESTPOSTING',v:2000.00},{n:'SENDIBLE',v:756.00}]},
+  {dept:'Social Media',    total:850.89,  tools:[{n:'CANVA (alloc)',v:40.99},{n:'CAPCUT',v:14.92},{n:'CHATGPT (alloc)',v:20.00},{n:'CLAUDE',v:25.00},{n:'ENVATO',v:169.00},{n:'EXPRESSVPN (alloc)',v:9.75},{n:'GOOGLE SUITE',v:33.60},{n:'GOOGLE VEO 3',v:19.99},{n:'HEYGEN',v:29.00},{n:'INVIDEO',v:20.00},{n:'SHUTTERSTOCK',v:9.67},{n:'SOCIAL PILOT',v:340.00},{n:'TEAMWORK DESK',v:42.00},{n:'TEAMWORK.COM',v:51.98},{n:'VIMEO PRO',v:25.00},{n:'ARTLIST AI',v:149.99},{n:'CREATIFY.AI',v:39.00},{n:'GRAMMARLY',v:30.00},{n:'MURF',v:25.00}]},
+  {dept:'Software Dev',    total:1530.63, tools:[{n:'ATLASSIAN',v:224.16},{n:'BITLY (×2)',v:64.00},{n:'CLAUDE (U360)',v:100.00},{n:'GOOGLE SUITE',v:50.40},{n:'HUBSTAFF',v:26.10},{n:'MESSAGEBIRD/PUSHER',v:49.00},{n:'POSTMARK',v:12.05},{n:'SERPAPI',v:175.00},{n:'SERPHOUSE',v:140.00},{n:'TEAMWORK DESK',v:42.00},{n:'TEAMWORK.COM',v:77.97},{n:'TWILIO',v:350.00},{n:'TWILIO SENDGRID',v:89.95},{n:'TWITTER DEV',v:200.00},{n:'ZAPIER',v:30.00},{n:'GROK AI',v:25.00},{n:'JETBRAINS',v:14.15},{n:'SPRINTO (alloc)',v:145.83},{n:'MARKETERS TOOLKIT',v:297.00}]},
+  {dept:'Software Support', total:161.60, tools:[{n:'ARCADE',v:50.00},{n:'FIREFLIES (alloc)',v:10.11},{n:'GOOGLE SUITE',v:16.80},{n:'HUBSTAFF',v:8.70},{n:'INTERCOM',v:29.00},{n:'TEAMWORK DESK',v:21.00},{n:'TEAMWORK.COM',v:25.99}]}
+];
+
+// Service allocation table (Dept Expense by Service sheet)
+var svcAllocation = [
+  {svc:'APPS',        depts:'LSA',                  payroll:4572.75,  overhead:3825.20, tools:398.45,   total:8796.40},
+  {svc:'CALL',        depts:'LSA, SEO',              payroll:6452.64,  overhead:3825.20, tools:650.07,   total:10927.91},
+  {svc:'DESIGN',      depts:'DESIGN, CONTENT',       payroll:17214.50, overhead:3825.20, tools:528.70,   total:21568.40},
+  {svc:'EMAIL',       depts:'SEO',                   payroll:1879.89,  overhead:3825.20, tools:251.62,   total:5956.71},
+  {svc:'GBP',         depts:'SEO',                   payroll:1879.89,  overhead:3825.20, tools:251.62,   total:5956.71},
+  {svc:'HOSTING',     depts:'IT (SYS AD)',            payroll:1636.00,  overhead:3825.20, tools:638.43,   total:6099.63},
+  {svc:'LBO',         depts:'SEO',                   payroll:1879.89,  overhead:3825.20, tools:251.62,   total:5956.71},
+  {svc:'LSA',         depts:'LSA',                   payroll:4572.75,  overhead:3825.20, tools:398.45,   total:8796.40},
+  {svc:'NODIG',       depts:'SEO, CONTENT, SOFTWARE', payroll:3607.39,  overhead:3825.20, tools:340.35,   total:7772.94},
+  {svc:'PPC',         depts:'PPC',                   payroll:3600.00,  overhead:3825.20, tools:194.98,   total:7620.18},
+  {svc:'RTM PACKAGE', depts:'SEO, LSA, PPC',         payroll:10052.64, overhead:3825.20, tools:845.05,   total:14722.89},
+  {svc:'SEO',         depts:'SEO, CONTENT',           payroll:3607.39,  overhead:3825.20, tools:340.35,   total:7772.94},
+  {svc:'SOCIAL',      depts:'SOCIAL, SEO, CONTENT',  payroll:9411.39,  overhead:3825.20, tools:1191.24,  total:14427.83},
+  {svc:'SOFTWARE',    depts:'UNIFY360 (Software)',    payroll:12249.00, overhead:3825.20, tools:1692.23,  total:17766.43},
+  {svc:'YELP',        depts:'SEO',                   payroll:1879.89,  overhead:3825.20, tools:251.62,   total:5956.71}
+];
+
+// Department detail: payroll + tools combined (for dept buttons)
+var deptDetail = {
+  'Executive':        {payroll:90141.01, tools:0,       headcount:5,  type:'Overhead', toolsList:[]},
+  'Account Manager':  {payroll:14917.00, tools:761.53,  headcount:9,  type:'Overhead', toolsList:[{n:'CLAUDE',v:25.00},{n:'FASTVPN',v:2.88},{n:'GOOGLE SUITE',v:168.00},{n:'HUBSTAFF',v:87.00},{n:'SLACK',v:8.75},{n:'TEAMWORK DESK',v:210.00},{n:'TEAMWORK.COM',v:259.90}]},
+  'Design':           {payroll:15487.00, tools:439.96,  headcount:6,  type:'Direct',   toolsList:[{n:'BEAVER BUILDER',v:33.25},{n:'ELEMENTOR',v:5.00},{n:'GOOGLE SUITE',v:100.80},{n:'HUBSTAFF',v:51.60},{n:'LASTPASS',v:7.00},{n:'POWERPACK',v:4.95},{n:'SHUTTERSTOCK',v:9.67},{n:'TEAMWORK DESK',v:63.00},{n:'TEAMWORK.COM',v:155.94},{n:'WOOCOMMERCE PLUGIN',v:25.34},{n:'FIGMA',v:84.64},{n:'WESHOP/SEEDANCE',v:12.99}]},
+  'Software':         {payroll:12249.00, tools:1692.23, headcount:4,  type:'Direct',   toolsList:[{n:'SOFTWARE DEV tools',v:1530.63},{n:'SOFTWARE SUPPORT tools',v:161.60}]},
+  'LSA':              {payroll:18416.00, tools:1593.79, headcount:21, type:'Direct',   toolsList:[{n:'CLAUDE',v:50.00},{n:'EXPRESSVPN (alloc)',v:9.75},{n:'FASTVPN (alloc)',v:3.00},{n:'GOOGLE SUITE',v:352.80},{n:'HUBSTAFF',v:182.70},{n:'SLACK',v:8.75},{n:'TEAMWORK DESK',v:441.00},{n:'TEAMWORK.COM',v:545.79}]},
+  'SEO (ON+OFF Page)':{payroll:17539.00, tools:2264.57, headcount:19, type:'Direct',   toolsList:[{n:'BRIGHTLOCAL (×2)',v:362.50},{n:'CANVA (alloc)',v:40.99},{n:'CLAUDE',v:50.00},{n:'GMPEVERYWHERE',v:30.00},{n:'GOOGLE SUITE',v:319.20},{n:'GUMROAD GEOIMGR',v:9.90},{n:'HUBSTAFF',v:165.30},{n:'LASTPASS',v:7.00},{n:'SCREAMING FROG',v:23.25},{n:'SEMRUSH',v:353.95},{n:'SHUTTERSTOCK',v:9.67},{n:'TEAMWORK DESK',v:399.00},{n:'TEAMWORK.COM',v:493.81},{n:'ACTIVECAMPAIGN',v:500.00},{n:'GUESTPOSTING',v:2000.00},{n:'SENDIBLE',v:756.00}]},
+  'PPC':              {payroll:7200.00,  tools:389.96,  headcount:3,  type:'Direct',   toolsList:[{n:'CHATGPT',v:20.00},{n:'CLAUDE',v:100.00},{n:'GOOGLE SUITE',v:67.20},{n:'HUBSTAFF',v:34.80},{n:'TEAMWORK DESK',v:84.00},{n:'TEAMWORK.COM',v:103.96},{n:'CLICKCEASE (alloc)',v:103.17}]},
+  'Content':          {payroll:6910.00,  tools:354.94,  headcount:6,  type:'Direct',   toolsList:[{n:'CLAUDE.AI',v:25.00},{n:'GOOGLE SUITE',v:100.80},{n:'HUBSTAFF',v:52.20},{n:'TEAMWORK DESK',v:21.00},{n:'TEAMWORK.COM',v:155.94}]},
+  'Social Media':     {payroll:5804.00,  tools:850.89,  headcount:2,  type:'Direct',   toolsList:[{n:'CANVA (alloc)',v:40.99},{n:'CAPCUT',v:14.92},{n:'CHATGPT (alloc)',v:20.00},{n:'CLAUDE',v:25.00},{n:'ENVATO',v:169.00},{n:'EXPRESSVPN (alloc)',v:9.75},{n:'GOOGLE SUITE',v:33.60},{n:'GOOGLE VEO 3',v:19.99},{n:'HEYGEN',v:29.00},{n:'INVIDEO',v:20.00},{n:'SHUTTERSTOCK',v:9.67},{n:'SOCIAL PILOT',v:340.00},{n:'TEAMWORK DESK',v:42.00},{n:'TEAMWORK.COM',v:51.98},{n:'VIMEO PRO',v:25.00},{n:'ARTLIST AI',v:149.99},{n:'CREATIFY.AI',v:39.00},{n:'GRAMMARLY',v:30.00},{n:'MURF',v:25.00}]},
+  'Operations':       {payroll:3600.00,  tools:391.53,  headcount:1,  type:'Overhead', toolsList:[{n:'CLAUDE',v:75.00},{n:'GOOGLE SUITE',v:67.52},{n:'HUBSTAFF',v:34.80},{n:'SLACK',v:26.25},{n:'TEAMWORK DESK',v:84.00},{n:'TEAMWORK.COM',v:103.96}]},
+  'Billing':          {payroll:1720.00,  tools:384.98,  headcount:2,  type:'Overhead', toolsList:[{n:'EMAILMEFORM',v:240.00},{n:'GOOGLE SUITE',v:33.60},{n:'HUBSTAFF',v:17.40},{n:'TEAMWORK DESK',v:42.00},{n:'TEAMWORK.COM',v:51.98}]},
+  'Sales':            {payroll:2500.00,  tools:652.36,  headcount:1,  type:'Overhead', toolsList:[{n:'APOLLO.IO (alloc)',v:49.00},{n:'CLAUDE',v:25.00},{n:'FIREFLIES (alloc)',v:10.11},{n:'GOOGLE SUITE',v:16.80},{n:'HIGHLEVEL',v:10.00},{n:'HIGHLEVEL INC.',v:297.00},{n:'HUBSTAFF',v:8.70},{n:'KRISP (alloc)',v:15.00},{n:'PANDADOC',v:85.00},{n:'OPENAI',v:30.01},{n:'SINCH MAILGUN',v:35.00},{n:'SLACK',v:8.75},{n:'TEAMWORK DESK',v:21.00},{n:'TEAMWORK.COM',v:25.99},{n:'ELEVENLABS',v:5.00},{n:'VAPI',v:10.00},{n:'SAKARI',v:45.00}]},
+  'IT':               {payroll:1636.00,  tools:638.43,  headcount:1,  type:'Direct',   toolsList:[{n:'CLOUDFLARE',v:25.00},{n:'GOOGLE SUITE',v:16.80},{n:'HUBSTAFF',v:8.70},{n:'KINSTA',v:1265.00},{n:'INMOTIONHOSTING',v:499.94},{n:'LASTPASS',v:7.00},{n:'SITEGROUND',v:9.58},{n:'TEAMWORK DESK',v:21.00},{n:'TEAMWORK.COM',v:25.99},{n:'UPTIMEROBOT',v:34.00},{n:'n8n (AWS)',v:50.00}]},
+  'HR':               {payroll:2000.00,  tools:72.49,   headcount:1,  type:'Overhead', toolsList:[{n:'GOOGLE SUITE',v:16.80},{n:'HUBSTAFF',v:8.70},{n:'TEAMWORK DESK',v:21.00},{n:'TEAMWORK.COM',v:25.99}]},
+  'Marketing':        {payroll:0,        tools:144.83,  headcount:0,  type:'Overhead', toolsList:[{n:'ANYMAILFINDER',v:89.00},{n:'CONSTANT CONTACT',v:35.00},{n:'GOODY (alloc)',v:20.83},{n:'AFFILIATEWP (alloc)',v:16.63},{n:'APIFY',v:39.00},{n:'MAKE.COM',v:18.82},{n:'PAGEPIXELS',v:16.99},{n:'SALESHANDY',v:39.00}]}
+};
+
+
+
+function initOpex() {
+  buildOpexKpis();
+  buildOpexPayrollCharts();
+  buildOpexOverheadTable();
+  buildOpexDeptDetail('Account Manager');
+  buildSvcAllocTable();
+}
+
+function buildOpexKpis() {
+  var w = document.getElementById('opexKpis');
+  if (!w) return;
+  var totalPayrollYTD = opexPayroll.total.slice(0,5).reduce(function(a,b){return a+b;},0);
+  var totalTools = deptTools.reduce(function(a,d){return a+d.total;},0);
+  w.innerHTML =
+    '<div class="mc"><div class="lbl">Total payroll (Jan–May)</div><div class="val neg">$' + Math.round(totalPayrollYTD/1000) + 'K</div><div class="sub">US + PH combined</div></div>'
+  + '<div class="mc"><div class="lbl">Avg monthly payroll</div><div class="val neg">$' + Math.round(totalPayrollYTD/5/1000) + 'K</div><div class="sub">5-month average</div></div>'
+  + '<div class="mc"><div class="lbl">Total overhead (reference)</div><div class="val amb">$' + Math.round(deptOverhead.reduce(function(a,d){return a+d.monthly;},0)/1000) + 'K</div><div class="sub">Per dept, no ownership</div></div>'
+  + '<div class="mc"><div class="lbl">Total tools cost / mo</div><div class="val teal">$' + Math.round(totalTools).toLocaleString() + '</div><div class="sub">Monthly allocation</div></div>'
+  + '<div class="mc"><div class="lbl">Jun payroll (projected)</div><div class="val neg">$144.9K</div><div class="sub">Down from $171.7K in Jan</div></div>'
+  + '<div class="mc"><div class="lbl">Total services allocated</div><div class="val">15</div><div class="sub">Across all departments</div></div>';
+}
+
+function buildOpexPayrollCharts() {
+  var c1 = document.getElementById('c_opex_payroll');
+  if (c1) {
+    opexCharts.payroll = new Chart(c1, {
+      type: 'bar',
+      data: { labels: opexPayroll.months, datasets: [
+        { label: 'PH', data: opexPayroll.ph, backgroundColor: '#0D7A8C', borderRadius: 3 },
+        { label: 'US', data: opexPayroll.us, backgroundColor: '#FDA813', borderRadius: 3 }
+      ]},
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+        scales: { x: { stacked: true, grid: { color: gc }, ticks: { color: tc } },
+                  y: { stacked: true, grid: { color: gc }, ticks: { color: tc, callback: k } } } }
+    });
+  }
+  var sorted = deptOverhead.slice().sort(function(a,b){return b.monthly-a.monthly;});
+  var c2 = document.getElementById('c_opex_dept');
+  if (c2) {
+    opexCharts.dept = new Chart(c2, {
+      type: 'bar',
+      data: { labels: sorted.map(function(d){return d.dept;}),
+              datasets: [{ data: sorted.map(function(d){return d.monthly;}), backgroundColor: '#FDA813', borderRadius: 3 }] },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { x: { grid: { color: gc }, ticks: { color: tc, callback: k } },
+                  y: { grid: { color: gc }, ticks: { color: tc, font: { size: 10 } } } } }
+    });
+  }
+  var toolsSorted = deptTools.slice().sort(function(a,b){return b.total-a.total;});
+  var c3 = document.getElementById('c_opex_tools_dept');
+  if (c3) {
+    opexCharts.tools = new Chart(c3, {
+      type: 'bar',
+      data: { labels: toolsSorted.map(function(d){return d.dept;}),
+              datasets: [{ data: toolsSorted.map(function(d){return d.total;}), backgroundColor: '#0D7A8C', borderRadius: 3 }] },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { x: { grid: { color: gc }, ticks: { color: tc, callback: k } },
+                  y: { grid: { color: gc }, ticks: { color: tc, font: { size: 10 } } } } }
+    });
+  }
+}
+
+function buildOpexOverheadTable() {
+  var tb = document.getElementById('opexOverheadBody');
+  if (!tb) return;
+  var sorted = deptOverhead.slice().sort(function(a,b){return b.monthly-a.monthly;});
+  var totalM = 0, totalC = 0;
+  tb.innerHTML = '';
+  sorted.forEach(function(d) {
+    totalM += d.monthly; totalC += d.count;
+    var typeCls = d.type === 'Direct' ? 'td-pos' : 'td-warn';
+    tb.innerHTML += '<tr>'
+      + '<td style="font-weight:500;">' + d.dept + '</td>'
+      + '<td style="text-align:center;">' + d.count + '</td>'
+      + '<td class="' + typeCls + '">' + d.type + '</td>'
+      + '<td class="td-warn">$' + d.monthly.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</td>'
+      + '</tr>';
+  });
+  tb.innerHTML += '<tr class="tot"><td>Total</td><td style="text-align:center;">' + totalC + '</td><td></td><td class="td-warn">$' + totalM.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</td></tr>';
+}
+
+
+var curOpexDept = 'Account Manager';
+var opexDeptChart = null;
+
+function showOpexDept(dept, el) {
+  document.querySelectorAll('#opexDeptBtnRow .btn').forEach(function(b){ b.classList.remove('active'); });
+  if (el) el.classList.add('active');
+  curOpexDept = dept;
+  buildOpexDeptDetail(dept);
+}
+
+function buildOpexDeptDetail(dept) {
+  var d = deptDetail[dept];
+  if (!d) return;
+  var total = d.payroll + d.tools;
+
+  // KPI cards
+  var w = document.getElementById('opexDeptCards');
+  if (w) {
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">Payroll</div><div class="val neg">$' + d.payroll.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</div><div class="sub">' + d.headcount + ' headcount</div></div>'
+    + '<div class="mc"><div class="lbl">Tools (monthly)</div><div class="val teal">$' + d.tools.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</div><div class="sub">' + d.toolsList.length + ' active tools</div></div>'
+    + '<div class="mc"><div class="lbl">Total dept cost</div><div class="val amb">$' + total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</div><div class="sub">Payroll + Tools</div></div>';
+  }
+
+  // Donut chart: payroll vs tools
+  if (opexDeptChart) { opexDeptChart.destroy(); opexDeptChart = null; }
+  var c = document.getElementById('c_opex_dept_split');
+  if (c) {
+    opexDeptChart = new Chart(c, {
+      type: 'doughnut',
+      data: {
+        labels: ['Payroll','Tools'],
+        datasets: [{ data: [d.payroll, d.tools], backgroundColor: ['#f26b5b','#0D7A8C'], borderWidth: 0 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: '60%',
+        plugins: {
+          legend: { display: true, position: 'right', labels: { color: '#8ba3b8', boxWidth: 10, padding: 10, font: { size: 11 } } },
+          tooltip: { callbacks: { label: function(ctx) { return ' $' + ctx.parsed.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}); } } }
+        }
+      }
+    });
+  }
+
+  // Tools breakdown table
+  var tb = document.getElementById('opexDeptToolsBody');
+  var lbl = document.getElementById('opexDeptToolsLabel');
+  if (lbl) lbl.textContent = dept + ' — tools breakdown';
+  if (tb) {
+    if (d.toolsList.length === 0) {
+      tb.innerHTML = '<tr><td colspan="2" style="color:var(--muted);text-align:center;padding:1rem;">No dedicated tools for this department</td></tr>';
+    } else {
+      tb.innerHTML = '';
+      d.toolsList.forEach(function(t) {
+        tb.innerHTML += '<tr><td style="font-size:12px;font-weight:500;">' + t.n + '</td><td class="td-warn" style="text-align:right;">$' + t.v.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</td></tr>';
+      });
+      tb.innerHTML += '<tr class="tot"><td>Monthly Allocation</td><td class="td-warn" style="text-align:right;">$' + d.tools.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</td></tr>';
+    }
+  }
+}
+
+
+function buildSvcAllocTable() {
+  var tb = document.getElementById('svcAllocBody');
+  if (!tb) return;
+  tb.innerHTML = '';
+  svcAllocation.forEach(function(s) {
+    tb.innerHTML += '<tr>'
+      + '<td style="font-weight:600;">' + s.svc + '</td>'
+      + '<td style="font-size:11px;color:var(--muted);">' + s.depts + '</td>'
+      + '<td class="td-neg">$' + s.payroll.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</td>'
+      + '<td style="color:var(--muted);">$' + s.overhead.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</td>'
+      + '<td class="td-warn">$' + s.tools.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</td>'
+      + '<td class="td-warn" style="font-weight:600;">$' + s.total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</td>'
+      + '</tr>';
+  });
+  var totP=0,totO=0,totT=0,totTot=0;
+  svcAllocation.forEach(function(s){totP+=s.payroll;totO+=s.overhead;totT+=s.tools;totTot+=s.total;});
+  tb.innerHTML += '<tr class="tot"><td>GRAND TOTAL</td><td></td>'
+    + '<td>$' + totP.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</td>'
+    + '<td>$' + totO.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</td>'
+    + '<td>$' + totT.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</td>'
+    + '<td>$' + totTot.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</td>'
+    + '</tr>';
 }
 
 </script>
