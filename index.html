@@ -865,6 +865,19 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
     <tbody id="priceErosionTableBody"></tbody>
   </table></div></div>
 
+  <p class="slabel">Price change attribution &mdash; upgrades, downgrades &amp; unflagged leakage</p>
+  <div class="good-box"><strong>&#9432; Methodology</strong> Cross-references each stable campaign's price delta against its billing Remarks (Upgrade/Downgrade tags). "Unflagged" = a price moved but no corresponding Upgrade/Downgrade was logged in the billing master &mdash; this is the leakage that isn't formally tracked or approved anywhere. There is no separate "Discount" tag in source data, so unflagged decreases are the closest available proxy for untracked discounting.</div>
+  <div id="priceAttributionCards" class="mg3" style="margin-bottom:1rem;"></div>
+  <div class="cc">
+    <div class="ct">Price change $ by attribution type</div>
+    <div class="cs">Stacked &middot; logged vs. unflagged, up vs. down</div>
+    <div class="cw" style="height:260px;"><canvas id="c_price_attribution"></canvas></div>
+  </div>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead><tr><th>Service</th><th style="text-align:center;">Logged Upgrade</th><th style="text-align:center;">Unflagged Increase</th><th style="text-align:center;">Logged Downgrade</th><th style="text-align:center;">Unflagged Decrease</th><th style="text-align:right;">Unflagged $ at Risk</th></tr></thead>
+    <tbody id="priceAttributionTableBody"></tbody>
+  </table></div></div>
+
     <hr class="dv">
   <p class="slabel">Profit per service &mdash; revenue minus allocated payroll, overhead &amp; tools</p>
   <div class="good-box"><strong>&#9432; Source: RTM_Dept_Expense_Allocation_by_Service.xlsx</strong> Cost = monthly allocated direct payroll + overhead + tools, &times;5 months. Profit = YTD revenue minus YTD allocated cost. Negative margins indicate services where allocated overhead currently exceeds direct revenue generated.</div>
@@ -1793,7 +1806,7 @@ function initTab(name) {
     new Chart(document.getElementById('c_sv_donut'), {type:'doughnut',data:{labels:['SEO','LSA','LBO','GBP','PPC','RTM Pkg','Social','Other'],datasets:[{data:[544724,372040,205085,199704,132949,118554,110670,308071],backgroundColor:['#FDA813','#0D7A8C','#534AB7','#f26b5b','#2ec48a','#11a0b8','#8ba3b8','#3C3489'],borderWidth:0}]},options:donut('right',11)});
     var tb=document.getElementById('svcSummaryBody');
     if(tb){tb.innerHTML='';svcLabels.forEach(function(s,i){var pct=(svcVals[i]/svTotal*100).toFixed(1);tb.innerHTML+='<tr><td style="font-weight:500;">'+s+'</td><td class="td-warn">$'+svcVals[i].toLocaleString()+'</td><td style="color:var(--muted);">'+pct+'%</td></tr>';});}
-    setTimeout(function(){ buildSvcDashboard('SEO'); buildSvcAMView('Kelly'); buildSvcCampView('all'); buildAMWinLoss(); buildPriceErosion(); buildProfitPerService(); buildProfitPerCampaign(); }, 80);
+    setTimeout(function(){ buildSvcDashboard('SEO'); buildSvcAMView('Kelly'); buildSvcCampView('all'); buildAMWinLoss(); buildPriceErosion(); buildPriceAttribution(); buildProfitPerService(); buildProfitPerCampaign(); }, 80);
   }
 
   if (name === 'cancel') {
@@ -4771,6 +4784,68 @@ function buildEbMomOpex() {
           + '<td class="'+cColor+'" style="text-align:right;">'+(pct>0?'+':'')+pct.toFixed(1)+'%</td>'
           + '</tr>';
       }
+    });
+  }
+}
+
+
+// ── PRICE CHANGE ATTRIBUTION: UPGRADE / DOWNGRADE / UNFLAGGED ──
+var priceAttributionData = {"SEO":{"stable":59,"same":55,"flagged_up_n":1,"flagged_up_total":250.0,"unflagged_up_n":0,"unflagged_up_total":0.0,"flagged_down_n":2,"flagged_down_total":-1200.0,"unflagged_down_n":1,"unflagged_down_total":-525.0},"LSA":{"stable":63,"same":26,"flagged_up_n":21,"flagged_up_total":6597.0,"unflagged_up_n":1,"unflagged_up_total":35.0,"flagged_down_n":12,"flagged_down_total":-7093.0,"unflagged_down_n":3,"unflagged_down_total":-2149.0},"LBO":{"stable":30,"same":27,"flagged_up_n":0,"flagged_up_total":0.0,"unflagged_up_n":1,"unflagged_up_total":999.0,"flagged_down_n":1,"flagged_down_total":-100.0,"unflagged_down_n":1,"unflagged_down_total":-750.0},"GBP":{"stable":38,"same":33,"flagged_up_n":2,"flagged_up_total":700.0,"unflagged_up_n":0,"unflagged_up_total":0.0,"flagged_down_n":1,"flagged_down_total":-339.0,"unflagged_down_n":2,"unflagged_down_total":-1997.0},"PPC":{"stable":30,"same":20,"flagged_up_n":5,"flagged_up_total":1576.0,"unflagged_up_n":1,"unflagged_up_total":250.0,"flagged_down_n":2,"flagged_down_total":-245.0,"unflagged_down_n":2,"unflagged_down_total":-700.0}};
+var priceAttributionChart = null;
+
+function buildPriceAttribution() {
+  var svcs = Object.keys(priceAttributionData);
+
+  var totalUnflaggedDown = svcs.reduce(function(s,k){ return s+priceAttributionData[k].unflagged_down_total; },0);
+  var totalFlaggedDown = svcs.reduce(function(s,k){ return s+priceAttributionData[k].flagged_down_total; },0);
+  var totalUnflaggedN = svcs.reduce(function(s,k){ return s+priceAttributionData[k].unflagged_down_n; },0);
+  var worstSvc = svcs.reduce(function(a,b){
+    return priceAttributionData[a].unflagged_down_total < priceAttributionData[b].unflagged_down_total ? a : b;
+  });
+
+  var w = document.getElementById('priceAttributionCards');
+  if (w) {
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">Unflagged price drops</div><div class="val neg">$'+Math.abs(Math.round(totalUnflaggedDown)).toLocaleString()+'</div><div class="sub">'+totalUnflaggedN+' campaigns, no Downgrade logged</div></div>'
+    + '<div class="mc"><div class="lbl">Logged downgrades</div><div class="val" style="color:var(--warn);">$'+Math.abs(Math.round(totalFlaggedDown)).toLocaleString()+'</div><div class="sub">Formally tagged in billing master</div></div>'
+    + '<div class="mc"><div class="lbl">Worst unflagged leakage</div><div class="val neg" style="font-size:15px;">'+worstSvc+'</div><div class="sub">$'+Math.abs(priceAttributionData[worstSvc].unflagged_down_total).toLocaleString()+' unexplained</div></div>';
+  }
+
+  if (priceAttributionChart) { priceAttributionChart.destroy(); priceAttributionChart = null; }
+  var c = document.getElementById('c_price_attribution');
+  if (c) {
+    priceAttributionChart = new Chart(c, {
+      type: 'bar',
+      data: {
+        labels: svcs,
+        datasets: [
+          { label: 'Logged Upgrade',    data: svcs.map(function(s){return priceAttributionData[s].flagged_up_total;}),    backgroundColor: '#2ec48a', borderRadius: 2 },
+          { label: 'Unflagged Increase',data: svcs.map(function(s){return priceAttributionData[s].unflagged_up_total;}),  backgroundColor: 'rgba(46,196,138,0.4)', borderRadius: 2 },
+          { label: 'Logged Downgrade',  data: svcs.map(function(s){return priceAttributionData[s].flagged_down_total;}),  backgroundColor: '#FDA813', borderRadius: 2 },
+          { label: 'Unflagged Decrease',data: svcs.map(function(s){return priceAttributionData[s].unflagged_down_total;}),backgroundColor: '#f26b5b', borderRadius: 2 }
+        ]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:true, labels:{color:tc,boxWidth:10,padding:8,font:{size:10}} } },
+        scales:{ x:{stacked:true,grid:{color:gc},ticks:{color:tc}}, y:{stacked:true,grid:{color:gc},ticks:{color:tc,callback:k}} }
+      }
+    });
+  }
+
+  var tb = document.getElementById('priceAttributionTableBody');
+  if (tb) {
+    tb.innerHTML = '';
+    svcs.forEach(function(s) {
+      var d = priceAttributionData[s];
+      tb.innerHTML += '<tr>'
+        + '<td style="font-weight:600;">'+s+'</td>'
+        + '<td class="td-pos" style="text-align:center;">'+d.flagged_up_n+'</td>'
+        + '<td style="text-align:center;color:var(--muted);">'+d.unflagged_up_n+'</td>'
+        + '<td style="text-align:center;color:var(--warn);">'+d.flagged_down_n+'</td>'
+        + '<td class="td-neg" style="text-align:center;font-weight:700;">'+d.unflagged_down_n+'</td>'
+        + '<td class="td-neg" style="text-align:right;font-weight:700;">$'+Math.abs(d.unflagged_down_total).toLocaleString()+'</td>'
+        + '</tr>';
     });
   }
 }
