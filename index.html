@@ -878,6 +878,14 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
     <tbody id="priceAttributionTableBody"></tbody>
   </table></div></div>
 
+  <p class="slabel">Cancellation risk &mdash; unflagged price drops vs. baseline</p>
+  <div class="good-box"><strong>&#9432; Methodology</strong> Checks whether campaigns with an unflagged price decrease (above) later appear in the cancellation data, compared to the cancellation rate among all stable campaigns. Sample size is small (9 campaigns), so treat this as directional only, not a statistically reliable signal.</div>
+  <div id="cancelErosionCards" class="mg3" style="margin-bottom:1rem;"></div>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead><tr><th>Group</th><th style="text-align:center;">Campaigns</th><th style="text-align:center;">Cancelled</th><th style="text-align:center;">Cancellation Rate</th></tr></thead>
+    <tbody id="cancelErosionTableBody"></tbody>
+  </table></div></div>
+
     <hr class="dv">
   <p class="slabel">Profit per service &mdash; revenue minus allocated payroll, overhead &amp; tools</p>
   <div class="good-box"><strong>&#9432; Source: RTM_Dept_Expense_Allocation_by_Service.xlsx</strong> Cost = monthly allocated direct payroll + overhead + tools, &times;5 months. Profit = YTD revenue minus YTD allocated cost. Negative margins indicate services where allocated overhead currently exceeds direct revenue generated.</div>
@@ -903,6 +911,48 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
   <div class="cc"><div class="tscroll"><table class="dt">
     <thead><tr><th>Service</th><th style="text-align:center;">Campaigns</th><th style="text-align:right;">Revenue / Camp</th><th style="text-align:right;">Cost / Camp</th><th style="text-align:right;">Profit / Camp</th></tr></thead>
     <tbody id="perCampaignTableBody"></tbody>
+  </table></div></div>
+
+    <hr class="dv">
+  <p class="slabel">AM profitability &mdash; revenue minus AM-attributed allocated cost</p>
+  <div class="good-box"><strong>&#9432; Methodology</strong> Cost allocated using <strong>current month (May 2026)</strong> as the basis: each AM's share of May revenue per service determines their share of that service's monthly cost. YTD cost = monthly cost &times;5. This reflects the current portfolio mix rather than a YTD average, giving a more accurate view of each AM's cost footprint today.</div>
+  <div id="amProfitCards" class="mg3" style="margin-bottom:1rem;"></div>
+  <div class="cc">
+    <div class="ct">YTD profit by AM</div>
+    <div class="cs">Revenue minus AM-attributed allocated cost &middot; Jan&ndash;May 2026</div>
+    <div class="cw" style="height:320px;"><canvas id="c_am_profit"></canvas></div>
+  </div>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead><tr><th>AM</th><th style="text-align:right;">Revenue</th><th style="text-align:right;">Allocated Cost</th><th style="text-align:right;">Profit</th><th style="text-align:right;">Margin</th></tr></thead>
+    <tbody id="amProfitTableBody"></tbody>
+  </table></div></div>
+
+  <hr class="dv">
+  <p class="slabel">AM tenure vs. performance</p>
+  <div class="good-box"><strong>&#9432; Name mapping (billing master first name &rarr; full HR name)</strong> Kelly = Racquel T. Rafal &middot; Veronica = Veronica Kott (US) &middot; Ada = Ada Fleur A. Limbaga &middot; Mabua = Judy B. Mabua &middot; Judy = Judy C. Mahinay &middot; all others matched by first name. Sean Kelly (resigned) excluded. Bubble size = relative YTD revenue.</div>
+  <div id="amTenureCards" class="mg3" style="margin-bottom:1rem;"></div>
+  <div class="cc">
+    <div class="ct">Tenure vs. win rate (bubble size = revenue)</div>
+    <div class="cs">Longer tenure right &middot; higher win rate up &middot; larger bubble = more revenue</div>
+    <div class="cw" style="height:320px;"><canvas id="c_am_tenure"></canvas></div>
+  </div>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead><tr><th>AM</th><th style="text-align:center;">Start</th><th style="text-align:center;">Tenure</th><th style="text-align:right;">Revenue</th><th style="text-align:right;">Margin</th><th style="text-align:center;">Win Rate</th><th style="text-align:center;">Won / Lost</th></tr></thead>
+    <tbody id="amTenureTableBody"></tbody>
+  </table></div></div>
+
+  <hr class="dv">
+  <p class="slabel">Client concentration risk &mdash; top campaigns as % of total revenue</p>
+  <div class="good-box"><strong>&#9432; Source: 2026_Billing_Master_File.xlsx</strong> Measures revenue exposure if a top account were to churn. Lower concentration = lower single-client risk.</div>
+  <div id="concentrationCards" class="mg3" style="margin-bottom:1rem;"></div>
+  <div class="cc">
+    <div class="ct">Top 10 campaigns by revenue</div>
+    <div class="cs">YTD paid &middot; Jan&ndash;May 2026</div>
+    <div class="cw" style="height:300px;"><canvas id="c_concentration"></canvas></div>
+  </div>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead><tr><th>#</th><th>Campaign</th><th>AM</th><th style="text-align:right;">YTD Revenue</th><th style="text-align:right;">% of Total</th></tr></thead>
+    <tbody id="concentrationTableBody"></tbody>
   </table></div></div>
 
   <div class="ig ig-4">
@@ -1806,7 +1856,7 @@ function initTab(name) {
     new Chart(document.getElementById('c_sv_donut'), {type:'doughnut',data:{labels:['SEO','LSA','LBO','GBP','PPC','RTM Pkg','Social','Other'],datasets:[{data:[544724,372040,205085,199704,132949,118554,110670,308071],backgroundColor:['#FDA813','#0D7A8C','#534AB7','#f26b5b','#2ec48a','#11a0b8','#8ba3b8','#3C3489'],borderWidth:0}]},options:donut('right',11)});
     var tb=document.getElementById('svcSummaryBody');
     if(tb){tb.innerHTML='';svcLabels.forEach(function(s,i){var pct=(svcVals[i]/svTotal*100).toFixed(1);tb.innerHTML+='<tr><td style="font-weight:500;">'+s+'</td><td class="td-warn">$'+svcVals[i].toLocaleString()+'</td><td style="color:var(--muted);">'+pct+'%</td></tr>';});}
-    setTimeout(function(){ buildSvcDashboard('SEO'); buildSvcAMView('Kelly'); buildSvcCampView('all'); buildAMWinLoss(); buildPriceErosion(); buildPriceAttribution(); buildProfitPerService(); buildProfitPerCampaign(); }, 80);
+    setTimeout(function(){ buildSvcDashboard('SEO'); buildSvcAMView('Kelly'); buildSvcCampView('all'); buildAMWinLoss(); buildPriceErosion(); buildPriceAttribution(); buildCancelErosionXref(); buildProfitPerService(); buildProfitPerCampaign(); buildAMProfitability(); buildAMTenure(); buildConcentrationRisk(); }, 80);
   }
 
   if (name === 'cancel') {
@@ -4850,6 +4900,210 @@ function buildPriceAttribution() {
   }
 }
 
-</script>
+
+// ── CANCELLATION RATE: UNFLAGGED-DISCOUNT CAMPAIGNS VS. BASELINE ──
+var cancelErosionXref = {"unflaggedCount":9,"unflaggedCancelled":1,"unflaggedCancelRate":11.1,"baselineStableCount":220,"baselineCancelled":21,"baselineCancelRate":9.5,"unflaggedCancelledNames":["Kinseyplumbing.com"]};
+
+function buildCancelErosionXref() {
+  var d = cancelErosionXref;
+  var w = document.getElementById('cancelErosionCards');
+  if (w) {
+    var diff = d.unflaggedCancelRate - d.baselineCancelRate;
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">Unflagged-discount campaigns</div><div class="val" style="font-size:17px;">'+d.unflaggedCount+'</div><div class="sub">'+d.unflaggedCancelled+' later cancelled</div></div>'
+    + '<div class="mc"><div class="lbl">Their cancellation rate</div><div class="val" style="font-size:17px;color:var(--warn);">'+d.unflaggedCancelRate+'%</div><div class="sub">vs. '+d.baselineCancelRate+'% baseline</div></div>'
+    + '<div class="mc"><div class="lbl">Difference vs. baseline</div><div class="val" style="font-size:17px;">'+(diff>=0?'+':'')+diff.toFixed(1)+'pp</div><div class="sub">Small sample &mdash; not statistically strong</div></div>';
+  }
+  var tb = document.getElementById('cancelErosionTableBody');
+  if (tb) {
+    tb.innerHTML =
+      '<tr><td style="font-weight:500;">Unflagged-discount campaigns</td><td style="text-align:center;">'+d.unflaggedCount+'</td><td style="text-align:center;" class="td-neg">'+d.unflaggedCancelled+'</td><td style="text-align:center;font-weight:600;">'+d.unflaggedCancelRate+'%</td></tr>'
+    + '<tr><td style="font-weight:500;">All stable campaigns (baseline)</td><td style="text-align:center;">'+d.baselineStableCount+'</td><td style="text-align:center;" class="td-neg">'+d.baselineCancelled+'</td><td style="text-align:center;font-weight:600;">'+d.baselineCancelRate+'%</td></tr>';
+  }
+}
+
+
+// ── AM-LEVEL PROFITABILITY (cost allocated by AM's share of each service's revenue) ──
+var amProfitData = {"Kelly":{"revenue":379992,"cost":51142,"profit":328850,"margin":86.5},"Veronica":{"revenue":235329,"cost":11898,"profit":223431,"margin":94.9},"Jason":{"revenue":364642,"cost":169336,"profit":195306,"margin":53.6},"Madison":{"revenue":305419,"cost":160039,"profit":145381,"margin":47.6},"Riza":{"revenue":252283,"cost":112742,"profit":139541,"margin":55.3},"Melissa":{"revenue":253718,"cost":140318,"profit":113401,"margin":44.7},"Ann":{"revenue":58443,"cost":358,"profit":58085,"margin":99.4},"Fay":{"revenue":27792,"cost":0,"profit":27792,"margin":100.0},"Ada":{"revenue":12737,"cost":6943,"profit":5794,"margin":45.5},"Judy":{"revenue":1297,"cost":991,"profit":306,"margin":23.6},"Mabua":{"revenue":13226,"cost":17553,"profit":-4327,"margin":-32.7},"John":{"revenue":51896,"cost":79174,"profit":-27278,"margin":-52.6}};
+var amProfitChart = null;
+
+function buildAMProfitability() {
+  var sorted = Object.entries(amProfitData).sort(function(a,b){ return b[1].profit - a[1].profit; });
+
+  var w = document.getElementById('amProfitCards');
+  if (w) {
+    var unprofitable = sorted.filter(function(e){ return e[1].profit < 0; }).length;
+    var totalProfit = sorted.reduce(function(s,e){ return s+e[1].profit; },0);
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">Total AM-attributed profit</div><div class="val pos">$'+Math.round(totalProfit).toLocaleString()+'</div><div class="sub">YTD Jan&ndash;May 2026</div></div>'
+    + '<div class="mc"><div class="lbl">Most profitable AM</div><div class="val" style="font-size:15px;color:var(--teal2);">'+sorted[0][0]+'</div><div class="sub">$'+Math.round(sorted[0][1].profit).toLocaleString()+' profit</div></div>'
+    + '<div class="mc"><div class="lbl">Unprofitable AMs</div><div class="val'+(unprofitable>0?' neg':'')+'">'+unprofitable+' of '+sorted.length+'</div><div class="sub">Allocated cost exceeds revenue</div></div>';
+  }
+
+  if (amProfitChart) { amProfitChart.destroy(); amProfitChart = null; }
+  var c = document.getElementById('c_am_profit');
+  if (c) {
+    amProfitChart = new Chart(c, {
+      type: 'bar',
+      data: {
+        labels: sorted.map(function(e){ return e[0]; }),
+        datasets: [{ data: sorted.map(function(e){ return e[1].profit; }),
+          backgroundColor: sorted.map(function(e){ return amBarColors[e[0]]||'#FDA813'; }), borderRadius: 3 }]
+      },
+      options: {
+        indexAxis:'y', responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:false } },
+        scales:{ x:{grid:{color:gc},ticks:{color:tc,callback:k}}, y:{grid:{color:gc},ticks:{color:tc,font:{size:11}}} }
+      }
+    });
+  }
+
+  var tb = document.getElementById('amProfitTableBody');
+  if (tb) {
+    tb.innerHTML = '';
+    sorted.forEach(function(e) {
+      var am = e[0], d = e[1];
+      var pColor = d.profit>=0 ? 'td-pos' : 'td-neg';
+      tb.innerHTML += '<tr>'
+        + '<td style="font-weight:600;">'+am+'</td>'
+        + '<td style="text-align:right;">$'+Math.round(d.revenue).toLocaleString()+'</td>'
+        + '<td style="text-align:right;color:var(--muted);">$'+Math.round(d.cost).toLocaleString()+'</td>'
+        + '<td class="'+pColor+'" style="text-align:right;font-weight:700;">$'+Math.round(d.profit).toLocaleString()+'</td>'
+        + '<td class="'+pColor+'" style="text-align:right;">'+d.margin.toFixed(1)+'%</td>'
+        + '</tr>';
+    });
+  }
+}
+
+
+// ── CLIENT CONCENTRATION RISK ──
+var concentrationData = {"totalRevenue":1956774.0,"totalCampaigns":317,"top10Total":465274.0,"top10Pct":23.8,"top20Total":722728.0,"top20Pct":36.9,"top10Detail":[{"campaign":"StraightShooterPlumbing.com","value":79786.0,"pct":4.08,"am":"Melissa"},{"campaign":"Goldstarplumbingaz.com","value":71578.0,"pct":3.66,"am":"Melissa"},{"campaign":"Eielectrical.com","value":47847.0,"pct":2.45,"am":"Kelly"},{"campaign":"PPM.us","value":44330.0,"pct":2.27,"am":"Madison"},{"campaign":"Tridentplumbingllc.com","value":43311.0,"pct":2.21,"am":"Kelly"},{"campaign":"Prideplumbingphc.com","value":38938.0,"pct":1.99,"am":"Melissa"},{"campaign":"Deltronelectricfl.com","value":38554.0,"pct":1.97,"am":"Melissa"},{"campaign":"Pricebustersplumbing.com","value":37292.0,"pct":1.91,"am":"Kelly"},{"campaign":"Yourbellplumbing.com","value":32240.0,"pct":1.65,"am":"Veronica"},{"campaign":"Bullseyeplumbing.com","value":31398.0,"pct":1.60,"am":"Kelly"}]};
+var concentrationChart = null;
+
+function buildConcentrationRisk() {
+  var d = concentrationData;
+
+  var w = document.getElementById('concentrationCards');
+  if (w) {
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">Top 10 campaigns</div><div class="val" style="font-size:17px;">'+d.top10Pct+'%</div><div class="sub">$'+Math.round(d.top10Total).toLocaleString()+' of total revenue</div></div>'
+    + '<div class="mc"><div class="lbl">Top 20 campaigns</div><div class="val" style="font-size:17px;">'+d.top20Pct+'%</div><div class="sub">$'+Math.round(d.top20Total).toLocaleString()+' of total revenue</div></div>'
+    + '<div class="mc"><div class="lbl">Largest single campaign</div><div class="val pos">'+d.top10Detail[0].pct+'%</div><div class="sub">'+d.top10Detail[0].campaign+'</div></div>';
+  }
+
+  if (concentrationChart) { concentrationChart.destroy(); concentrationChart = null; }
+  var c = document.getElementById('c_concentration');
+  if (c) {
+    concentrationChart = new Chart(c, {
+      type: 'bar',
+      data: {
+        labels: d.top10Detail.map(function(e){ return e.campaign.length>22?e.campaign.substr(0,21)+'\u2026':e.campaign; }),
+        datasets: [{ data: d.top10Detail.map(function(e){ return e.value; }), backgroundColor: '#FDA813', borderRadius: 3 }]
+      },
+      options: ho()
+    });
+  }
+
+  var tb = document.getElementById('concentrationTableBody');
+  if (tb) {
+    tb.innerHTML = '';
+    d.top10Detail.forEach(function(e,i) {
+      tb.innerHTML += '<tr>'
+        + '<td style="text-align:center;color:var(--muted);">'+(i+1)+'</td>'
+        + '<td style="font-weight:500;">'+e.campaign+'</td>'
+        + '<td style="color:var(--muted);">'+e.am+'</td>'
+        + '<td class="td-warn" style="text-align:right;font-weight:600;">$'+Math.round(e.value).toLocaleString()+'</td>'
+        + '<td style="text-align:right;">'+e.pct+'%</td>'
+        + '</tr>';
+    });
+  }
+}
+
+
+// ── AM TENURE VS PERFORMANCE ──
+// Kelly = Racquel T. Rafal | Veronica = Veronica Kott (US) | Ada = Ada Fleur Limbaga
+// Mabua = Judy B. Mabua | Judy = Judy C. Mahinay | Sean Kelly = resigned, excluded
+var amTenureData = {"Melissa":{"months":61,"years":5.1,"start":"May 2021","revenue":253718,"margin":59.8,"winRatio":60.0,"won":18,"lost":12},"Riza":{"months":58,"years":4.8,"start":"Aug 2021","revenue":252283,"margin":67.1,"winRatio":44.3,"won":31,"lost":39},"Ada":{"months":58,"years":4.8,"start":"Aug 2021","revenue":12737,"margin":80.8,"winRatio":100.0,"won":4,"lost":0},"Kelly":{"months":51,"years":4.2,"start":"Mar 2022","revenue":379992,"margin":56.9,"winRatio":34.6,"won":18,"lost":34},"Judy":{"months":49,"years":4.1,"start":"May 2022","revenue":1297,"margin":74.7,"winRatio":100.0,"won":1,"lost":0},"Jason":{"months":45,"years":3.8,"start":"Sep 2022","revenue":364642,"margin":61.6,"winRatio":62.7,"won":42,"lost":25},"Mabua":{"months":23,"years":1.9,"start":"Jul 2024 (rehire)","revenue":13226,"margin":-32.7,"winRatio":37.5,"won":6,"lost":10},"John":{"months":40,"years":3.3,"start":"Feb 2023","revenue":51896,"margin":34.8,"winRatio":21.4,"won":3,"lost":11},"Ann":{"months":31,"years":2.6,"start":"Nov 2023","revenue":58443,"margin":55.1,"winRatio":9.1,"won":2,"lost":20},"Madison":{"months":28,"years":2.3,"start":"Feb 2024","revenue":305419,"margin":63.3,"winRatio":75.0,"won":57,"lost":19},"Fay":{"months":26,"years":2.2,"start":"Apr 2024","revenue":27792,"margin":59.7,"winRatio":0.0,"won":0,"lost":1},"Veronica":{"months":12,"years":1.0,"start":"Jun 2025","revenue":235329,"margin":73.6,"winRatio":21.9,"won":14,"lost":50}};
+var amTenureChart = null;
+
+function buildAMTenure() {
+  var sorted = Object.entries(amTenureData).sort(function(a,b){ return b[1].months - a[1].months; });
+
+  // KPI cards
+  var w = document.getElementById('amTenureCards');
+  if (w) {
+    var avgTenure = sorted.reduce(function(s,e){ return s+e[1].months; },0)/sorted.length;
+    var bestWinNewbie = sorted.filter(function(e){ return e[1].months<=30; })
+      .sort(function(a,b){ return b[1].winRatio-a[1].winRatio; })[0];
+    var bestMarginVet = sorted.filter(function(e){ return e[1].months>=48; })
+      .sort(function(a,b){ return b[1].margin-a[1].margin; })[0];
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">Avg team tenure</div><div class="val" style="font-size:17px;">'+(avgTenure/12).toFixed(1)+' yrs</div><div class="sub">'+Math.round(avgTenure)+' months avg</div></div>'
+    + (bestWinNewbie ? '<div class="mc"><div class="lbl">Top win rate (&le;2.5 yrs)</div><div class="val pos" style="font-size:15px;">'+bestWinNewbie[0]+'</div><div class="sub">'+bestWinNewbie[1].winRatio+'% win rate &middot; '+bestWinNewbie[1].years+'y tenure</div></div>' : '')
+    + (bestMarginVet ? '<div class="mc"><div class="lbl">Top margin (&ge;4 yrs)</div><div class="val" style="font-size:15px;color:var(--teal2);">'+bestMarginVet[0]+'</div><div class="sub">'+bestMarginVet[1].margin+'% margin &middot; '+bestMarginVet[1].years+'y tenure</div></div>' : '');
+  }
+
+  // Scatter-like chart: tenure (x) vs. win ratio (y), sized by revenue
+  if (amTenureChart) { amTenureChart.destroy(); amTenureChart = null; }
+  var c = document.getElementById('c_am_tenure');
+  if (c) {
+    amTenureChart = new Chart(c, {
+      type: 'bubble',
+      data: {
+        datasets: [{
+          label: 'AM Tenure vs. Win Rate',
+          data: sorted.map(function(e) {
+            return { x: e[1].years, y: e[1].winRatio, r: Math.max(5, Math.round(e[1].revenue/15000)), am: e[0] };
+          }),
+          backgroundColor: sorted.map(function(e){
+            return (amBarColors&&amBarColors[e[0]]) ? amBarColors[e[0]]+'99' : '#FDA81399';
+          }),
+          borderColor: sorted.map(function(e){
+            return (amBarColors&&amBarColors[e[0]]) ? amBarColors[e[0]] : '#FDA813';
+          }),
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) {
+                var d = ctx.raw;
+                return d.am + ': ' + ctx.parsed.x + 'y tenure, ' + ctx.parsed.y + '% win rate';
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid:{color:gc}, ticks:{color:tc}, title:{display:true,text:'Tenure (years)',color:tc} },
+          y: { grid:{color:gc}, ticks:{color:tc,callback:function(v){return v+'%'}}, title:{display:true,text:'Win Rate %',color:tc}, min:0, max:110 }
+        }
+      }
+    });
+  }
+
+  // Table
+  var tb = document.getElementById('amTenureTableBody');
+  if (tb) {
+    tb.innerHTML = '';
+    sorted.forEach(function(e) {
+      var am = e[0], d = e[1];
+      var mColor = d.margin>=60?'td-pos':d.margin>=40?'td-warn':'td-neg';
+      var wColor = d.winRatio>=60?'td-pos':d.winRatio>=35?'td-warn':'td-neg';
+      tb.innerHTML += '<tr>'
+        + '<td style="font-weight:600;">'+am+'</td>'
+        + '<td style="text-align:center;color:var(--muted);">'+d.start+'</td>'
+        + '<td style="text-align:center;font-weight:600;">'+d.years+' yrs</td>'
+        + '<td style="text-align:right;">$'+Math.round(d.revenue).toLocaleString()+'</td>'
+        + '<td class="'+mColor+'" style="text-align:right;">'+d.margin.toFixed(1)+'%</td>'
+        + '<td class="'+wColor+'" style="text-align:center;">'+d.winRatio+'%</td>'
+        + '<td style="text-align:center;"><span style="color:#2ec48a;">+'+d.won+'</span> / <span style="color:#f26b5b;">-'+d.lost+'</span></td>'
+        + '</tr>';
+    });
+  }
+}</script>
 </body>
 </html>
