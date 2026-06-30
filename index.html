@@ -103,7 +103,7 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
 <div class="nav">
 <div class="tab active" onclick="sw(this,'overview')">Overview</div>
 <div class="tab" onclick="sw(this,'sales')">Sales by Entity</div>
-<div class="tab" onclick="sw(this,'services')">Sales by Service</div>
+<div class="tab" onclick="sw(this,'services')">Sales Overview</div>
 <div class="tab" onclick="sw(this,'cancel')">Cancellations</div>
 <div class="tab" onclick="sw(this,'billing')">Billing Activity</div>
 <div class="tab" onclick="sw(this,'forecast')">Forecast</div>
@@ -847,6 +847,27 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
     <div class="cc"><div class="ct">By account manager</div><div class="cw" style="height:220px;"><canvas id="c_ca_am"></canvas></div></div>
   </div>
   <hr class="dv">
+  <p class="slabel">Cancellations by service — campaign detail</p>
+  <div class="btn-row" id="cancelServiceBtnRow">
+    <button class="btn active" onclick="showCancelService('LSA',this)">LSA</button>
+    <button class="btn" onclick="showCancelService('SEO',this)">SEO</button>
+    <button class="btn" onclick="showCancelService('GBP',this)">GBP</button>
+    <button class="btn" onclick="showCancelService('LBO',this)">LBO</button>
+    <button class="btn" onclick="showCancelService('PPC',this)">PPC</button>
+    <button class="btn" onclick="showCancelService('HOSTING',this)">Hosting</button>
+    <button class="btn" onclick="showCancelService('SOFTWARE',this)">Software</button>
+    <button class="btn" onclick="showCancelService('SOCIAL',this)">Social</button>
+    <button class="btn" onclick="showCancelService('CALL',this)">Call</button>
+    <button class="btn" onclick="showCancelService('NODIG',this)">NoDig</button>
+  </div>
+  <div id="csCards" class="mg3" style="margin-bottom:1rem;"></div>
+  <div class="two">
+    <div class="cc"><div class="ct">Monthly trend</div><div class="cs">Cancellations for this service</div><div class="cw" style="height:180px;"><canvas id="c_cs_monthly"></canvas></div></div>
+    <div class="cc"><div class="ct">Top campaigns</div><div class="cs">Highest value for this service</div>
+      <div class="tscroll"><table class="dt"><thead><tr><th>Campaign</th><th>AM</th><th>Reason</th><th>Value</th></tr></thead><tbody id="csTableBody"></tbody></table></div>
+    </div>
+  </div>
+  <hr class="dv">
   <p class="slabel">Cancellations by account manager — detail</p>
   <div class="btn-row" id="amBtnRow">
     <button class="btn active" onclick="showAM('all',this)">All AMs</button>
@@ -890,27 +911,6 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
     <div class="cc"><div class="ct">Monthly trend</div><div class="cs">Cancellations by this reason</div><div class="cw" style="height:180px;"><canvas id="c_cr_monthly"></canvas></div></div>
     <div class="cc"><div class="ct">Top campaigns</div><div class="cs">Highest value for this reason</div>
       <div class="tscroll"><table class="dt"><thead><tr><th>Campaign</th><th>AM</th><th>Service</th><th>Value</th></tr></thead><tbody id="crTableBody"></tbody></table></div>
-    </div>
-  </div>
-  <hr class="dv">
-  <p class="slabel">Cancellations by service — campaign detail</p>
-  <div class="btn-row" id="cancelServiceBtnRow">
-    <button class="btn active" onclick="showCancelService('LSA',this)">LSA</button>
-    <button class="btn" onclick="showCancelService('SEO',this)">SEO</button>
-    <button class="btn" onclick="showCancelService('GBP',this)">GBP</button>
-    <button class="btn" onclick="showCancelService('LBO',this)">LBO</button>
-    <button class="btn" onclick="showCancelService('PPC',this)">PPC</button>
-    <button class="btn" onclick="showCancelService('HOSTING',this)">Hosting</button>
-    <button class="btn" onclick="showCancelService('SOFTWARE',this)">Software</button>
-    <button class="btn" onclick="showCancelService('SOCIAL',this)">Social</button>
-    <button class="btn" onclick="showCancelService('CALL',this)">Call</button>
-    <button class="btn" onclick="showCancelService('NODIG',this)">NoDig</button>
-  </div>
-  <div id="csCards" class="mg3" style="margin-bottom:1rem;"></div>
-  <div class="two">
-    <div class="cc"><div class="ct">Monthly trend</div><div class="cs">Cancellations for this service</div><div class="cw" style="height:180px;"><canvas id="c_cs_monthly"></canvas></div></div>
-    <div class="cc"><div class="ct">Top campaigns</div><div class="cs">Highest value for this service</div>
-      <div class="tscroll"><table class="dt"><thead><tr><th>Campaign</th><th>AM</th><th>Reason</th><th>Value</th></tr></thead><tbody id="csTableBody"></tbody></table></div>
     </div>
   </div>
   <div class="ig">
@@ -1435,6 +1435,20 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
     <tbody id="ebTableBody"></tbody>
   </table></div></div>
 
+  <!-- Operating Expense Breakdown (QB P&L) -->
+  <hr style="border:none;border-top:1px solid var(--border);margin:1.25rem 0;">
+  <p class="slabel">Operating expense breakdown &mdash; Payroll, Card Charges &amp; Other &middot; 2026 YTD</p>
+  <div id="ebOpexCards" class="mg3" style="margin-bottom:1rem;"></div>
+  <div class="cc">
+    <div class="ct">Monthly operating expense by category</div>
+    <div class="cs">RTM + Unify360 combined &middot; Jan&ndash;May 2026 &middot; Source: QuickBooks P&amp;L</div>
+    <div class="cw" style="height:240px;"><canvas id="c_eb_opex_breakdown"></canvas></div>
+  </div>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead><tr><th>Month</th><th>Payroll</th><th>Card Charges</th><th>Other Op. Expense</th><th>Total OpEx</th></tr></thead>
+    <tbody id="ebOpexTableBody"></tbody>
+  </table></div></div>
+
   <!-- Annual summary table -->
   <p class="slabel" style="margin-top:1rem;">Annual summary — all years</p>
   <div class="cc"><div class="tscroll"><table class="dt" id="ebSummaryTable">
@@ -1492,6 +1506,20 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
       <div class="cw" style="height:230px;"><canvas id="c_opex_dept"></canvas></div>
     </div>
   </div>
+  <hr class="dv">
+  <p class="slabel">Monthly operational expense &mdash; Payroll, Card, Stripe &amp; Affiliate Commission</p>
+  <div class="good-box"><strong>&#9432; Source: 2026 RTM Financial Outlook &rarr; PROFIT AND LOSS Report (PAL)</strong> Payroll = Payroll US/PH. Card Charges = Amex Platinum + Amex Gold. Stripe Charges = Stripe Fee. Affiliate Commission = Affiliates. Other Op. Cost = Payroll Tax/Charges + Project Based. All figures reconcile exactly to the report's Monthly Total row.</div>
+  <div id="opexMonthlyCards" class="mg4" style="margin-bottom:1rem;"></div>
+  <div class="cc">
+    <div class="ct">Monthly expense by category</div>
+    <div class="cs">Jan&ndash;May 2026 &middot; stacked view</div>
+    <div class="cw" style="height:260px;"><canvas id="c_opex_monthly_breakdown"></canvas></div>
+  </div>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead><tr><th>Month</th><th>Payroll</th><th>Card Charges</th><th>Stripe Charges</th><th>Affiliate Commission</th><th>Other Op. Cost</th><th>Monthly Total</th></tr></thead>
+    <tbody id="opexMonthlyTableBody"></tbody>
+  </table></div></div>
+
   <p class="slabel">Per-department overhead cost &mdash; reference (no ownership)</p>
   <div class="good-box"><strong>&#9432; Reference data</strong> Sourced from PH_Team_Payroll_Breakdown_.xlsx. Excludes executive ownership compensation. Total headcount across 15 departments.</div>
   <div class="cc"><div class="tscroll"><table class="dt">
@@ -1978,7 +2006,7 @@ var ebMargin = { rtm: [36.8,40.9,30.5,29.0,38.9], u360: [-26.8,-237.9,-274.3,-57
 var ebYrs = ['2022','2023','2024','2025','2026 YTD'];
 var ebLabel = { rtm: 'RTM', u360: 'Unify360', combined: 'Combined' };
 
-function initEbitda() { buildEbAnnual(); buildEbSummary(); showEbYear('2022', null); }
+function initEbitda() { buildEbAnnual(); buildEbSummary(); showEbYear('2022', null); buildEbOpexBreakdown(); }
 
 function showEbEntity(ent, el) {
   document.querySelectorAll('#ebEntityBtnRow .btn').forEach(function(b) { b.classList.remove('active'); });
@@ -2658,6 +2686,7 @@ var deptDetail = {
 function initOpex() {
   buildOpexKpis();
   buildOpexPayrollCharts();
+  buildOpexMonthlyBreakdown();
   buildOpexOverheadTable();
   buildOpexDeptDetail('Account Manager');
   buildSvcAllocTable();
@@ -3171,6 +3200,7 @@ var deptDetail = {
 function initOpex() {
   buildOpexKpis();
   buildOpexPayrollCharts();
+  buildOpexMonthlyBreakdown();
   buildOpexOverheadTable();
   buildOpexDeptDetail('Account Manager');
   buildSvcAllocTable();
@@ -4024,6 +4054,170 @@ document.addEventListener('click', function(e) {
     if (btn)  btn.classList.remove('open');
   }
 });
+
+
+// ── EBITDA OPEX BREAKDOWN ──
+// ── EBITDA OPEX BREAKDOWN (Payroll / Card Charges / Other) — 2026 QB-based ──
+var ebOpexData = {
+  months: ['Jan','Feb','Mar','Apr','May'],
+  payroll:   [65466.53, 66288.65, 62587.01, 62653.36, 54084.11],
+  cardChg:   [55011.23, 42309.15, 46490.18, 46720.33, 27120.75],
+  otherOpex:[97176.19,144542.07,162867.45,202285.95,145689.90]
+};
+var ebOpexChart = null;
+
+function buildEbOpexBreakdown() {
+  var d = ebOpexData;
+  var totals = d.months.map(function(_, i) {
+    return d.payroll[i] + d.cardChg[i] + d.otherOpex[i];
+  });
+  var grandPayroll = d.payroll.reduce(function(a,b){return a+b;},0);
+  var grandCard    = d.cardChg.reduce(function(a,b){return a+b;},0);
+  var grandOther   = d.otherOpex.reduce(function(a,b){return a+b;},0);
+  var grandTotal   = grandPayroll + grandCard + grandOther;
+
+  // KPI cards
+  var w = document.getElementById('ebOpexCards');
+  if (w) {
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">Payroll (YTD)</div><div class="val neg">$' + Math.round(grandPayroll).toLocaleString() + '</div><div class="sub">' + (grandTotal?Math.round(grandPayroll/grandTotal*100):0) + '% of OpEx</div></div>'
+    + '<div class="mc"><div class="lbl">Card Charges (YTD)</div><div class="val" style="color:#FDA813;">$' + Math.round(grandCard).toLocaleString() + '</div><div class="sub">' + (grandTotal?Math.round(grandCard/grandTotal*100):0) + '% of OpEx</div></div>'
+    + '<div class="mc"><div class="lbl">Other Op. Expense (YTD)</div><div class="val" style="color:#534AB7;">$' + Math.round(grandOther).toLocaleString() + '</div><div class="sub">' + (grandTotal?Math.round(grandOther/grandTotal*100):0) + '% of OpEx</div></div>';
+  }
+
+  // Stacked monthly chart
+  if (ebOpexChart) { ebOpexChart.destroy(); ebOpexChart = null; }
+  var c = document.getElementById('c_eb_opex_breakdown');
+  if (c) {
+    ebOpexChart = new Chart(c, {
+      type: 'bar',
+      data: {
+        labels: d.months,
+        datasets: [
+          { label: 'Payroll',           data: d.payroll,   backgroundColor: '#f26b5b', borderRadius: 2 },
+          { label: 'Card Charges',      data: d.cardChg,   backgroundColor: '#FDA813', borderRadius: 2 },
+          { label: 'Other Op. Expense', data: d.otherOpex, backgroundColor: '#534AB7', borderRadius: 2 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: true, labels: { color: tc, boxWidth: 10, padding: 8, font: { size: 11 } } } },
+        scales: {
+          x: { stacked: true, grid: { color: gc }, ticks: { color: tc } },
+          y: { stacked: true, grid: { color: gc }, ticks: { color: tc, callback: k } }
+        }
+      }
+    });
+  }
+
+  // Detail table
+  var tb = document.getElementById('ebOpexTableBody');
+  if (tb) {
+    tb.innerHTML = '';
+    d.months.forEach(function(m, i) {
+      var t = d.payroll[i] + d.cardChg[i] + d.otherOpex[i];
+      tb.innerHTML += '<tr>'
+        + '<td style="font-weight:500;">' + m + '</td>'
+        + '<td class="td-neg">$' + Math.round(d.payroll[i]).toLocaleString() + '</td>'
+        + '<td style="color:#FDA813;">$' + Math.round(d.cardChg[i]).toLocaleString() + '</td>'
+        + '<td style="color:#534AB7;">$' + Math.round(d.otherOpex[i]).toLocaleString() + '</td>'
+        + '<td class="td-warn" style="font-weight:600;">$' + Math.round(t).toLocaleString() + '</td>'
+        + '</tr>';
+    });
+    tb.innerHTML += '<tr class="tot"><td>Total</td>'
+      + '<td>$' + Math.round(grandPayroll).toLocaleString() + '</td>'
+      + '<td>$' + Math.round(grandCard).toLocaleString() + '</td>'
+      + '<td>$' + Math.round(grandOther).toLocaleString() + '</td>'
+      + '<td>$' + Math.round(grandTotal).toLocaleString() + '</td></tr>';
+  }
+}
+
+
+// ── OPEX MONTHLY BREAKDOWN ──
+// ── OPEX MONTHLY BREAKDOWN (Financial Outlook) — Payroll / Card / Stripe / Affiliate ──
+// ── OPEX MONTHLY BREAKDOWN (Financial Outlook → PROFIT AND LOSS Report / PAL) ──
+var opexMonthlyData = {
+  months:      ['Jan','Feb','Mar','Apr','May'],
+  payroll:     [171744.12, 170625.15, 165737.38, 158548.99, 151155.00],
+  cardChg:     [27696.57,  25664.22,  26263.13,  27104.62,  13757.34],
+  stripeChg:   [11096.32,  10107.42,  10907.79,  11412.72,  9538.97],
+  affiliate:   [3715.42,   3720.92,   4079.90,   4204.80,   4386.22],
+  otherOpCost: [7500.00,   8000.00,   8000.00,   6865.38,   4000.00]
+};
+var opexMonthlyChart = null;
+
+function buildOpexMonthlyBreakdown() {
+  var d = opexMonthlyData;
+  var grandPayroll = d.payroll.reduce(function(a,b){return a+b;},0);
+  var grandCard     = d.cardChg.reduce(function(a,b){return a+b;},0);
+  var grandStripe    = d.stripeChg.reduce(function(a,b){return a+b;},0);
+  var grandAffiliate= d.affiliate.reduce(function(a,b){return a+b;},0);
+  var grandOther     = d.otherOpCost.reduce(function(a,b){return a+b;},0);
+  var grandTotal = grandPayroll + grandCard + grandStripe + grandAffiliate + grandOther;
+
+  // KPI cards
+  var w = document.getElementById('opexMonthlyCards');
+  if (w) {
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">Payroll (YTD)</div><div class="val neg">$' + Math.round(grandPayroll).toLocaleString() + '</div><div class="sub">' + (grandTotal?Math.round(grandPayroll/grandTotal*100):0) + '% of total</div></div>'
+    + '<div class="mc"><div class="lbl">Card Charges (YTD)</div><div class="val" style="color:#FDA813;">$' + Math.round(grandCard).toLocaleString() + '</div><div class="sub">' + (grandTotal?Math.round(grandCard/grandTotal*100):0) + '% of total</div></div>'
+    + '<div class="mc"><div class="lbl">Stripe Charges (YTD)</div><div class="val" style="color:#11a0b8;">$' + Math.round(grandStripe).toLocaleString() + '</div><div class="sub">' + (grandTotal?Math.round(grandStripe/grandTotal*100):0) + '% of total</div></div>'
+    + '<div class="mc"><div class="lbl">Affiliate Commission (YTD)</div><div class="val" style="color:#2ec48a;">$' + Math.round(grandAffiliate).toLocaleString() + '</div><div class="sub">' + (grandTotal?(grandAffiliate/grandTotal*100).toFixed(1):0) + '% of total</div></div>';
+  }
+
+  // Stacked monthly chart
+  if (opexMonthlyChart) { opexMonthlyChart.destroy(); opexMonthlyChart = null; }
+  var c = document.getElementById('c_opex_monthly_breakdown');
+  if (c) {
+    opexMonthlyChart = new Chart(c, {
+      type: 'bar',
+      data: {
+        labels: d.months,
+        datasets: [
+          { label: 'Payroll',             data: d.payroll,     backgroundColor: '#f26b5b', borderRadius: 2 },
+          { label: 'Card Charges',        data: d.cardChg,     backgroundColor: '#FDA813', borderRadius: 2 },
+          { label: 'Stripe Charges',      data: d.stripeChg,   backgroundColor: '#11a0b8', borderRadius: 2 },
+          { label: 'Affiliate Commission',data: d.affiliate,   backgroundColor: '#2ec48a', borderRadius: 2 },
+          { label: 'Other Op. Cost',      data: d.otherOpCost, backgroundColor: '#534AB7', borderRadius: 2 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: true, labels: { color: tc, boxWidth: 10, padding: 8, font: { size: 10 } } } },
+        scales: {
+          x: { stacked: true, grid: { color: gc }, ticks: { color: tc } },
+          y: { stacked: true, grid: { color: gc }, ticks: { color: tc, callback: k } }
+        }
+      }
+    });
+  }
+
+  // Detail table
+  var tb = document.getElementById('opexMonthlyTableBody');
+  if (tb) {
+    tb.innerHTML = '';
+    d.months.forEach(function(m, i) {
+      var t = d.payroll[i] + d.cardChg[i] + d.stripeChg[i] + d.affiliate[i] + d.otherOpCost[i];
+      tb.innerHTML += '<tr>'
+        + '<td style="font-weight:500;">' + m + '</td>'
+        + '<td class="td-neg">$' + Math.round(d.payroll[i]).toLocaleString() + '</td>'
+        + '<td style="color:#FDA813;">$' + Math.round(d.cardChg[i]).toLocaleString() + '</td>'
+        + '<td style="color:#11a0b8;">$' + Math.round(d.stripeChg[i]).toLocaleString() + '</td>'
+        + '<td style="color:#2ec48a;">$' + Math.round(d.affiliate[i]).toLocaleString() + '</td>'
+        + '<td style="color:#534AB7;">$' + Math.round(d.otherOpCost[i]).toLocaleString() + '</td>'
+        + '<td class="td-warn" style="font-weight:600;">$' + Math.round(t).toLocaleString() + '</td>'
+        + '</tr>';
+    });
+    tb.innerHTML += '<tr class="tot"><td>Total</td>'
+      + '<td>$' + Math.round(grandPayroll).toLocaleString() + '</td>'
+      + '<td>$' + Math.round(grandCard).toLocaleString() + '</td>'
+      + '<td>$' + Math.round(grandStripe).toLocaleString() + '</td>'
+      + '<td>$' + Math.round(grandAffiliate).toLocaleString() + '</td>'
+      + '<td>$' + Math.round(grandOther).toLocaleString() + '</td>'
+      + '<td>$' + Math.round(grandTotal).toLocaleString() + '</td></tr>';
+  }
+}
+
 
 </script>
 </body>
