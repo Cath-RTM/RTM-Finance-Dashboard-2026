@@ -831,7 +831,68 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
     </div>
   </div>
 
-    <div class="ig ig-4">
+      <hr class="dv">
+  <p class="slabel">Sales velocity &mdash; AM campaign acquisition vs. attrition</p>
+  <div class="good-box"><strong>&#9432; Methodology</strong> "Won" = campaigns billed for the first time after January (proxy for new client acquisition). "Lost" = campaigns cancelled. This is not a true close-rate (no lost-prospect data exists in source files) &mdash; it measures net portfolio growth per AM, not deal conversion.</div>
+  <div id="amWinLossCards" class="mg3" style="margin-bottom:1rem;"></div>
+  <div class="two">
+    <div class="cc">
+      <div class="ct">Campaigns won vs. lost by AM</div>
+      <div class="cs">Feb&ndash;May 2026 (won) &middot; Jan&ndash;May 2026 (lost)</div>
+      <div class="cw" style="height:260px;"><canvas id="c_am_winloss"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct">AM net acquisition detail</div>
+      <div class="cs">Sorted by net campaigns gained</div>
+      <div class="tscroll"><table class="dt">
+        <thead><tr><th>AM</th><th style="text-align:center;">Won</th><th style="text-align:center;">Lost</th><th style="text-align:center;">Net</th><th style="text-align:center;">Win Ratio</th></tr></thead>
+        <tbody id="amWinLossTableBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <hr class="dv">
+  <p class="slabel">Pricing &amp; discount leakage &mdash; same-campaign price tracking</p>
+  <div class="good-box"><strong>&#9432; Methodology</strong> Tracks campaigns billed in both January and May at the same service. Shows whether pricing held, increased, or eroded deal-by-deal &mdash; isolating true price drift from mix-shift effects.</div>
+  <div id="priceErosionCards" class="mg3" style="margin-bottom:1rem;"></div>
+  <div class="cc">
+    <div class="ct">Net price change by service</div>
+    <div class="cs">Jan&rarr;May, stable campaigns only</div>
+    <div class="cw" style="height:220px;"><canvas id="c_price_erosion"></canvas></div>
+  </div>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead><tr><th>Service</th><th style="text-align:center;">Stable Camps</th><th style="text-align:center;">Up</th><th style="text-align:center;">Down</th><th style="text-align:center;">Same</th><th style="text-align:right;">Jan Total</th><th style="text-align:right;">May Total</th><th style="text-align:right;">% Change</th></tr></thead>
+    <tbody id="priceErosionTableBody"></tbody>
+  </table></div></div>
+
+    <hr class="dv">
+  <p class="slabel">Profit per service &mdash; revenue minus allocated payroll, overhead &amp; tools</p>
+  <div class="good-box"><strong>&#9432; Source: RTM_Dept_Expense_Allocation_by_Service.xlsx</strong> Cost = monthly allocated direct payroll + overhead + tools, &times;5 months. Profit = YTD revenue minus YTD allocated cost. Negative margins indicate services where allocated overhead currently exceeds direct revenue generated.</div>
+  <div id="profitServiceCards" class="mg3" style="margin-bottom:1rem;"></div>
+  <div class="cc">
+    <div class="ct">YTD profit by service</div>
+    <div class="cs">Revenue minus allocated cost &middot; Jan&ndash;May 2026</div>
+    <div class="cw" style="height:340px;"><canvas id="c_profit_service"></canvas></div>
+  </div>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead><tr><th>Service</th><th style="text-align:center;">Campaigns</th><th style="text-align:right;">Revenue</th><th style="text-align:right;">Allocated Cost</th><th style="text-align:right;">Profit</th><th style="text-align:right;">Margin</th></tr></thead>
+    <tbody id="profitServiceTableBody"></tbody>
+  </table></div></div>
+
+  <p class="slabel">Profit per campaign &mdash; normalized by service size</p>
+  <div class="good-box"><strong>&#9432; Why this view matters</strong> The aggregate view above treats each service as one unit regardless of how many campaigns it serves. Hosting (141 campaigns) and Software (120 campaigns) absorb the same flat overhead allocation as smaller services, which can understate their per-deal profitability. This view divides revenue, cost, and profit by active campaign count to show true unit economics per service.</div>
+  <div id="perCampaignCards" class="mg3" style="margin-bottom:1rem;"></div>
+  <div class="cc">
+    <div class="ct">Profit per campaign by service</div>
+    <div class="cs">YTD revenue and cost &divide; active campaign count</div>
+    <div class="cw" style="height:340px;"><canvas id="c_per_campaign"></canvas></div>
+  </div>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead><tr><th>Service</th><th style="text-align:center;">Campaigns</th><th style="text-align:right;">Revenue / Camp</th><th style="text-align:right;">Cost / Camp</th><th style="text-align:right;">Profit / Camp</th></tr></thead>
+    <tbody id="perCampaignTableBody"></tbody>
+  </table></div></div>
+
+  <div class="ig ig-4">
     <div class="ins warn-ins"><div class="it">SEO + LSA = 46% of revenue</div>The top two services alone account for $916.8K YTD. Heavy concentration — any client loss in these categories has outsized impact.</div>
     <div class="ins neg-ins"><div class="it">Cancellations skew toward LSA &amp; SEO</div>LSA ($26.7K) and SEO ($20.7K) are also the top two cancellation services — the same services driving revenue are also driving attrition.</div>
     <div class="ins good-ins"><div class="it">LBO &amp; GBP show resilience</div>LBO ($205K) and GBP ($200K) have strong paid totals with relatively lower cancellation exposure — reliable mid-tier services.</div>
@@ -1178,6 +1239,20 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
     Total overhead dropped from $232,850 in January to $192,285 in May — a reduction of $40,565 (17.4%). Payroll accounts for ~74% of total overhead. Payroll Taxes and Paychex Fees sourced directly from RTM + U360 QuickBooks P&L. June projection: $148,497 reflecting payroll reduction and Amex/Stripe not yet billed.
   </div>
 
+    <hr class="dv">
+  <p class="slabel">Headcount efficiency &mdash; revenue per FTE</p>
+  <div class="good-box"><strong>&#9432; Source: approved org headcount (98 FTE) &times; Sales by Company revenue</strong> Trended monthly alongside the salary-to-revenue ratio above to give a complementary view of labor efficiency.</div>
+  <div id="headcountEffCards" class="mg3" style="margin-bottom:1rem;"></div>
+  <div class="cc">
+    <div class="ct">Monthly revenue per FTE</div>
+    <div class="cs">Jan&ndash;May 2026 &middot; 98 approved headcount</div>
+    <div class="cw" style="height:220px;"><canvas id="c_headcount_eff"></canvas></div>
+  </div>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead><tr><th>Month</th><th style="text-align:right;">Total Revenue</th><th style="text-align:center;">Headcount</th><th style="text-align:right;">Revenue per FTE</th></tr></thead>
+    <tbody id="headcountEffTableBody"></tbody>
+  </table></div></div>
+
   <div class="ig ig-4">
     <div class="ins neg-ins"><div class="it">61.3% ratio is in the danger zone</div>Industry healthy range is 35–45%. At 61.3%, every dollar of revenue pays $0.61 in salaries — unsustainable at current revenue levels.</div>
     <div class="ins warn-ins"><div class="it">Revenue growth is the only lever</div>Payroll is largely fixed. The path to a safe ratio runs through $25–30K in net new monthly recurring — not cost cuts alone.</div>
@@ -1462,6 +1537,20 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
     <tbody id="ebOpexTableBody"></tbody>
   </table></div></div>
 
+  <hr style="border:none;border-top:1px solid var(--border);margin:1.25rem 0;">
+  <p class="slabel">Month-over-month operating expense trend &mdash; QuickBooks P&amp;L</p>
+  <div class="good-box"><strong>&#9432; Source: QuickBooks P&amp;L (RTM + Unify360 combined) &middot; "Total for Expenses"</strong> This compares each month's actual OpEx to the prior month's actual. No independent budget/plan figure exists in source files, so this is a trend view, not variance to plan. Note: this QB-sourced OpEx series differs from the Financial Outlook-based view on the Operating Expenses tab &mdash; the two sources track different expense scopes and should not be directly cross-compared.</div>
+  <div id="ebMomOpexCards" class="mg3" style="margin-bottom:1rem;"></div>
+  <div class="cc">
+    <div class="ct">Monthly OpEx vs. prior month</div>
+    <div class="cs">RTM + Unify360 combined &middot; Jan&ndash;May 2026</div>
+    <div class="cw" style="height:230px;"><canvas id="c_eb_mom_opex"></canvas></div>
+  </div>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead><tr><th>Month</th><th style="text-align:right;">Prior Month</th><th style="text-align:right;">Actual</th><th style="text-align:right;">Change</th><th style="text-align:right;">% Change</th></tr></thead>
+    <tbody id="ebMomOpexTableBody"></tbody>
+  </table></div></div>
+
   <!-- Annual summary table -->
   <p class="slabel" style="margin-top:1rem;">Annual summary — all years</p>
   <div class="cc"><div class="tscroll"><table class="dt" id="ebSummaryTable">
@@ -1582,6 +1671,20 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
     <thead><tr><th>Service</th><th>Supporting Dept(s)</th><th>Direct Payroll</th><th>Overhead</th><th>Tools</th><th>Total</th></tr></thead>
     <tbody id="svcAllocBody"></tbody>
   </table></div></div>
+    <hr class="dv">
+  <p class="slabel">Month-over-month operating expense trend</p>
+  <div class="good-box"><strong>&#9432; Source: 2026 RTM Financial Outlook &rarr; PAL "Monthly Total" row</strong> This compares each month's actual OpEx to the prior month's actual &mdash; it is a trend view, not a comparison against a fixed budget target. No independent budget/plan figure exists in the source files; the Financial Outlook's "Cost Savings" line is itself month-over-month change, not variance to plan.</div>
+  <div id="budgetActualCards" class="mg3" style="margin-bottom:1rem;"></div>
+  <div class="cc">
+    <div class="ct">Monthly OpEx vs. prior month</div>
+    <div class="cs">Jan&ndash;May 2026</div>
+    <div class="cw" style="height:230px;"><canvas id="c_budget_actual"></canvas></div>
+  </div>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead><tr><th>Month</th><th style="text-align:right;">Prior Month</th><th style="text-align:right;">Actual</th><th style="text-align:right;">Change</th><th style="text-align:right;">% Change</th></tr></thead>
+    <tbody id="budgetActualTableBody"></tbody>
+  </table></div></div>
+
   <div class="ig">
     <div class="ins neg-ins"><div class="it">Payroll declining 15.8% Jan&ndash;Jun</div>Total payroll dropped from $171.7K (Jan) to projected $144.9K (Jun).</div>
     <div class="ins warn-ins"><div class="it">Executive = largest dept cost</div>At $32.6K/mo, executive overhead is the single largest department cost.</div>
@@ -1690,7 +1793,7 @@ function initTab(name) {
     new Chart(document.getElementById('c_sv_donut'), {type:'doughnut',data:{labels:['SEO','LSA','LBO','GBP','PPC','RTM Pkg','Social','Other'],datasets:[{data:[544724,372040,205085,199704,132949,118554,110670,308071],backgroundColor:['#FDA813','#0D7A8C','#534AB7','#f26b5b','#2ec48a','#11a0b8','#8ba3b8','#3C3489'],borderWidth:0}]},options:donut('right',11)});
     var tb=document.getElementById('svcSummaryBody');
     if(tb){tb.innerHTML='';svcLabels.forEach(function(s,i){var pct=(svcVals[i]/svTotal*100).toFixed(1);tb.innerHTML+='<tr><td style="font-weight:500;">'+s+'</td><td class="td-warn">$'+svcVals[i].toLocaleString()+'</td><td style="color:var(--muted);">'+pct+'%</td></tr>';});}
-    setTimeout(function(){ buildSvcDashboard('SEO'); buildSvcAMView('Kelly'); buildSvcCampView('all'); }, 80);
+    setTimeout(function(){ buildSvcDashboard('SEO'); buildSvcAMView('Kelly'); buildSvcCampView('all'); buildAMWinLoss(); buildPriceErosion(); buildProfitPerService(); buildProfitPerCampaign(); }, 80);
   }
 
   if (name === 'cancel') {
@@ -1752,6 +1855,7 @@ function initTab(name) {
       },
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { stacked: true, grid: { color: gc }, ticks: { color: tc } }, y: { stacked: true, grid: { color: gc }, ticks: { color: tc, callback: k } } } }
     });
+    buildHeadcountEfficiency();
   }
 
   if (name === 'billing') { setTimeout(function() { initBilling(); }, 80); }
@@ -2019,7 +2123,7 @@ var ebMargin = { rtm: [36.8,40.9,30.5,29.0,38.9], u360: [-26.8,-237.9,-274.3,-57
 var ebYrs = ['2022','2023','2024','2025','2026 YTD'];
 var ebLabel = { rtm: 'RTM', u360: 'Unify360', combined: 'Combined' };
 
-function initEbitda() { buildEbAnnual(); buildEbSummary(); showEbYear('2022', null); buildEbOpexBreakdown(); }
+function initEbitda() { buildEbAnnual(); buildEbSummary(); showEbYear('2022', null); buildEbOpexBreakdown(); buildEbMomOpex(); }
 
 function showEbEntity(ent, el) {
   document.querySelectorAll('#ebEntityBtnRow .btn').forEach(function(b) { b.classList.remove('active'); });
@@ -2703,6 +2807,7 @@ function initOpex() {
   buildOpexOverheadTable();
   buildOpexDeptDetail('Account Manager');
   buildSvcAllocTable();
+  buildBudgetVsActual();
 }
 
 function buildOpexKpis() {
@@ -3217,6 +3322,7 @@ function initOpex() {
   buildOpexOverheadTable();
   buildOpexDeptDetail('Account Manager');
   buildSvcAllocTable();
+  buildBudgetVsActual();
 }
 
 function buildOpexKpis() {
@@ -4243,6 +4349,430 @@ function showGroup(group, el) {
     if (match && !firstTab) firstTab = t;
   });
   if (firstTab) { sw(firstTab, firstTab.getAttribute('onclick').match(/'(\w+)'/)[1]); }
+}
+
+
+// ── AM WIN/LOSS: CAMPAIGN ACQUISITION VS ATTRITION ──
+var amWinLossData = {"Madison":{"won":[0,8,20,17,12],"lost":[0,1,2,7,9],"totalWon":57,"totalLost":19,"net":38,"ratio":75.0},"Jason":{"won":[0,6,9,16,11],"lost":[0,0,0,12,13],"totalWon":42,"totalLost":25,"net":17,"ratio":62.7},"Riza":{"won":[0,2,7,12,10],"lost":[0,3,9,11,16],"totalWon":31,"totalLost":39,"net":-8,"ratio":44.3},"Kelly":{"won":[0,1,5,7,5],"lost":[0,4,4,14,12],"totalWon":18,"totalLost":34,"net":-16,"ratio":34.6},"Melissa":{"won":[0,1,4,6,7],"lost":[0,2,1,3,6],"totalWon":18,"totalLost":12,"net":6,"ratio":60.0},"Veronica":{"won":[0,1,4,4,5],"lost":[0,4,16,12,18],"totalWon":14,"totalLost":50,"net":-36,"ratio":21.9},"Mabua":{"won":[0,0,2,2,2],"lost":[0,1,3,2,4],"totalWon":6,"totalLost":10,"net":-4,"ratio":37.5},"Ada":{"won":[0,0,0,2,2],"lost":[0,0,0,0,0],"totalWon":4,"totalLost":0,"net":4,"ratio":100.0},"John":{"won":[0,0,1,1,1],"lost":[0,0,2,4,5],"totalWon":3,"totalLost":11,"net":-8,"ratio":21.4},"Ann":{"won":[0,0,1,1,0],"lost":[0,5,1,5,9],"totalWon":2,"totalLost":20,"net":-18,"ratio":9.1},"Judy":{"won":[0,0,0,0,1],"lost":[0,0,0,0,0],"totalWon":1,"totalLost":0,"net":1,"ratio":100.0},"Fay":{"won":[0,0,0,0,0],"lost":[0,0,0,0,1],"totalWon":0,"totalLost":1,"net":-1,"ratio":0.0}};
+var amWinLossChart = null;
+
+function buildAMWinLoss() {
+  var sorted = Object.entries(amWinLossData).sort(function(a,b){ return b[1].net - a[1].net; });
+
+  // KPI cards
+  var w = document.getElementById('amWinLossCards');
+  if (w) {
+    var totalWon  = sorted.reduce(function(s,e){ return s+e[1].totalWon; },0);
+    var totalLost = sorted.reduce(function(s,e){ return s+e[1].totalLost; },0);
+    var topAM = sorted[0];
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">New campaigns won</div><div class="val pos">'+totalWon+'</div><div class="sub">Feb&ndash;May 2026</div></div>'
+    + '<div class="mc"><div class="lbl">Campaigns lost</div><div class="val neg">'+totalLost+'</div><div class="sub">Cancellations Jan&ndash;May</div></div>'
+    + '<div class="mc"><div class="lbl">Top net acquirer</div><div class="val" style="font-size:15px;color:var(--teal2);">'+topAM[0]+'</div><div class="sub">+'+topAM[1].net+' net campaigns</div></div>';
+  }
+
+  // Net won-lost bar chart
+  if (amWinLossChart) { amWinLossChart.destroy(); amWinLossChart = null; }
+  var c = document.getElementById('c_am_winloss');
+  if (c) {
+    amWinLossChart = new Chart(c, {
+      type: 'bar',
+      data: {
+        labels: sorted.map(function(e){ return e[0]; }),
+        datasets: [
+          { label: 'Won',  data: sorted.map(function(e){ return e[1].totalWon; }),  backgroundColor: '#2ec48a', borderRadius: 3 },
+          { label: 'Lost', data: sorted.map(function(e){ return -e[1].totalLost; }), backgroundColor: '#f26b5b', borderRadius: 3 }
+        ]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:true, labels:{color:tc,boxWidth:10,padding:8,font:{size:11}} } },
+        scales:{ x:{grid:{color:gc},ticks:{color:tc}}, y:{stacked:false,grid:{color:gc},ticks:{color:tc}} }
+      }
+    });
+  }
+
+  // Table
+  var tb = document.getElementById('amWinLossTableBody');
+  if (tb) {
+    tb.innerHTML = '';
+    sorted.forEach(function(e) {
+      var am = e[0], d = e[1];
+      var netColor = d.net > 0 ? 'var(--pos)' : d.net < 0 ? 'var(--neg)' : 'var(--muted)';
+      tb.innerHTML += '<tr>'
+        + '<td style="font-weight:600;">'+am+'</td>'
+        + '<td class="td-pos" style="text-align:center;">'+d.totalWon+'</td>'
+        + '<td class="td-neg" style="text-align:center;">'+d.totalLost+'</td>'
+        + '<td style="text-align:center;font-weight:700;color:'+netColor+';">'+(d.net>0?'+':'')+d.net+'</td>'
+        + '<td style="text-align:center;">'+d.ratio+'%</td>'
+        + '</tr>';
+    });
+  }
+}
+
+
+// ── PRICING / DISCOUNT LEAKAGE ──
+var priceErosionData = {"SEO":{"stable_camps":59,"up":1,"down":3,"same":55,"jan_total":92876.0,"may_total":91402.0,"net_change":-1474.0,"pct_change":-1.59,"monthly_avg_price":[1477.77,1483.48,1498.11,1436.05,1433.01]},"LSA":{"stable_camps":63,"up":22,"down":15,"same":26,"jan_total":53951.0,"may_total":51341.0,"net_change":-2610.0,"pct_change":-4.84,"monthly_avg_price":[597.61,612.2,598.84,596.25,616.79]},"LBO":{"stable_camps":30,"up":1,"down":2,"same":27,"jan_total":30083.0,"may_total":30232.0,"net_change":149.0,"pct_change":0.5,"monthly_avg_price":[870.74,961.94,869.34,903.56,895.31]},"GBP":{"stable_camps":38,"up":2,"down":3,"same":33,"jan_total":23541.0,"may_total":21905.0,"net_change":-1636.0,"pct_change":-6.95,"monthly_avg_price":[359.52,357.22,398.62,413.24,468.82]},"PPC":{"stable_camps":30,"up":6,"down":4,"same":20,"jan_total":21468.0,"may_total":22349.0,"net_change":881.0,"pct_change":4.1,"monthly_avg_price":[398.68,393.95,431.44,418.26,460.11]}};
+var priceErosionChart = null;
+
+function buildPriceErosion() {
+  var svcs = Object.keys(priceErosionData);
+
+  // KPI cards
+  var w = document.getElementById('priceErosionCards');
+  if (w) {
+    var worst = svcs.reduce(function(a,b){ return priceErosionData[a].pct_change < priceErosionData[b].pct_change ? a : b; });
+    var best  = svcs.reduce(function(a,b){ return priceErosionData[a].pct_change > priceErosionData[b].pct_change ? a : b; });
+    var totalStable = svcs.reduce(function(s,k){ return s+priceErosionData[k].stable_camps; },0);
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">Stable campaigns tracked</div><div class="val" style="font-size:17px;">'+totalStable+'</div><div class="sub">Priced in both Jan &amp; May</div></div>'
+    + '<div class="mc"><div class="lbl">Most erosion</div><div class="val neg" style="font-size:15px;">'+worst+'</div><div class="sub">'+priceErosionData[worst].pct_change+'% Jan&rarr;May</div></div>'
+    + '<div class="mc"><div class="lbl">Most price growth</div><div class="val pos" style="font-size:15px;">'+best+'</div><div class="sub">+'+priceErosionData[best].pct_change+'% Jan&rarr;May</div></div>';
+  }
+
+  // Chart: % change per service
+  if (priceErosionChart) { priceErosionChart.destroy(); priceErosionChart = null; }
+  var c = document.getElementById('c_price_erosion');
+  if (c) {
+    var vals = svcs.map(function(s){ return priceErosionData[s].pct_change; });
+    priceErosionChart = new Chart(c, {
+      type: 'bar',
+      data: { labels: svcs, datasets: [{ data: vals,
+        backgroundColor: vals.map(function(v){ return v<0?'#f26b5b':'#2ec48a'; }), borderRadius: 3 }] },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:false } },
+        scales:{ x:{grid:{color:gc},ticks:{color:tc}},
+                 y:{grid:{color:gc},ticks:{color:tc,callback:function(v){return v+'%';}}} }
+      }
+    });
+  }
+
+  // Table
+  var tb = document.getElementById('priceErosionTableBody');
+  if (tb) {
+    tb.innerHTML = '';
+    svcs.forEach(function(s) {
+      var d = priceErosionData[s];
+      var chgColor = d.net_change < 0 ? 'td-neg' : 'td-pos';
+      tb.innerHTML += '<tr>'
+        + '<td style="font-weight:600;">'+s+'</td>'
+        + '<td style="text-align:center;">'+d.stable_camps+'</td>'
+        + '<td class="td-pos" style="text-align:center;">'+d.up+'</td>'
+        + '<td class="td-neg" style="text-align:center;">'+d.down+'</td>'
+        + '<td style="text-align:center;color:var(--muted);">'+d.same+'</td>'
+        + '<td style="text-align:right;">$'+d.jan_total.toLocaleString()+'</td>'
+        + '<td style="text-align:right;">$'+d.may_total.toLocaleString()+'</td>'
+        + '<td class="'+chgColor+'" style="text-align:right;font-weight:600;">'+(d.pct_change>0?'+':'')+d.pct_change+'%</td>'
+        + '</tr>';
+    });
+  }
+}
+
+
+// ── OPEX BUDGET VS ACTUAL ──
+// ── MONTH-OVER-MONTH OPEX TREND (relabeled from prior "Budget vs Actual" — no real budget exists in source) ──
+var budgetActualData = {"months":["Jan","Feb","Mar","Apr","May"],"actual":[221752.43,218117.71,214988.2,208136.51,182837.53],"priorMonth":[null,221752.43,218117.71,214988.2,208136.51],"change":[null,-3634.72,-3129.51,-6851.69,-25298.98]};
+var budgetActualChart = null;
+
+function buildBudgetVsActual() {
+  var d = budgetActualData;
+
+  var totalActual = d.actual.reduce(function(a,b){return a+b;},0);
+  var janVal = d.actual[0];
+  var mayVal = d.actual[d.actual.length-1];
+  var totalDecline = mayVal - janVal;
+  var pctDecline = janVal ? (totalDecline/janVal*100) : 0;
+
+  var w = document.getElementById('budgetActualCards');
+  if (w) {
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">YTD Total OpEx</div><div class="val neg">$'+Math.round(totalActual).toLocaleString()+'</div><div class="sub">Jan&ndash;May 2026</div></div>'
+    + '<div class="mc"><div class="lbl">Jan &rarr; May change</div><div class="val pos">$'+Math.round(totalDecline).toLocaleString()+'</div><div class="sub">'+pctDecline.toFixed(1)+'% decline</div></div>'
+    + '<div class="mc"><div class="lbl">Largest single-month drop</div><div class="val pos">May</div><div class="sub">$25,299 (12.2%) vs. April</div></div>';
+  }
+
+  if (budgetActualChart) { budgetActualChart.destroy(); budgetActualChart = null; }
+  var c = document.getElementById('c_budget_actual');
+  if (c) {
+    budgetActualChart = new Chart(c, {
+      type: 'line',
+      data: {
+        labels: d.months,
+        datasets: [{ label: 'Actual OpEx', data: d.actual, borderColor: '#FDA813',
+          backgroundColor: 'rgba(253,168,19,0.1)', fill: true, tension: 0.35,
+          pointBackgroundColor: '#FDA813', pointRadius: 5 }]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:false } },
+        scales:{ x:{grid:{color:gc},ticks:{color:tc}}, y:{grid:{color:gc},ticks:{color:tc,callback:k}} }
+      }
+    });
+  }
+
+  var tb = document.getElementById('budgetActualTableBody');
+  if (tb) {
+    tb.innerHTML = '';
+    d.months.forEach(function(m,i) {
+      var prior = d.priorMonth[i];
+      var chg = d.change[i];
+      if (prior === null) {
+        tb.innerHTML += '<tr>'
+          + '<td style="font-weight:500;">'+m+'</td>'
+          + '<td style="text-align:right;color:var(--muted);">&mdash;</td>'
+          + '<td style="text-align:right;">$'+Math.round(d.actual[i]).toLocaleString()+'</td>'
+          + '<td style="text-align:right;color:var(--muted);">&mdash;</td>'
+          + '<td style="text-align:right;color:var(--muted);">&mdash;</td>'
+          + '</tr>';
+      } else {
+        var cColor = chg<=0 ? 'td-pos' : 'td-neg';
+        var pct = prior ? (chg/prior*100) : 0;
+        tb.innerHTML += '<tr>'
+          + '<td style="font-weight:500;">'+m+'</td>'
+          + '<td style="text-align:right;color:var(--muted);">$'+Math.round(prior).toLocaleString()+'</td>'
+          + '<td style="text-align:right;">$'+Math.round(d.actual[i]).toLocaleString()+'</td>'
+          + '<td class="'+cColor+'" style="text-align:right;font-weight:600;">$'+Math.round(chg).toLocaleString()+'</td>'
+          + '<td class="'+cColor+'" style="text-align:right;">'+(pct>=0?'+':'')+pct.toFixed(1)+'%</td>'
+          + '</tr>';
+      }
+    });
+  }
+}
+
+
+
+// ── PROFIT PER SERVICE ──
+var profitPerServiceData = {"SEO":{"revenue":544724,"cost":38864.7,"profit":505859.3,"margin":92.9},"LSA":{"revenue":372040,"cost":43982.0,"profit":328058.0,"margin":88.2},"LBO":{"revenue":205085,"cost":29783.55,"profit":175301.45,"margin":85.5},"GBP":{"revenue":199704,"cost":29783.55,"profit":169920.45,"margin":85.1},"PPC":{"revenue":132949,"cost":38100.9,"profit":94848.1,"margin":71.3},"RTM Package":{"revenue":118554,"cost":73614.45,"profit":44939.55,"margin":37.9},"Social":{"revenue":110670,"cost":72139.15,"profit":38530.85,"margin":34.8},"Hosting":{"revenue":51056,"cost":30498.15,"profit":20557.85,"margin":40.3},"Software":{"revenue":92371,"cost":88832.15,"profit":3538.85,"margin":3.8},"NoDig":{"revenue":29151,"cost":38864.7,"profit":-9713.7,"margin":-33.3},"Yelp":{"revenue":18531,"cost":29783.55,"profit":-11252.55,"margin":-60.7},"Email":{"revenue":10744,"cost":29783.55,"profit":-19039.55,"margin":-177.2},"Call":{"revenue":26014,"cost":54639.55,"profit":-28625.55,"margin":-110.0},"Apps":{"revenue":8172,"cost":43982.0,"profit":-35810.0,"margin":-438.2},"Design":{"revenue":71932,"cost":107842.0,"profit":-35910.0,"margin":-49.9}};
+var profitServiceChart = null;
+
+function buildProfitPerService() {
+  var sorted = Object.entries(profitPerServiceData).sort(function(a,b){ return b[1].profit - a[1].profit; });
+
+  var totalRev = sorted.reduce(function(s,e){ return s+e[1].revenue; },0);
+  var totalProfit = sorted.reduce(function(s,e){ return s+e[1].profit; },0);
+  var unprofitableCount = sorted.filter(function(e){ return e[1].profit < 0; }).length;
+
+  var w = document.getElementById('profitServiceCards');
+  if (w) {
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">YTD net profit (all services)</div><div class="val pos">$'+Math.round(totalProfit).toLocaleString()+'</div><div class="sub">Revenue minus allocated cost</div></div>'
+    + '<div class="mc"><div class="lbl">Most profitable</div><div class="val" style="font-size:15px;color:var(--teal2);">'+sorted[0][0]+'</div><div class="sub">$'+Math.round(sorted[0][1].profit).toLocaleString()+' profit</div></div>'
+    + '<div class="mc"><div class="lbl">Unprofitable services</div><div class="val neg" style="font-size:17px;">'+unprofitableCount+' of '+sorted.length+'</div><div class="sub">Cost exceeds revenue</div></div>';
+  }
+
+  if (profitServiceChart) { profitServiceChart.destroy(); profitServiceChart = null; }
+  var c = document.getElementById('c_profit_service');
+  if (c) {
+    profitServiceChart = new Chart(c, {
+      type: 'bar',
+      data: {
+        labels: sorted.map(function(e){ return e[0]; }),
+        datasets: [{ data: sorted.map(function(e){ return e[1].profit; }),
+          backgroundColor: sorted.map(function(e){ return e[1].profit>=0?'#2ec48a':'#f26b5b'; }), borderRadius: 3 }]
+      },
+      options: {
+        indexAxis:'y', responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:false } },
+        scales:{ x:{grid:{color:gc},ticks:{color:tc,callback:k}}, y:{grid:{color:gc},ticks:{color:tc,font:{size:11}}} }
+      }
+    });
+  }
+
+  var tb = document.getElementById('profitServiceTableBody');
+  if (tb) {
+    tb.innerHTML = '';
+    sorted.forEach(function(e) {
+      var svc = e[0], d = e[1];
+      var pColor = d.profit>=0 ? 'td-pos' : 'td-neg';
+      var campCt = (typeof perCampaignData !== 'undefined' && perCampaignData[svc]) ? perCampaignData[svc].campaigns : '—';
+      tb.innerHTML += '<tr>'
+        + '<td style="font-weight:600;">'+svc+'</td>'
+        + '<td style="text-align:center;color:var(--muted);">'+campCt+'</td>'
+        + '<td style="text-align:right;">$'+Math.round(d.revenue).toLocaleString()+'</td>'
+        + '<td style="text-align:right;color:var(--muted);">$'+Math.round(d.cost).toLocaleString()+'</td>'
+        + '<td class="'+pColor+'" style="text-align:right;font-weight:700;">$'+Math.round(d.profit).toLocaleString()+'</td>'
+        + '<td class="'+pColor+'" style="text-align:right;">'+d.margin.toFixed(1)+'%</td>'
+        + '</tr>';
+    });
+  }
+}
+
+
+// ── HEADCOUNT EFFICIENCY (REVENUE PER FTE) ──
+var headcountEffData = {"months":["Jan","Feb","Mar","Apr","May"],"totalHeadcount":98,"monthlyRevenue":[415798.35,402370.7,387875.12,398851.52,386801.04],"revPerFTE":[4242.84,4105.82,3957.91,4069.91,3946.95],"ytdRevPerFTE":20323.44};
+var headcountEffChart = null;
+
+function buildHeadcountEfficiency() {
+  var d = headcountEffData;
+
+  var w = document.getElementById('headcountEffCards');
+  if (w) {
+    var trend = d.revPerFTE[d.revPerFTE.length-1] - d.revPerFTE[0];
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">Total headcount</div><div class="val" style="font-size:17px;">'+d.totalHeadcount+'</div><div class="sub">Approved org count</div></div>'
+    + '<div class="mc"><div class="lbl">YTD revenue per FTE</div><div class="val amb">$'+Math.round(d.ytdRevPerFTE).toLocaleString()+'</div><div class="sub">Jan&ndash;May 2026 total</div></div>'
+    + '<div class="mc"><div class="lbl">May rev/FTE</div><div class="val'+(trend<0?' neg':' pos')+'">$'+Math.round(d.revPerFTE[d.revPerFTE.length-1]).toLocaleString()+'</div><div class="sub">'+(trend<0?'Down ':'Up ')+'$'+Math.abs(Math.round(trend)).toLocaleString()+' vs. Jan</div></div>';
+  }
+
+  if (headcountEffChart) { headcountEffChart.destroy(); headcountEffChart = null; }
+  var c = document.getElementById('c_headcount_eff');
+  if (c) {
+    headcountEffChart = new Chart(c, {
+      type: 'line',
+      data: {
+        labels: d.months,
+        datasets: [{ data: d.revPerFTE, borderColor: '#FDA813', backgroundColor: 'rgba(253,168,19,0.1)',
+          fill: true, tension: 0.35, pointBackgroundColor: '#FDA813', pointRadius: 5 }]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:false } },
+        scales:{ x:{grid:{color:gc},ticks:{color:tc}}, y:{grid:{color:gc},ticks:{color:tc,callback:k}} }
+      }
+    });
+  }
+
+  var tb = document.getElementById('headcountEffTableBody');
+  if (tb) {
+    tb.innerHTML = '';
+    d.months.forEach(function(m,i) {
+      tb.innerHTML += '<tr>'
+        + '<td style="font-weight:500;">'+m+'</td>'
+        + '<td style="text-align:right;">$'+Math.round(d.monthlyRevenue[i]).toLocaleString()+'</td>'
+        + '<td style="text-align:center;">'+d.totalHeadcount+'</td>'
+        + '<td class="td-warn" style="text-align:right;font-weight:600;">$'+Math.round(d.revPerFTE[i]).toLocaleString()+'</td>'
+        + '</tr>';
+    });
+  }
+}
+
+
+// ── PROFIT PER CAMPAIGN (normalized by service size) ──
+var perCampaignData = {"SEO":{"campaigns":85,"revenuePerCamp":6409.0,"costPerCamp":457.0,"profitPerCamp":5951.0},"RTM Package":{"campaigns":10,"revenuePerCamp":11855.0,"costPerCamp":7361.0,"profitPerCamp":4494.0},"LSA":{"campaigns":102,"revenuePerCamp":3647.0,"costPerCamp":431.0,"profitPerCamp":3216.0},"LBO":{"campaigns":57,"revenuePerCamp":3598.0,"costPerCamp":523.0,"profitPerCamp":3075.0},"GBP":{"campaigns":75,"revenuePerCamp":2663.0,"costPerCamp":397.0,"profitPerCamp":2266.0},"PPC":{"campaigns":51,"revenuePerCamp":2607.0,"costPerCamp":747.0,"profitPerCamp":1860.0},"Social":{"campaigns":37,"revenuePerCamp":2991.0,"costPerCamp":1950.0,"profitPerCamp":1041.0},"Hosting":{"campaigns":141,"revenuePerCamp":362.0,"costPerCamp":216.0,"profitPerCamp":146.0},"Software":{"campaigns":120,"revenuePerCamp":770.0,"costPerCamp":740.0,"profitPerCamp":29.0},"NoDig":{"campaigns":39,"revenuePerCamp":747.0,"costPerCamp":997.0,"profitPerCamp":-249.0},"Call":{"campaigns":52,"revenuePerCamp":500.0,"costPerCamp":1051.0,"profitPerCamp":-550.0},"Design":{"campaigns":53,"revenuePerCamp":1357.0,"costPerCamp":2035.0,"profitPerCamp":-678.0},"Yelp":{"campaigns":10,"revenuePerCamp":1853.0,"costPerCamp":2978.0,"profitPerCamp":-1125.0},"Email":{"campaigns":8,"revenuePerCamp":1343.0,"costPerCamp":3723.0,"profitPerCamp":-2380.0},"Apps":{"campaigns":5,"revenuePerCamp":1634.0,"costPerCamp":8796.0,"profitPerCamp":-7162.0}};
+var perCampaignChart = null;
+
+function buildProfitPerCampaign() {
+  var sorted = Object.entries(perCampaignData).sort(function(a,b){ return b[1].profitPerCamp - a[1].profitPerCamp; });
+
+  var w = document.getElementById('perCampaignCards');
+  if (w) {
+    var best = sorted[0], worst = sorted[sorted.length-1];
+    var flipped = sorted.filter(function(e){
+      var aggMargin = profitPerServiceData[e[0]] ? profitPerServiceData[e[0]].margin : 0;
+      return (aggMargin < 0 && e[1].profitPerCamp > 0) || (aggMargin > 0 && e[1].profitPerCamp < 0);
+    }).length;
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">Best per-campaign profit</div><div class="val pos" style="font-size:15px;">'+best[0]+'</div><div class="sub">$'+best[1].profitPerCamp.toLocaleString()+' / campaign</div></div>'
+    + '<div class="mc"><div class="lbl">Worst per-campaign profit</div><div class="val neg" style="font-size:15px;">'+worst[0]+'</div><div class="sub">$'+worst[1].profitPerCamp.toLocaleString()+' / campaign</div></div>'
+    + '<div class="mc"><div class="lbl">Re-ranked vs. aggregate view</div><div class="val" style="font-size:17px;">'+flipped+' of '+sorted.length+'</div><div class="sub">Flip sign when normalized</div></div>';
+  }
+
+  if (perCampaignChart) { perCampaignChart.destroy(); perCampaignChart = null; }
+  var c = document.getElementById('c_per_campaign');
+  if (c) {
+    perCampaignChart = new Chart(c, {
+      type: 'bar',
+      data: {
+        labels: sorted.map(function(e){ return e[0]; }),
+        datasets: [{ data: sorted.map(function(e){ return e[1].profitPerCamp; }),
+          backgroundColor: sorted.map(function(e){ return e[1].profitPerCamp>=0?'#2ec48a':'#f26b5b'; }), borderRadius: 3 }]
+      },
+      options: {
+        indexAxis:'y', responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:false } },
+        scales:{ x:{grid:{color:gc},ticks:{color:tc,callback:function(v){return '$'+v;}}}, y:{grid:{color:gc},ticks:{color:tc,font:{size:11}}} }
+      }
+    });
+  }
+
+  var tb = document.getElementById('perCampaignTableBody');
+  if (tb) {
+    tb.innerHTML = '';
+    sorted.forEach(function(e) {
+      var svc = e[0], d = e[1];
+      var pColor = d.profitPerCamp>=0 ? 'td-pos' : 'td-neg';
+      var aggMargin = profitPerServiceData[svc] ? profitPerServiceData[svc].margin : 0;
+      var flip = (aggMargin<0 && d.profitPerCamp>0) || (aggMargin>0 && d.profitPerCamp<0);
+      tb.innerHTML += '<tr>'
+        + '<td style="font-weight:600;">'+svc+(flip?' <span style="color:var(--warn);font-size:10px;">&#9650;flip</span>':'')+'</td>'
+        + '<td style="text-align:center;">'+d.campaigns+'</td>'
+        + '<td style="text-align:right;">$'+d.revenuePerCamp.toLocaleString()+'</td>'
+        + '<td style="text-align:right;color:var(--muted);">$'+d.costPerCamp.toLocaleString()+'</td>'
+        + '<td class="'+pColor+'" style="text-align:right;font-weight:700;">$'+d.profitPerCamp.toLocaleString()+'</td>'
+        + '</tr>';
+    });
+  }
+}
+
+
+// ── EBITDA: MONTH-OVER-MONTH OPEX TREND (QB P&L sourced — RTM + Unify360 combined) ──
+var ebMomOpexData = {"months":["Jan","Feb","Mar","Apr","May"],"actual":[217654,253140,271945,311660,226895],"priorMonth":[null,217654,253140,271945,311660],"change":[null,35486,18805,39715,-84765]};
+var ebMomOpexChart = null;
+
+function buildEbMomOpex() {
+  var d = ebMomOpexData;
+
+  var janVal = d.actual[0];
+  var mayVal = d.actual[d.actual.length-1];
+  var totalChange = mayVal - janVal;
+  var pctChange = janVal ? (totalChange/janVal*100) : 0;
+  var peakIdx = d.actual.indexOf(Math.max.apply(null, d.actual));
+
+  var w = document.getElementById('ebMomOpexCards');
+  if (w) {
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">Jan &rarr; May change</div><div class="val'+(totalChange>0?' neg':' pos')+'">$'+Math.abs(Math.round(totalChange)).toLocaleString()+'</div><div class="sub">'+(totalChange>0?'+':'')+pctChange.toFixed(1)+'% net change</div></div>'
+    + '<div class="mc"><div class="lbl">Peak month</div><div class="val neg" style="font-size:17px;">'+d.months[peakIdx]+'</div><div class="sub">$'+d.actual[peakIdx].toLocaleString()+'</div></div>'
+    + '<div class="mc"><div class="lbl">Largest single-month drop</div><div class="val pos">May</div><div class="sub">-$84,765 (-27.2%) vs. April</div></div>';
+  }
+
+  if (ebMomOpexChart) { ebMomOpexChart.destroy(); ebMomOpexChart = null; }
+  var c = document.getElementById('c_eb_mom_opex');
+  if (c) {
+    ebMomOpexChart = new Chart(c, {
+      type: 'line',
+      data: {
+        labels: d.months,
+        datasets: [{ label: 'OpEx (QB P&L)', data: d.actual, borderColor: '#f26b5b',
+          backgroundColor: 'rgba(242,107,91,0.1)', fill: true, tension: 0.35,
+          pointBackgroundColor: '#f26b5b', pointRadius: 5 }]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:false } },
+        scales:{ x:{grid:{color:gc},ticks:{color:tc}}, y:{grid:{color:gc},ticks:{color:tc,callback:k}} }
+      }
+    });
+  }
+
+  var tb = document.getElementById('ebMomOpexTableBody');
+  if (tb) {
+    tb.innerHTML = '';
+    d.months.forEach(function(m,i) {
+      var prior = d.priorMonth[i];
+      var chg = d.change[i];
+      if (prior === null) {
+        tb.innerHTML += '<tr>'
+          + '<td style="font-weight:500;">'+m+'</td>'
+          + '<td style="text-align:right;color:var(--muted);">&mdash;</td>'
+          + '<td style="text-align:right;">$'+d.actual[i].toLocaleString()+'</td>'
+          + '<td style="text-align:right;color:var(--muted);">&mdash;</td>'
+          + '<td style="text-align:right;color:var(--muted);">&mdash;</td>'
+          + '</tr>';
+      } else {
+        var cColor = chg<=0 ? 'td-pos' : 'td-neg';
+        var pct = prior ? (chg/prior*100) : 0;
+        tb.innerHTML += '<tr>'
+          + '<td style="font-weight:500;">'+m+'</td>'
+          + '<td style="text-align:right;color:var(--muted);">$'+prior.toLocaleString()+'</td>'
+          + '<td style="text-align:right;">$'+d.actual[i].toLocaleString()+'</td>'
+          + '<td class="'+cColor+'" style="text-align:right;font-weight:600;">'+(chg>0?'+':'')+'$'+Math.abs(chg).toLocaleString()+'</td>'
+          + '<td class="'+cColor+'" style="text-align:right;">'+(pct>0?'+':'')+pct.toFixed(1)+'%</td>'
+          + '</tr>';
+      }
+    });
+  }
 }
 
 </script>
