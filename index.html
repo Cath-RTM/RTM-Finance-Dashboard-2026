@@ -5523,66 +5523,155 @@ function buildAnnualReport() {
 // Patch these into showAnnualView by extending the existing functions.
 // Call after existing functions are defined.
 
-var annualTopC1 = null, annualTopC2 = null, annualTopC3 = null;
+// ── TOP PERFORMERS & CANCELLATIONS — fully dynamic per year ──
+var annualTopC1 = null, annualTopC2 = null;
 
 function buildAnnualKpisTop(w, d, yr) {
+  if (!w) return;
   var yi = d.years.indexOf(yr);
-  // top service
-  var svcRanked = Object.keys(d.salesPerService).sort(function(a,b){
-    return d.salesPerService[b][yi] - d.salesPerService[a][yi];
-  });
-  var topSvc = svcRanked[0], topSvcVal = d.salesPerService[topSvc][yi];
-  var topSvcPct = (topSvcVal / d.totalSales[yi] * 100).toFixed(1);
-  // top cancel service
-  var cancelSvcRanked = Object.keys(d.attritionPerService).sort(function(a,b){
-    return d.attritionPerService[b][yi] - d.attritionPerService[a][yi];
-  });
-  var topCancelSvc = cancelSvcRanked[0], topCancelSvcVal = d.attritionPerService[topCancelSvc][yi];
-  // top cancel reason
-  var reasons = d.cancelReasons[yr] || {};
-  var reasonKeys = Object.keys(reasons).sort(function(a,b){ return reasons[b]-reasons[a]; });
-  var topReason = reasonKeys[0] || '—', topReasonVal = reasons[topReason] || 0;
-  // AM 2026 (labelled clearly as 2026 YTD only)
-  var topAM = Object.keys(d.am2026Sales).sort(function(a,b){ return d.am2026Sales[b]-d.am2026Sales[a]; })[0];
-  var topAMVal = d.am2026Sales[topAM];
-  var topAMCancel = Object.keys(d.am2026Cancel).sort(function(a,b){ return d.am2026Cancel[b]-d.am2026Cancel[a]; })[0];
-  var topAMCancelVal = d.am2026Cancel[topAMCancel];
+  var yiPrev = yi - 1;
 
-  w.innerHTML =
-    '<div class="mc"><div class="lbl">Top selling service ('+yr+')</div><div class="val amb" style="font-size:15px;">'+topSvc+'</div><div class="sub">$'+Math.round(topSvcVal).toLocaleString()+' &middot; '+topSvcPct+'% of total</div></div>'
-  + '<div class="mc"><div class="lbl">2nd service ('+yr+')</div><div class="val" style="font-size:15px;color:var(--teal2);">'+svcRanked[1]+'</div><div class="sub">$'+Math.round(d.salesPerService[svcRanked[1]][yi]).toLocaleString()+'</div></div>'
-  + '<div class="mc"><div class="lbl">3rd service ('+yr+')</div><div class="val" style="font-size:15px;color:var(--muted);">'+svcRanked[2]+'</div><div class="sub">$'+Math.round(d.salesPerService[svcRanked[2]][yi]).toLocaleString()+'</div></div>'
-  + '<div class="mc"><div class="lbl">Top cancel service ('+yr+')</div><div class="val neg" style="font-size:15px;">'+topCancelSvc+'</div><div class="sub">$'+Math.round(topCancelSvcVal).toLocaleString()+' attrition</div></div>'
-  + '<div class="mc"><div class="lbl">Top cancel reason ('+yr+')</div><div class="val" style="font-size:13px;color:var(--warn);">'+topReason+'</div><div class="sub">$'+Math.round(topReasonVal).toLocaleString()+' lost</div></div>'
-  + '<div class="mc"><div class="lbl">Total attrition ('+yr+')</div><div class="val neg">$'+Math.round(d.attritionTotal[yi]).toLocaleString()+'</div><div class="sub">'+(d.attritionTotal[yi]/d.totalSales[yi]*100).toFixed(1)+'% of sales</div></div>'
-  + '<div class="mc"><div class="lbl">Top AM by sales (2026 YTD)</div><div class="val" style="font-size:15px;color:var(--teal2);">'+topAM+'</div><div class="sub">$'+topAMVal.toLocaleString()+' &middot; billing master</div></div>'
-  + '<div class="mc"><div class="lbl">Most cancellations (2026 YTD)</div><div class="val neg" style="font-size:15px;">'+topAMCancel+'</div><div class="sub">$'+topAMCancelVal.toLocaleString()+' cancelled</div></div>';
+  // Rank services for selected year and prior year
+  function rankSvc(i) {
+    return Object.keys(d.salesPerService)
+      .filter(function(s){ return d.salesPerService[s][i] > 0; })
+      .sort(function(a,b){ return d.salesPerService[b][i] - d.salesPerService[a][i]; });
+  }
+  function rankAttr(i) {
+    return Object.keys(d.attritionPerService)
+      .filter(function(s){ return d.attritionPerService[s][i] > 0; })
+      .sort(function(a,b){ return d.attritionPerService[b][i] - d.attritionPerService[a][i]; });
+  }
+
+  var currSvcRank = rankSvc(yi);
+  var prevSvcRank = yiPrev >= 0 ? rankSvc(yiPrev) : null;
+
+  // Rank indicator: ↑ if moved up, ↓ if moved down, NEW if not in prior, — if same
+  function rankChg(svc, curr, prev) {
+    if (!prev) return '';
+    var ci = curr.indexOf(svc), pi = prev.indexOf(svc);
+    if (ci < 0) return '';
+    if (pi < 0) return ' <span style="color:#2ec48a;font-size:10px;">NEW</span>';
+    if (pi > ci) return ' <span style="color:#2ec48a;font-size:10px;">&#8593;'+(pi-ci)+'</span>';
+    if (pi < ci) return ' <span style="color:#f26b5b;font-size:10px;">&#8595;'+(ci-pi)+'</span>';
+    return ' <span style="color:var(--muted);font-size:10px;">&#8212;</span>';
+  }
+
+  var currAttrRank = rankAttr(yi);
+  var prevAttrRank = yiPrev >= 0 ? rankAttr(yiPrev) : null;
+
+  var reasons = d.cancelReasons[yr] || {};
+  var reasonRanked = Object.keys(reasons).sort(function(a,b){ return reasons[b]-reasons[a]; });
+  var prevReasons = yiPrev >= 0 ? (d.cancelReasons[d.years[yiPrev]] || {}) : {};
+  var prevReasonRanked = Object.keys(prevReasons).sort(function(a,b){ return prevReasons[b]-prevReasons[a]; });
+
+  function reasonChg(r) {
+    if (!yiPrev || yiPrev < 0) return '';
+    var ci = reasonRanked.indexOf(r), pi = prevReasonRanked.indexOf(r);
+    if (pi < 0) return ' <span style="color:#2ec48a;font-size:10px;">NEW</span>';
+    if (pi > ci) return ' <span style="color:#2ec48a;font-size:10px;">&#8593;'+(pi-ci)+'</span>';
+    if (pi < ci) return ' <span style="color:#f26b5b;font-size:10px;">&#8595;'+(ci-pi)+'</span>';
+    return ' <span style="color:var(--muted);font-size:10px;">&#8212;</span>';
+  }
+
+  function vsLabel(curr, prev) {
+    if (prev === undefined || prev === null || prev === 0) return '';
+    var chg = (curr - prev) / prev * 100;
+    var col = chg >= 0 ? '#2ec48a' : '#f26b5b';
+    var arrow = chg >= 0 ? '&#8593;' : '&#8595;';
+    return ' <span style="color:'+col+';font-size:10px;">'+arrow+Math.abs(chg).toFixed(1)+'%</span>';
+  }
+
+  // Build 8 KPI cards
+  var html = '';
+
+  // Cards 1-3: Top 3 Services
+  [0,1,2].forEach(function(rank) {
+    var svc = currSvcRank[rank];
+    if (!svc) return;
+    var val = d.salesPerService[svc][yi];
+    var prevVal = yiPrev >= 0 ? d.salesPerService[svc][yiPrev] : null;
+    var pct = (val / d.totalSales[yi] * 100).toFixed(1);
+    var rankLabel = ['#1 Top Service','#2 Service','#3 Service'][rank];
+    var rankColor = ['var(--amber)','var(--teal2)','var(--muted)'][rank];
+    html += '<div class="mc"><div class="lbl">'+rankLabel+' ('+yr+')</div>'
+      +'<div class="val" style="font-size:15px;color:'+rankColor+';">'+svc+rankChg(svc,currSvcRank,prevSvcRank)+'</div>'
+      +'<div class="sub">$'+Math.round(val).toLocaleString()+' &middot; '+pct+'%'+vsLabel(val,prevVal)+'</div></div>';
+  });
+
+  // Card 4: Top cancel service
+  var topCsvc = currAttrRank[0];
+  var topCsvcVal = topCsvc ? d.attritionPerService[topCsvc][yi] : 0;
+  var prevCsvcVal = (topCsvc && yiPrev >= 0) ? d.attritionPerService[topCsvc][yiPrev] : null;
+  html += '<div class="mc"><div class="lbl">Top attrition service ('+yr+')</div>'
+    +'<div class="val neg" style="font-size:14px;">'+(topCsvc||'—')+rankChg(topCsvc,currAttrRank,prevAttrRank)+'</div>'
+    +'<div class="sub">$'+Math.round(topCsvcVal).toLocaleString()+' lost'+vsLabel(topCsvcVal,prevCsvcVal)+'</div></div>';
+
+  // Card 5: 2nd cancel service
+  var topCsvc2 = currAttrRank[1];
+  var topCsvc2Val = topCsvc2 ? d.attritionPerService[topCsvc2][yi] : 0;
+  html += '<div class="mc"><div class="lbl">2nd attrition service ('+yr+')</div>'
+    +'<div class="val" style="font-size:14px;color:var(--warn);">'+(topCsvc2||'—')+rankChg(topCsvc2,currAttrRank,prevAttrRank)+'</div>'
+    +'<div class="sub">$'+Math.round(topCsvc2Val).toLocaleString()+' lost</div></div>';
+
+  // Card 6: Top cancel reason
+  var topReason = reasonRanked[0] || '—';
+  var topReasonVal = reasons[topReason] || 0;
+  html += '<div class="mc"><div class="lbl">Top cancel reason ('+yr+')</div>'
+    +'<div class="val" style="font-size:12px;color:var(--warn);">'+topReason+reasonChg(topReason)+'</div>'
+    +'<div class="sub">$'+Math.round(topReasonVal).toLocaleString()+' lost</div></div>';
+
+  // Card 7: 2nd cancel reason
+  var topReason2 = reasonRanked[1] || '—';
+  var topReason2Val = reasons[topReason2] || 0;
+  html += '<div class="mc"><div class="lbl">2nd cancel reason ('+yr+')</div>'
+    +'<div class="val" style="font-size:12px;color:var(--muted);">'+topReason2+reasonChg(topReason2)+'</div>'
+    +'<div class="sub">$'+Math.round(topReason2Val).toLocaleString()+' lost</div></div>';
+
+  // Card 8: Attrition total + rate
+  var attrTotal = d.attritionTotal[yi];
+  var prevAttrTotal = yiPrev >= 0 ? d.attritionTotal[yiPrev] : null;
+  var attrRate = (attrTotal / d.totalSales[yi] * 100).toFixed(1);
+  html += '<div class="mc"><div class="lbl">Total attrition ('+yr+')</div>'
+    +'<div class="val neg">$'+Math.round(attrTotal).toLocaleString()+'</div>'
+    +'<div class="sub">'+attrRate+'% rate'+vsLabel(attrTotal,prevAttrTotal)+'</div></div>';
+
+  w.innerHTML = html;
 }
 
 function buildAnnualChartsTop(d, yr) {
-  if (annualTopC1) { annualTopC1.destroy(); annualTopC1=null; }
-  if (annualTopC2) { annualTopC2.destroy(); annualTopC2=null; }
-  if (annualTopC3) { annualTopC3.destroy(); annualTopC3=null; }
+  if (annualTopC1) { annualTopC1.destroy(); annualTopC1 = null; }
+  if (annualTopC2) { annualTopC2.destroy(); annualTopC2 = null; }
 
   var yi = d.years.indexOf(yr);
+  var yiPrev = yi - 1;
 
-  // Left: top services by sales (selected year)
+  // Chart 1: Top services — current year vs prior year side by side
   var c1 = document.getElementById('c_annual_main');
   if (c1) {
-    var svcKeys = Object.keys(d.salesPerService).filter(function(s){ return d.salesPerService[s][yi]>0; });
-    svcKeys.sort(function(a,b){ return d.salesPerService[b][yi]-d.salesPerService[a][yi]; });
-    var svcColors = ['#FDA813','#0D7A8C','#534AB7','#f26b5b','#2ec48a','#11a0b8','#8ba3b8','#c4830a','#3C3489','#e8a87c','#FDA813','#0D7A8C'];
-    annualTopC1 = new Chart(c1, { type:'bar', data:{ labels:svcKeys,
-      datasets:[{ label:'Sales '+yr, data:svcKeys.map(function(s){return d.salesPerService[s][yi];}),
-        backgroundColor:svcColors.slice(0,svcKeys.length), borderRadius:3 }]},
-      options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{ display:false }},
-        scales:{ x:{grid:{color:gc},ticks:{color:tc,callback:k}}, y:{grid:{color:gc},ticks:{color:tc,font:{size:10}}} }
+    var svcKeys = Object.keys(d.salesPerService)
+      .filter(function(s){ return d.salesPerService[s][yi]>0 || (yiPrev>=0 && d.salesPerService[s][yiPrev]>0); })
+      .sort(function(a,b){ return d.salesPerService[b][yi] - d.salesPerService[a][yi]; });
+    var datasets = [
+      { label: yr, data: svcKeys.map(function(s){ return d.salesPerService[s][yi]||0; }),
+        backgroundColor: 'rgba(253,168,19,0.85)', borderRadius: 3 }
+    ];
+    if (yiPrev >= 0) {
+      datasets.unshift({
+        label: d.years[yiPrev],
+        data: svcKeys.map(function(s){ return d.salesPerService[s][yiPrev]||0; }),
+        backgroundColor: 'rgba(13,122,140,0.6)', borderRadius: 3
+      });
+    }
+    annualTopC1 = new Chart(c1, { type:'bar', data:{ labels:svcKeys, datasets:datasets },
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:true, labels:{color:tc,boxWidth:10,padding:8,font:{size:11}} }},
+        scales:{ x:{grid:{color:gc},ticks:{color:tc,font:{size:10}}}, y:{grid:{color:gc},ticks:{color:tc,callback:k}} }
       }
     });
   }
 
-  // Right: top cancel reasons (selected year)
+  // Chart 2: Cancellation reasons donut for selected year
   var c2 = document.getElementById('c_annual_secondary');
   if (c2) {
     var reasons = d.cancelReasons[yr] || {};
@@ -5590,49 +5679,136 @@ function buildAnnualChartsTop(d, yr) {
     var rColors = ['#f26b5b','#FDA813','#534AB7','#0D7A8C','#2ec48a','#8ba3b8','#11a0b8','#c4830a','#3C3489'];
     annualTopC2 = new Chart(c2, { type:'doughnut', data:{
       labels: rKeys,
-      datasets:[{ data:rKeys.map(function(r){return reasons[r];}),
-        backgroundColor:rColors.slice(0,rKeys.length), borderWidth:0 }]},
+      datasets:[{ data: rKeys.map(function(r){ return reasons[r]; }),
+        backgroundColor: rColors.slice(0,rKeys.length), borderWidth:0 }]},
       options:{ responsive:true, maintainAspectRatio:false, cutout:'55%',
-        plugins:{ legend:{ display:true, position:'right', labels:{color:tc,boxWidth:10,padding:6,font:{size:10}}},
-          tooltip:{ callbacks:{ label:function(ctx){ return ' $'+Math.round(ctx.parsed).toLocaleString(); }}}}
+        plugins:{
+          legend:{ display:true, position:'right', labels:{color:tc,boxWidth:10,padding:6,font:{size:10}} },
+          tooltip:{ callbacks:{ label:function(ctx){ return ' $'+Math.round(ctx.parsed).toLocaleString(); } } }
+        }
       }
     });
   }
 }
 
 function buildAnnualTableTop(tb, head, d, yr) {
+  if (!tb) return;
   var yi = d.years.indexOf(yr);
-  if (head) head.innerHTML = '<tr><th>Service</th><th style="text-align:right;">Sales ('+yr+')</th><th style="text-align:right;">% of Total</th><th style="text-align:right;">Attrition ('+yr+')</th><th style="text-align:right;">Attr %</th></tr>';
-  var svcKeys = Object.keys(d.salesPerService).sort(function(a,b){ return d.salesPerService[b][yi]-d.salesPerService[a][yi]; });
+  var yiPrev = yi - 1;
+  var prevYr = yiPrev >= 0 ? d.years[yiPrev] : null;
+
+  var hdr = '<tr><th>Service</th>'
+    + '<th style="text-align:right;">Sales ('+yr+')</th>'
+    + (prevYr ? '<th style="text-align:right;">Sales ('+prevYr+')</th><th style="text-align:right;">&#916; vs '+prevYr+'</th>' : '')
+    + '<th style="text-align:right;">Sales Rank</th>'
+    + '<th style="text-align:right;">Attrition ('+yr+')</th>'
+    + '<th style="text-align:right;">Attr Rate</th></tr>';
+  if (head) head.innerHTML = hdr;
+
+  // Rank services for current and prior year
+  function getSvcRank(i) {
+    var ranked = Object.keys(d.salesPerService)
+      .filter(function(s){ return d.salesPerService[s][i]>0; })
+      .sort(function(a,b){ return d.salesPerService[b][i]-d.salesPerService[a][i]; });
+    var rankMap = {};
+    ranked.forEach(function(s,idx){ rankMap[s] = idx+1; });
+    return rankMap;
+  }
+  var currRank = getSvcRank(yi);
+  var prevRank = yiPrev >= 0 ? getSvcRank(yiPrev) : {};
+
+  var allSvcs = Object.keys(d.salesPerService)
+    .filter(function(s){ return d.salesPerService[s][yi]>0||(yiPrev>=0&&d.salesPerService[s][yiPrev]>0); })
+    .sort(function(a,b){
+      var av = d.salesPerService[a][yi]||0, bv = d.salesPerService[b][yi]||0;
+      return bv - av;
+    });
+
   tb.innerHTML = '';
-  svcKeys.forEach(function(svc) {
-    var sv = d.salesPerService[svc][yi];
+  allSvcs.forEach(function(svc) {
+    var cv = d.salesPerService[svc][yi] || 0;
+    var pv = yiPrev >= 0 ? (d.salesPerService[svc][yiPrev]||0) : null;
     var av = (d.attritionPerService[svc] && d.attritionPerService[svc][yi]) || 0;
-    var svPct = sv>0?(sv/d.totalSales[yi]*100).toFixed(1):'—';
-    var avPct = sv>0&&av>0?(av/sv*100).toFixed(1):'—';
+    var attrRate = cv > 0 && av > 0 ? (av/cv*100).toFixed(1)+'%' : '&mdash;';
+
+    // Rank change indicator
+    var cr = currRank[svc] || '—', pr = prevRank[svc];
+    var rankLabel = cr === '—' ? '&mdash;' : '#'+cr;
+    var rankChgHtml = '';
+    if (pr && cr !== '—') {
+      if (pr > cr) rankChgHtml = ' <span style="color:#2ec48a;font-size:10px;">&#8593;'+(pr-cr)+'</span>';
+      else if (pr < cr) rankChgHtml = ' <span style="color:#f26b5b;font-size:10px;">&#8595;'+(cr-pr)+'</span>';
+      else rankChgHtml = ' <span style="color:var(--muted);font-size:10px;">&#8212;</span>';
+    } else if (!pr && cr !== '—') {
+      rankChgHtml = ' <span style="color:#2ec48a;font-size:10px;">NEW</span>';
+    }
+
+    // $ change vs prior year
+    var chgHtml = '';
+    if (pv !== null && pv > 0 && cv > 0) {
+      var chgPct = (cv-pv)/pv*100;
+      var col = chgPct >= 0 ? 'td-pos' : 'td-neg';
+      chgHtml = '<td class="'+col+'" style="text-align:right;">'+(chgPct>=0?'+':'')+chgPct.toFixed(1)+'%</td>';
+    } else if (pv !== null) {
+      chgHtml = '<td style="text-align:right;color:var(--muted);">&mdash;</td>';
+    }
+
     tb.innerHTML += '<tr>'
       +'<td style="font-weight:600;">'+svc+'</td>'
-      +'<td class="td-warn" style="text-align:right;">'+(sv>0?'$'+Math.round(sv).toLocaleString():'&mdash;')+'</td>'
-      +'<td style="text-align:right;color:var(--muted);">'+(svPct==='—'?'—':svPct+'%')+'</td>'
-      +'<td class="td-neg" style="text-align:right;">'+(av>0?'$'+Math.round(av).toLocaleString():'&mdash;')+'</td>'
-      +'<td style="text-align:right;color:var(--muted);">'+(avPct==='—'?'—':avPct+'%')+'</td>'
+      +'<td class="'+(cv>0?'td-warn':'')+'" style="text-align:right;">'+(cv>0?'$'+Math.round(cv).toLocaleString():'&mdash;')+'</td>'
+      +(prevYr ? '<td style="text-align:right;color:var(--muted);">'+(pv>0?'$'+Math.round(pv).toLocaleString():'&mdash;')+'</td>'+chgHtml : '')
+      +'<td style="text-align:right;">'+rankLabel+rankChgHtml+'</td>'
+      +'<td class="'+(av>0?'td-neg':'')+'" style="text-align:right;">'+(av>0?'$'+Math.round(av).toLocaleString():'&mdash;')+'</td>'
+      +'<td style="text-align:right;color:var(--muted);">'+attrRate+'</td>'
       +'</tr>';
   });
-  // AM section (2026 YTD only — labelled)
-  tb.innerHTML += '<tr style="background:rgba(255,255,255,0.04);"><td colspan="5" style="font-weight:700;padding:.5rem;color:var(--amber);">Account Manager Performance — 2026 YTD only (not available in annual file)</td></tr>';
-  var amKeys = Object.keys(d.am2026Sales).sort(function(a,b){ return d.am2026Sales[b]-d.am2026Sales[a]; });
-  amKeys.forEach(function(am) {
-    var sv = d.am2026Sales[am];
-    var cv = d.am2026Cancel[am] || 0;
+
+  // Cancellation Reasons section
+  tb.innerHTML += '<tr style="background:rgba(255,255,255,0.04);"><td colspan="'+(prevYr?'6':'4')+'" style="font-weight:700;padding:.6rem .5rem;color:var(--amber);">&#128683; Top Cancellation Reasons &mdash; '+yr+'</td></tr>';
+  var reasons = d.cancelReasons[yr] || {};
+  var prevReasons = prevYr ? (d.cancelReasons[prevYr]||{}) : {};
+  var rKeys = Object.keys(reasons).sort(function(a,b){ return reasons[b]-reasons[a]; });
+  var total = Object.values(reasons).reduce(function(a,b){return a+b;},0);
+  rKeys.forEach(function(r, ri) {
+    var rv = reasons[r], pv2 = prevReasons[r];
+    var rpct = total > 0 ? (rv/total*100).toFixed(1)+'%' : '—';
+    var rChgHtml = '';
+    if (pv2 !== undefined && pv2 > 0) {
+      var rChg = (rv-pv2)/pv2*100;
+      var rcol = rChg <= 0 ? 'td-pos' : 'td-neg'; // less = good for cancellations
+      rChgHtml = '<td class="'+rcol+'" style="text-align:right;">'+(rChg>=0?'+':'')+rChg.toFixed(1)+'%</td>';
+    } else if (pv2 === undefined) {
+      rChgHtml = '<td style="text-align:right;color:#2ec48a;font-size:10px;">NEW</td>';
+    } else {
+      rChgHtml = '<td style="text-align:right;color:var(--muted);">—</td>';
+    }
     tb.innerHTML += '<tr>'
-      +'<td style="font-weight:600;padding-left:1rem;">'+am+'</td>'
+      +'<td style="padding-left:1rem;font-weight:'+(ri<3?'600':'400')+';">#'+(ri+1)+' '+r+'</td>'
+      +'<td class="td-neg" style="text-align:right;">$'+Math.round(rv).toLocaleString()+'</td>'
+      +(prevYr ? '<td style="text-align:right;color:var(--muted);">'+(pv2!==undefined?'$'+Math.round(pv2).toLocaleString():'NEW')+'</td>'+rChgHtml : '')
+      +'<td style="text-align:right;color:var(--muted);">'+rpct+'</td>'
+      +'<td style="text-align:right;color:var(--muted);">&mdash;</td>'
+      +'<td style="text-align:right;color:var(--muted);">&mdash;</td>'
+      +'</tr>';
+  });
+
+  // AM section — 2026 YTD with clear label
+  tb.innerHTML += '<tr style="background:rgba(253,168,19,0.06);"><td colspan="'+(prevYr?'6':'4')+'" style="font-weight:700;padding:.6rem .5rem;color:var(--amber);">&#128100; Account Manager Performance &mdash; 2026 YTD (Billing Master &middot; per-AM data not available for 2023&ndash;2025 in source file)</td></tr>';
+  var amKeys = Object.keys(d.am2026Sales).sort(function(a,b){ return d.am2026Sales[b]-d.am2026Sales[a]; });
+  var amTotal = Object.values(d.am2026Sales).reduce(function(a,b){return a+b;},0);
+  amKeys.forEach(function(am) {
+    var sv = d.am2026Sales[am], cv2 = d.am2026Cancel[am]||0;
+    tb.innerHTML += '<tr>'
+      +'<td style="padding-left:1rem;font-weight:600;">'+am+'</td>'
       +'<td class="td-warn" style="text-align:right;">$'+sv.toLocaleString()+'</td>'
-      +'<td style="text-align:right;color:var(--muted);">'+(sv/Object.values(d.am2026Sales).reduce(function(a,b){return a+b;},0)*100).toFixed(1)+'%</td>'
-      +'<td class="'+(cv>0?'td-neg':'')+'" style="text-align:right;">'+(cv>0?'$'+cv.toLocaleString():'—')+'</td>'
-      +'<td style="text-align:right;color:var(--muted);">'+(cv>0&&sv>0?(cv/sv*100).toFixed(1)+'%':'—')+'</td>'
+      +(prevYr ? '<td colspan="2" style="text-align:center;color:var(--muted);font-size:10px;">2026 YTD only</td>' : '')
+      +'<td style="text-align:right;color:var(--muted);">'+(sv/amTotal*100).toFixed(1)+'%</td>'
+      +'<td class="'+(cv2>0?'td-neg':'')+'" style="text-align:right;">'+(cv2>0?'$'+cv2.toLocaleString():'—')+'</td>'
+      +'<td style="text-align:right;color:var(--muted);">'+(cv2>0&&sv>0?(cv2/sv*100).toFixed(1)+'%':'—')+'</td>'
       +'</tr>';
   });
 }
+
 </script>
 </body>
 </html>
