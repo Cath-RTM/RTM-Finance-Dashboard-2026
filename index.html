@@ -121,6 +121,7 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
 <div class="tab" onclick="sw(this,'billing')" data-group="sales-perf">Billing Activity</div>
 <div class="tab" onclick="sw(this,'forecast')" data-group="sales-perf">Monthly Forecast</div>
 <div class="tab" onclick="sw(this,'annual')" data-group="sales-perf">Annual Performance Overview</div>
+
 <div class="tab" onclick="sw(this,'ebitda')" data-group="finance-perf" style="display:none;">EBITDA Overview</div>
 <div class="tab" onclick="sw(this,'opex')" data-group="finance-perf" style="display:none;">Operating Expenses</div>
 <div class="tab" onclick="sw(this,'salary')" data-group="finance-perf" style="display:none;">Salary Analysis</div>
@@ -1304,6 +1305,48 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
   </div>
 
     <hr class="dv">
+  <p class="slabel">Annual payroll comparison &mdash; 2023 &middot; 2024 &middot; 2025 &middot; 2026 YTD</p>
+
+  <!-- View selector -->
+  <div class="btn-row" id="payrollViewBtns" style="margin-bottom:1rem;">
+    <button class="btn active" onclick="showPayrollView('overview',this)">&#128200; Annual Overview</button>
+    <button class="btn" onclick="showPayrollView('phus',this)">&#127987; PH vs. US Breakdown</button>
+    <button class="btn" onclick="showPayrollView('monthly',this)">&#128197; Monthly Detail by Year</button>
+  </div>
+
+  <!-- Year selector — shown only in Monthly view -->
+  <div id="payrollYrSel" class="btn-row" style="display:none;margin-bottom:1rem;align-items:center;gap:8px;">
+    <span style="font-size:11px;color:var(--muted);font-weight:600;">SELECT YEAR:</span>
+    <button class="btn" data-yr="2023" onclick="setPayrollYear('2023',this)">2023</button>
+    <button class="btn" data-yr="2024" onclick="setPayrollYear('2024',this)">2024</button>
+    <button class="btn active" data-yr="2025" onclick="setPayrollYear('2025',this)">2025</button>
+    <button class="btn" data-yr="2026" onclick="setPayrollYear('2026',this)">2026 YTD</button>
+  </div>
+
+  <!-- KPI cards — dynamic -->
+  <div id="payrollKpiCards" class="mg4" style="margin-bottom:1.25rem;"></div>
+
+  <!-- Chart pair — dynamic -->
+  <div class="two">
+    <div class="cc">
+      <div class="ct" id="payrollChart1Title">Annual payroll — PH &amp; US</div>
+      <div class="cs" id="payrollChart1Sub">2023 &middot; 2024 &middot; 2025 &middot; 2026 YTD &middot; Source: Payroll Summary sheets</div>
+      <div class="cw" style="height:240px;"><canvas id="c_payroll_main"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct" id="payrollChart2Title">Year-over-year change</div>
+      <div class="cs" id="payrollChart2Sub">% change vs prior year</div>
+      <div class="cw" style="height:240px;"><canvas id="c_payroll_secondary"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Detail table — dynamic -->
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead id="payrollTableHead"></thead>
+    <tbody id="payrollTableBody"></tbody>
+  </table></div></div>
+
+  <hr class="dv">
   <p class="slabel">Headcount efficiency &mdash; revenue per FTE</p>
   <div class="good-box"><strong>&#9432; Source: approved org headcount (98 FTE) &times; Sales by Company revenue</strong> Trended monthly alongside the salary-to-revenue ratio above to give a complementary view of labor efficiency.</div>
   <div id="headcountEffCards" class="mg3" style="margin-bottom:1rem;"></div>
@@ -1978,6 +2021,7 @@ function initTab(name) {
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { stacked: true, grid: { color: gc }, ticks: { color: tc } }, y: { stacked: true, grid: { color: gc }, ticks: { color: tc, callback: k } } } }
     });
     buildHeadcountEfficiency();
+    buildPayrollAnnual();
   }
 
   if (name === 'billing') { setTimeout(function() { initBilling(); }, 80); }
@@ -5807,6 +5851,312 @@ function buildAnnualTableTop(tb, head, d, yr) {
       +'<td style="text-align:right;color:var(--muted);">'+(cv2>0&&sv>0?(cv2/sv*100).toFixed(1)+'%':'—')+'</td>'
       +'</tr>';
   });
+}
+
+
+
+// ── ANNUAL PAYROLL COMPARISON ──
+// ── ANNUAL PAYROLL COMPARISON — source: PH Team Payroll Breakdown (Payroll Summary sheets) ──
+var payrollView = 'overview';
+var payrollYr   = '2025';
+var payrollC1 = null, payrollC2 = null;
+
+// Monthly data from PH_Team_Payroll_Breakdown_ — Payroll Summary sheets
+// Columns: US (TM + RTM), PH, Total  |  2026: Jan-Jun actuals
+var payrollSource = {
+  months: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+  '2023': {
+    us:    [176662.92,167541.82,166099.96,219470.40,164819.30,180240.05,210653.68,173516.10,179585.21,231139.31,209713.72,217359.41],
+    ph:    [94936.74, 100388.74,102938.69,104537.31,104384.20,105305.64,109921.32,110935.76,116855.15,120576.92,121196.21,125627.44],
+    total: [271599.66,267930.56,269038.65,324007.71,269203.50,285545.69,320575.00,284451.86,296440.36,351716.23,330909.93,342986.85]
+  },
+  '2024': {
+    us:    [283087.48,232635.03,244403.75,231394.66,233647.61,223143.08,205549.11,183609.09,172723.17,166245.75,171598.20,176850.23],
+    ph:    [139255.94,133709.92,130847.13,132940.32,137750.17,135104.05,136168.05,136416.24,132637.92,134481.86,136291.02,136544.10],
+    total: [422343.42,366344.95,375250.88,364334.98,371397.78,358247.13,341717.16,320025.33,305361.09,300727.61,307889.22,313394.33]
+  },
+  '2025': {
+    us:    [187344.52,198871.18,180818.77,175366.38,169922.19,194622.34,206169.38,171212.70,138247.81,95281.28,86226.99,63266.51],
+    ph:    [131583.15,131574.81,132750.48,131695.92,125797.69,131053.56,137746.93,140163.83,131907.01,134843.60,125147.33,118886.64],
+    total: [318927.67,330445.99,313569.25,307062.30,295719.88,325675.90,343916.31,311376.53,270154.82,230124.88,211374.32,182153.15]
+  },
+  '2026': {
+    us:    [63855.39,64603.51,60759.45,60588.46,53120.83,50245.40,0,0,0,0,0,0],
+    ph:    [115182.64,116386.01,113227.69,107225.85,105426.98,101007.52,0,0,0,0,0,0],
+    total: [179038.03,180989.52,173987.14,167814.31,158547.81,151252.92,0,0,0,0,0,0]
+  },
+  annualUS:    [2296801.88, 2524887.16, 1867350.05],
+  annualPH:    [1317604.12, 1622146.72, 1573150.95],
+  annualTotal: [3614406.00, 4147033.88, 3440501.00],
+  ytd2026US:   353173.04,
+  ytd2026PH:   658456.69,
+  ytd2026Total:1011629.73,
+  activeMonths2026: 6
+};
+
+function showPayrollView(view, el) {
+  payrollView = view;
+  document.querySelectorAll('#payrollViewBtns .btn').forEach(function(b){ b.classList.remove('active'); });
+  if (el) el.classList.add('active');
+  // Show year selector only for monthly view
+  var yrSel = document.getElementById('payrollYrSel');
+  if (yrSel) yrSel.style.display = (view === 'monthly') ? 'flex' : 'none';
+  buildPayrollKpis(view);
+  buildPayrollCharts(view);
+  buildPayrollTable(view);
+}
+
+function setPayrollYear(yr, el) {
+  payrollYr = yr;
+  document.querySelectorAll('#payrollYrSel .btn').forEach(function(b){ b.classList.remove('active'); });
+  if (el) el.classList.add('active');
+  buildPayrollKpis('monthly');
+  buildPayrollCharts('monthly');
+  buildPayrollTable('monthly');
+}
+
+function buildPayrollKpis(view) {
+  var w = document.getElementById('payrollKpiCards');
+  if (!w) return;
+  var s = payrollSource;
+  var yrs = ['2023','2024','2025'];
+  var tots  = s.annualTotal;
+  var yoy24 = (tots[1]-tots[0])/tots[0]*100;
+  var yoy25 = (tots[2]-tots[1])/tots[1]*100;
+
+  if (view === 'overview') {
+    var savings = tots[1]-tots[2];
+    var ph25pct = (s.annualPH[2]/tots[2]*100).toFixed(1);
+    var us25pct = (s.annualUS[2]/tots[2]*100).toFixed(1);
+    var ytdAvg  = Math.round(s.ytd2026Total/s.activeMonths2026);
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">Total payroll 2023</div><div class="val amb">$'+Math.round(tots[0]/1e6*100)/100+'M</div><div class="sub">US $'+Math.round(s.annualUS[0]/1e3)+'K · PH $'+Math.round(s.annualPH[0]/1e3)+'K</div></div>'
+    + '<div class="mc"><div class="lbl">Total payroll 2024</div><div class="val neg">$'+Math.round(tots[1]/1e6*100)/100+'M</div><div class="sub">'+(yoy24>0?'+':'')+yoy24.toFixed(1)+'% vs 2023</div></div>'
+    + '<div class="mc"><div class="lbl">Total payroll 2025</div><div class="val pos">$'+Math.round(tots[2]/1e6*100)/100+'M</div><div class="sub">'+yoy25.toFixed(1)+'% vs 2024</div></div>'
+    + '<div class="mc"><div class="lbl">2026 YTD ('+s.activeMonths2026+' mo)</div><div class="val" style="color:var(--warn);">$'+Math.round(s.ytd2026Total/1e3)+'K</div><div class="sub">Avg $'+ytdAvg.toLocaleString()+'/mo</div></div>'
+    + '<div class="mc"><div class="lbl">PH share 2025</div><div class="val" style="color:var(--teal2);">'+ph25pct+'%</div><div class="sub">$'+Math.round(s.annualPH[2]/1e3)+'K · was '+Math.round(s.annualPH[0]/tots[0]*100)+'% in 2023</div></div>'
+    + '<div class="mc"><div class="lbl">US share 2025</div><div class="val amb">'+us25pct+'%</div><div class="sub">$'+Math.round(s.annualUS[2]/1e3)+'K · was '+Math.round(s.annualUS[0]/tots[0]*100)+'% in 2023</div></div>'
+    + '<div class="mc"><div class="lbl">2025 vs 2024 savings</div><div class="val pos">$'+Math.round(savings/1e3)+'K</div><div class="sub">'+Math.abs(yoy25).toFixed(1)+'% reduction</div></div>'
+    + '<div class="mc"><div class="lbl">US payroll 2025 vs 2024</div><div class="val pos">'+((s.annualUS[2]-s.annualUS[1])/s.annualUS[1]*100).toFixed(1)+'%</div><div class="sub">Largest driver of savings</div></div>';
+
+  } else if (view === 'phus') {
+    var phChg = (s.annualPH[2]-s.annualPH[0])/s.annualPH[0]*100;
+    var usChg = (s.annualUS[2]-s.annualUS[0])/s.annualUS[0]*100;
+    var ph24 = (s.annualPH[1]-s.annualPH[0])/s.annualPH[0]*100;
+    var ph25 = (s.annualPH[2]-s.annualPH[1])/s.annualPH[1]*100;
+    var us24 = (s.annualUS[1]-s.annualUS[0])/s.annualUS[0]*100;
+    var us25 = (s.annualUS[2]-s.annualUS[1])/s.annualUS[1]*100;
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">PH payroll 2023</div><div class="val" style="color:var(--teal2);">$'+Math.round(s.annualPH[0]/1e3)+'K</div><div class="sub">'+Math.round(s.annualPH[0]/tots[0]*100)+'% of total</div></div>'
+    + '<div class="mc"><div class="lbl">PH payroll 2024</div><div class="val" style="color:var(--teal2);">$'+Math.round(s.annualPH[1]/1e3)+'K</div><div class="sub">'+(ph24>0?'+':'')+ph24.toFixed(1)+'% vs 2023</div></div>'
+    + '<div class="mc"><div class="lbl">PH payroll 2025</div><div class="val" style="color:var(--teal2);">$'+Math.round(s.annualPH[2]/1e3)+'K</div><div class="sub">'+ph25.toFixed(1)+'% vs 2024</div></div>'
+    + '<div class="mc"><div class="lbl">PH 2-year change</div><div class="val'+(phChg>=0?' neg':' pos')+'">'+phChg.toFixed(1)+'%</div><div class="sub">2023&rarr;2025</div></div>'
+    + '<div class="mc"><div class="lbl">US payroll 2023</div><div class="val amb">$'+Math.round(s.annualUS[0]/1e3)+'K</div><div class="sub">'+Math.round(s.annualUS[0]/tots[0]*100)+'% of total</div></div>'
+    + '<div class="mc"><div class="lbl">US payroll 2024</div><div class="val amb">$'+Math.round(s.annualUS[1]/1e3)+'K</div><div class="sub">'+(us24>0?'+':'')+us24.toFixed(1)+'% vs 2023</div></div>'
+    + '<div class="mc"><div class="lbl">US payroll 2025</div><div class="val pos">$'+Math.round(s.annualUS[2]/1e3)+'K</div><div class="sub">'+us25.toFixed(1)+'% vs 2024</div></div>'
+    + '<div class="mc"><div class="lbl">US 2-year change</div><div class="val pos">'+usChg.toFixed(1)+'%</div><div class="sub">2023&rarr;2025</div></div>';
+
+  } else {
+    // monthly view for selected year
+    var yr = payrollYr;
+    var mo = s[yr].total.filter(function(v){ return v>0; });
+    var tot = mo.reduce(function(a,b){return a+b;},0);
+    var avg = Math.round(tot/mo.length);
+    var peak = Math.max.apply(null, mo);
+    var low  = Math.min.apply(null, mo);
+    var peakIdx = s[yr].total.indexOf(peak);
+    var lowIdx  = s[yr].total.indexOf(low);
+    var trendChg = mo[mo.length-1] - mo[0];
+    // vs prior year same period
+    var prevYr = yr==='2023'?null:String(parseInt(yr)-1);
+    var prevTot = prevYr ? s[prevYr].total.slice(0,mo.length).reduce(function(a,b){return a+b;},0) : null;
+    var vsLabel = prevTot ? ((tot-prevTot)/prevTot*100).toFixed(1)+'% vs '+prevYr : 'baseline year';
+    w.innerHTML =
+      '<div class="mc"><div class="lbl">Year selected</div><div class="val amb" style="font-size:20px;">'+yr+'</div><div class="sub">'+mo.length+' months of data</div></div>'
+    + '<div class="mc"><div class="lbl">Total payroll ('+yr+')</div><div class="val neg">$'+Math.round(tot).toLocaleString()+'</div><div class="sub">'+vsLabel+'</div></div>'
+    + '<div class="mc"><div class="lbl">Monthly average</div><div class="val neg">$'+avg.toLocaleString()+'</div><div class="sub">Over '+mo.length+' months</div></div>'
+    + '<div class="mc"><div class="lbl">Jan→'+s.months[mo.length-1]+' trend</div><div class="val'+(trendChg<0?' pos':' neg')+'">$'+Math.abs(Math.round(trendChg)).toLocaleString()+'</div><div class="sub">'+(trendChg<0?'&#8595; declining':'&#8593; increasing')+' month over month</div></div>'
+    + '<div class="mc"><div class="lbl">Peak month</div><div class="val neg">'+s.months[peakIdx]+'</div><div class="sub">$'+Math.round(peak).toLocaleString()+'</div></div>'
+    + '<div class="mc"><div class="lbl">Lowest month</div><div class="val pos">'+s.months[lowIdx]+'</div><div class="sub">$'+Math.round(low).toLocaleString()+'</div></div>'
+    + '<div class="mc"><div class="lbl">PH total ('+yr+')</div><div class="val" style="color:var(--teal2);">$'+Math.round(s[yr].ph.reduce(function(a,b){return a+b;},0)).toLocaleString()+'</div><div class="sub">'+Math.round(s[yr].ph.reduce(function(a,b){return a+b;},0)/tot*100)+'% of total</div></div>'
+    + '<div class="mc"><div class="lbl">US total ('+yr+')</div><div class="val amb">$'+Math.round(s[yr].us.reduce(function(a,b){return a+b;},0)).toLocaleString()+'</div><div class="sub">'+Math.round(s[yr].us.reduce(function(a,b){return a+b;},0)/tot*100)+'% of total</div></div>';
+  }
+}
+
+function buildPayrollCharts(view) {
+  if (payrollC1) { payrollC1.destroy(); payrollC1=null; }
+  if (payrollC2) { payrollC2.destroy(); payrollC2=null; }
+  var s = payrollSource;
+  var c1 = document.getElementById('c_payroll_main');
+  var c2 = document.getElementById('c_payroll_secondary');
+
+  if (view === 'overview') {
+    // Left: stacked PH+US bar 2023/2024/2025 + 2026 YTD
+    if (c1) payrollC1 = new Chart(c1, { type:'bar', data:{ labels:['2023','2024','2025','2026 YTD'],
+      datasets:[
+        { label:'PH', data:[s.annualPH[0],s.annualPH[1],s.annualPH[2],s.ytd2026PH], backgroundColor:'#0D7A8C', borderRadius:3 },
+        { label:'US', data:[s.annualUS[0],s.annualUS[1],s.annualUS[2],s.ytd2026US], backgroundColor:'#FDA813', borderRadius:3 }
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:true, labels:{color:tc,boxWidth:10,padding:8,font:{size:11}} }},
+        scales:{ x:{stacked:true,grid:{color:gc},ticks:{color:tc}}, y:{stacked:true,grid:{color:gc},ticks:{color:tc,callback:k}} }
+      }
+    });
+    // Right: YoY % change bars
+    var chg24 = (s.annualTotal[1]-s.annualTotal[0])/s.annualTotal[0]*100;
+    var chg25 = (s.annualTotal[2]-s.annualTotal[1])/s.annualTotal[1]*100;
+    var chg26 = ((s.ytd2026Total/s.activeMonths2026*12)-s.annualTotal[2])/s.annualTotal[2]*100;
+    if (c2) payrollC2 = new Chart(c2, { type:'bar', data:{ labels:['2024 vs 2023','2025 vs 2024','2026 ann. vs 2025'],
+      datasets:[{ data:[chg24,chg25,chg26],
+        backgroundColor:[chg24<=0?'#2ec48a':'#f26b5b',chg25<=0?'#2ec48a':'#f26b5b',chg26<=0?'#2ec48a':'#f26b5b'],
+        borderRadius:4 }]},
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false }},
+        scales:{ x:{grid:{color:gc},ticks:{color:tc}}, y:{grid:{color:gc},ticks:{color:tc,callback:function(v){return v.toFixed(1)+'%';}}} }
+      }
+    });
+
+  } else if (view === 'phus') {
+    // Left: PH vs US grouped bar all years
+    if (c1) payrollC1 = new Chart(c1, { type:'bar', data:{ labels:['2023','2024','2025','2026 YTD'],
+      datasets:[
+        { label:'PH Payroll', data:[s.annualPH[0],s.annualPH[1],s.annualPH[2],s.ytd2026PH], backgroundColor:'#0D7A8C', borderRadius:3 },
+        { label:'US Payroll', data:[s.annualUS[0],s.annualUS[1],s.annualUS[2],s.ytd2026US], backgroundColor:'#FDA813', borderRadius:3 }
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:true, labels:{color:tc,boxWidth:10,padding:8,font:{size:11}} }},
+        scales:{ x:{grid:{color:gc},ticks:{color:tc}}, y:{grid:{color:gc},ticks:{color:tc,callback:k}} }
+      }
+    });
+    // Right: PH share trend line
+    var phPcts = ['2023','2024','2025'].map(function(yr,i){ return parseFloat((s.annualPH[i]/s.annualTotal[i]*100).toFixed(1)); });
+    phPcts.push(parseFloat((s.ytd2026PH/s.ytd2026Total*100).toFixed(1)));
+    if (c2) payrollC2 = new Chart(c2, { type:'line', data:{ labels:['2023','2024','2025','2026 YTD'],
+      datasets:[
+        { label:'PH %', data:phPcts, borderColor:'#0D7A8C', backgroundColor:'rgba(13,122,140,0.1)', fill:true, tension:0.3, pointBackgroundColor:'#0D7A8C', pointRadius:5 },
+        { label:'US %', data:phPcts.map(function(v){return parseFloat((100-v).toFixed(1));}), borderColor:'#FDA813', backgroundColor:'rgba(253,168,19,0.1)', fill:true, tension:0.3, pointBackgroundColor:'#FDA813', pointRadius:5 }
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:true, labels:{color:tc,boxWidth:10,padding:8,font:{size:11}} }},
+        scales:{ x:{grid:{color:gc},ticks:{color:tc}}, y:{grid:{color:gc},min:0,max:100,ticks:{color:tc,callback:function(v){return v+'%';}}} }
+      }
+    });
+
+  } else {
+    // Monthly view for selected year vs prior year
+    var yr = payrollYr;
+    var prevYr = yr==='2023'?null:String(parseInt(yr)-1);
+    var activeMo = s[yr].total.filter(function(v){return v>0;}).length;
+    var labels = s.months.slice(0, activeMo);
+
+    // Left: stacked monthly PH+US for selected year
+    if (c1) payrollC1 = new Chart(c1, { type:'bar', data:{ labels:labels,
+      datasets:[
+        { label:'PH ('+yr+')', data:s[yr].ph.slice(0,activeMo), backgroundColor:'#0D7A8C', borderRadius:3 },
+        { label:'US ('+yr+')', data:s[yr].us.slice(0,activeMo), backgroundColor:'#FDA813', borderRadius:3 }
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:true, labels:{color:tc,boxWidth:10,padding:8,font:{size:11}} }},
+        scales:{ x:{stacked:true,grid:{color:gc},ticks:{color:tc}}, y:{stacked:true,grid:{color:gc},ticks:{color:tc,callback:k}} }
+      }
+    });
+
+    // Right: selected year vs prior year line overlay
+    var datasets = [{ label:yr, data:s[yr].total.slice(0,activeMo), borderColor:'#FDA813', backgroundColor:'rgba(253,168,19,0.1)', fill:true, tension:0.3, pointBackgroundColor:'#FDA813', pointRadius:5 }];
+    if (prevYr) datasets.push({ label:prevYr, data:s[prevYr].total.slice(0,activeMo), borderColor:'rgba(13,122,140,0.7)', backgroundColor:'transparent', borderDash:[5,3], tension:0.3, pointRadius:4, pointBackgroundColor:'#0D7A8C' });
+    if (c2) payrollC2 = new Chart(c2, { type:'line', data:{ labels:labels, datasets:datasets },
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:true, labels:{color:tc,boxWidth:10,padding:8,font:{size:11}} }},
+        scales:{ x:{grid:{color:gc},ticks:{color:tc}}, y:{grid:{color:gc},ticks:{color:tc,callback:k}} }
+      }
+    });
+  }
+}
+
+function buildPayrollTable(view) {
+  var tb   = document.getElementById('payrollTableBody');
+  var head = document.getElementById('payrollTableHead');
+  if (!tb) return;
+  var s = payrollSource;
+
+  if (view === 'overview') {
+    if (head) head.innerHTML = '<tr><th>Metric</th><th style="text-align:right;">2023</th><th style="text-align:right;">2024</th><th style="text-align:right;">vs 2023</th><th style="text-align:right;">2025</th><th style="text-align:right;">vs 2024</th><th style="text-align:right;">2026 YTD</th></tr>';
+    var rows = [
+      { l:'Total Payroll',  ph:[s.annualPH[0],s.annualPH[1],s.annualPH[2]], us:[s.annualUS[0],s.annualUS[1],s.annualUS[2]], tot:[s.annualTotal[0],s.annualTotal[1],s.annualTotal[2]], ytd:s.ytd2026Total },
+    ];
+    // Build as multi-row table
+    tb.innerHTML = '';
+    var rowDefs = [
+      { l:'Total Payroll',  v:[s.annualTotal[0],s.annualTotal[1],s.annualTotal[2]], ytd:s.ytd2026Total, inv:true },
+      { l:'PH Payroll',     v:[s.annualPH[0],   s.annualPH[1],   s.annualPH[2]],   ytd:s.ytd2026PH,    inv:true },
+      { l:'US Payroll',     v:[s.annualUS[0],   s.annualUS[1],   s.annualUS[2]],   ytd:s.ytd2026US,    inv:true },
+      { l:'Monthly Avg',    v:[Math.round(s.annualTotal[0]/12),Math.round(s.annualTotal[1]/12),Math.round(s.annualTotal[2]/12)], ytd:Math.round(s.ytd2026Total/s.activeMonths2026), inv:true },
+      { l:'PH %',           v:[parseFloat((s.annualPH[0]/s.annualTotal[0]*100).toFixed(1)),parseFloat((s.annualPH[1]/s.annualTotal[1]*100).toFixed(1)),parseFloat((s.annualPH[2]/s.annualTotal[2]*100).toFixed(1))], ytd:parseFloat((s.ytd2026PH/s.ytd2026Total*100).toFixed(1)), pct:true },
+      { l:'US %',           v:[parseFloat((s.annualUS[0]/s.annualTotal[0]*100).toFixed(1)),parseFloat((s.annualUS[1]/s.annualTotal[1]*100).toFixed(1)),parseFloat((s.annualUS[2]/s.annualTotal[2]*100).toFixed(1))], ytd:parseFloat((s.ytd2026US/s.ytd2026Total*100).toFixed(1)), pct:true }
+    ];
+    rowDefs.forEach(function(row) {
+      var c24 = row.pct?(row.v[1]-row.v[0]):(row.v[1]-row.v[0])/row.v[0]*100;
+      var c25 = row.pct?(row.v[2]-row.v[1]):(row.v[2]-row.v[1])/row.v[1]*100;
+      var cl24 = c24<=0?(row.inv?'td-pos':'td-neg'):(row.inv?'td-neg':'td-pos');
+      var cl25 = c25<=0?(row.inv?'td-pos':'td-neg'):(row.inv?'td-neg':'td-pos');
+      var fmt = function(v){ return row.pct?v.toFixed(1)+'%':'$'+Math.round(v).toLocaleString(); };
+      var fmtC = function(c){ return row.pct?(c>0?'+':'')+c.toFixed(1)+'pp':(c>0?'+':'')+c.toFixed(1)+'%'; };
+      tb.innerHTML += '<tr><td style="font-weight:600;padding-left:.5rem;">'+row.l+'</td>'
+        +'<td style="text-align:right;">'+fmt(row.v[0])+'</td>'
+        +'<td style="text-align:right;">'+fmt(row.v[1])+'</td>'
+        +'<td class="'+cl24+'" style="text-align:right;">'+fmtC(c24)+'</td>'
+        +'<td style="text-align:right;">'+fmt(row.v[2])+'</td>'
+        +'<td class="'+cl25+'" style="text-align:right;">'+fmtC(c25)+'</td>'
+        +'<td style="text-align:right;color:var(--muted);">'+fmt(row.ytd)+'</td></tr>';
+    });
+
+  } else if (view === 'phus') {
+    if (head) head.innerHTML = '<tr><th>Entity</th><th style="text-align:right;">2023</th><th style="text-align:right;">2024</th><th style="text-align:right;">vs 2023</th><th style="text-align:right;">2025</th><th style="text-align:right;">vs 2024</th><th style="text-align:right;">2-Year &#916;</th></tr>';
+    tb.innerHTML = '';
+    [['PH Payroll',s.annualPH],['US Payroll',s.annualUS],['Total',s.annualTotal]].forEach(function(row) {
+      var v=row[1];
+      var c24=(v[1]-v[0])/v[0]*100, c25=(v[2]-v[1])/v[1]*100, c2y=(v[2]-v[0])/v[0]*100;
+      tb.innerHTML += '<tr><td style="font-weight:600;padding-left:.5rem;">'+row[0]+'</td>'
+        +'<td style="text-align:right;">$'+Math.round(v[0]).toLocaleString()+'</td>'
+        +'<td style="text-align:right;">$'+Math.round(v[1]).toLocaleString()+'</td>'
+        +'<td class="'+(c24<=0?'td-pos':'td-neg')+'" style="text-align:right;">'+(c24>0?'+':'')+c24.toFixed(1)+'%</td>'
+        +'<td style="text-align:right;">$'+Math.round(v[2]).toLocaleString()+'</td>'
+        +'<td class="'+(c25<=0?'td-pos':'td-neg')+'" style="text-align:right;">'+(c25>0?'+':'')+c25.toFixed(1)+'%</td>'
+        +'<td class="'+(c2y<=0?'td-pos':'td-neg')+'" style="text-align:right;font-weight:600;">'+(c2y>0?'+':'')+c2y.toFixed(1)+'%</td></tr>';
+    });
+
+  } else {
+    // Monthly table for selected year
+    var yr = payrollYr;
+    var prevYr = yr==='2023'?null:String(parseInt(yr)-1);
+    var prevHdr = prevYr ? '<th style="text-align:right;">'+prevYr+'</th><th style="text-align:right;">&#916; vs '+prevYr+'</th>' : '';
+    if (head) head.innerHTML = '<tr><th>Month</th><th style="text-align:right;">PH</th><th style="text-align:right;">US</th><th style="text-align:right;">Total</th>'+prevHdr+'<th style="text-align:right;">&#916; vs Jan</th></tr>';
+    tb.innerHTML = '';
+    var jan = s[yr].total[0];
+    s.months.forEach(function(m,i) {
+      if (s[yr].total[i] === 0 && i > 0) return;
+      var tot2 = s[yr].total[i];
+      var vsJan = i===0?'&mdash;':((tot2-jan)/jan*100).toFixed(1)+'%';
+      var vsJanCl = i===0?'':(tot2<=jan?'td-pos':'td-neg');
+      var prevRow = prevYr ? '<td style="text-align:right;color:var(--muted);">$'+Math.round(s[prevYr].total[i]).toLocaleString()+'</td>'
+        +'<td class="'+(tot2<=s[prevYr].total[i]?'td-pos':'td-neg')+'" style="text-align:right;">'
+        +((tot2-s[prevYr].total[i])/s[prevYr].total[i]*100).toFixed(1)+'%</td>' : '';
+      tb.innerHTML += '<tr><td style="font-weight:600;">'+m+'</td>'
+        +'<td style="text-align:right;color:var(--teal2);">$'+Math.round(s[yr].ph[i]).toLocaleString()+'</td>'
+        +'<td style="text-align:right;color:var(--warn);">$'+Math.round(s[yr].us[i]).toLocaleString()+'</td>'
+        +'<td style="text-align:right;font-weight:600;">$'+Math.round(tot2).toLocaleString()+'</td>'
+        +prevRow
+        +'<td class="'+vsJanCl+'" style="text-align:right;">'+vsJan+'</td></tr>';
+    });
+    // Total row
+    var totUS = Math.round(s[yr].us.filter(function(v){return v>0;}).reduce(function(a,b){return a+b;},0));
+    var totPH = Math.round(s[yr].ph.filter(function(v){return v>0;}).reduce(function(a,b){return a+b;},0));
+    var totTot = Math.round(s[yr].total.filter(function(v){return v>0;}).reduce(function(a,b){return a+b;},0));
+    tb.innerHTML += '<tr class="tot"><td>Total</td><td style="text-align:right;">$'+totPH.toLocaleString()+'</td><td style="text-align:right;">$'+totUS.toLocaleString()+'</td><td style="text-align:right;">$'+totTot.toLocaleString()+'</td>'+(prevYr?'<td colspan="2"></td>':'')+'<td></td></tr>';
+  }
+}
+
+function buildPayrollAnnual() {
+  showPayrollView('overview', document.querySelector('#payrollViewBtns .btn'));
 }
 
 </script>
