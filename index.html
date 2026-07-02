@@ -125,6 +125,7 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
 <div class="tab" onclick="sw(this,'ebitda')" data-group="finance-perf" style="display:none;">EBITDA Overview</div>
 <div class="tab" onclick="sw(this,'opex')" data-group="finance-perf" style="display:none;">Operating Expenses</div>
 <div class="tab" onclick="sw(this,'salary')" data-group="finance-perf" style="display:none;">Salary Analysis</div>
+<div class="tab" onclick="sw(this,'payroll')" data-group="finance-perf" style="display:none;">Annual Payroll Comparison</div>
 </div>
 
 
@@ -1305,48 +1306,6 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
   </div>
 
     <hr class="dv">
-  <p class="slabel">Annual payroll comparison &mdash; 2023 &middot; 2024 &middot; 2025 &middot; 2026 YTD</p>
-
-  <!-- View selector -->
-  <div class="btn-row" id="payrollViewBtns" style="margin-bottom:1rem;">
-    <button class="btn active" onclick="showPayrollView('overview',this)">&#128200; Annual Overview</button>
-    <button class="btn" onclick="showPayrollView('phus',this)">&#127987; PH vs. US Breakdown</button>
-    <button class="btn" onclick="showPayrollView('monthly',this)">&#128197; Monthly Detail by Year</button>
-  </div>
-
-  <!-- Year selector — shown only in Monthly view -->
-  <div id="payrollYrSel" class="btn-row" style="display:none;margin-bottom:1rem;align-items:center;gap:8px;">
-    <span style="font-size:11px;color:var(--muted);font-weight:600;">SELECT YEAR:</span>
-    <button class="btn" data-yr="2023" onclick="setPayrollYear('2023',this)">2023</button>
-    <button class="btn" data-yr="2024" onclick="setPayrollYear('2024',this)">2024</button>
-    <button class="btn active" data-yr="2025" onclick="setPayrollYear('2025',this)">2025</button>
-    <button class="btn" data-yr="2026" onclick="setPayrollYear('2026',this)">2026 YTD</button>
-  </div>
-
-  <!-- KPI cards — dynamic -->
-  <div id="payrollKpiCards" class="mg4" style="margin-bottom:1.25rem;"></div>
-
-  <!-- Chart pair — dynamic -->
-  <div class="two">
-    <div class="cc">
-      <div class="ct" id="payrollChart1Title">Annual payroll — PH &amp; US</div>
-      <div class="cs" id="payrollChart1Sub">2023 &middot; 2024 &middot; 2025 &middot; 2026 YTD &middot; Source: Payroll Summary sheets</div>
-      <div class="cw" style="height:240px;"><canvas id="c_payroll_main"></canvas></div>
-    </div>
-    <div class="cc">
-      <div class="ct" id="payrollChart2Title">Year-over-year change</div>
-      <div class="cs" id="payrollChart2Sub">% change vs prior year</div>
-      <div class="cw" style="height:240px;"><canvas id="c_payroll_secondary"></canvas></div>
-    </div>
-  </div>
-
-  <!-- Detail table — dynamic -->
-  <div class="cc"><div class="tscroll"><table class="dt">
-    <thead id="payrollTableHead"></thead>
-    <tbody id="payrollTableBody"></tbody>
-  </table></div></div>
-
-  <hr class="dv">
   <p class="slabel">Headcount efficiency &mdash; revenue per FTE</p>
   <div class="good-box"><strong>&#9432; Source: approved org headcount (98 FTE) &times; Sales by Company revenue</strong> Trended monthly alongside the salary-to-revenue ratio above to give a complementary view of labor efficiency.</div>
   <div id="headcountEffCards" class="mg3" style="margin-bottom:1rem;"></div>
@@ -1609,6 +1568,58 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
     <div class="ins neg-ins"><div class="it">New recurring pipeline at risk</div>New recurring sales dropped 44.3% from $353K (2023) to $197K (2025) — the steepest sustained decline.</div>
     <div class="ins warn-ins"><div class="it">Attrition elevated but improving</div>Rose 3.2%&rarr;4.2% in 2024, pulled back to 4.0% in 2025. Still above the 2023 baseline.</div>
     <div class="ins good-ins"><div class="it">Payroll savings in 2025</div>Total payroll with charges dropped from $4.15M (2024) to $3.44M (2025) — $706.5K saved YoY.</div>
+  </div>
+</div>
+
+<div id="pane-payroll" class="pane">
+  <p class="slabel">Annual payroll comparison &mdash; 2023 &middot; 2024 &middot; 2025 &middot; 2026 YTD &middot; Source: PH Team Payroll Breakdown</p>
+
+  <!-- View selector -->
+  <div class="btn-row" id="payrollViewBtns" style="margin-bottom:1rem;">
+    <button class="btn active" onclick="showPayrollView('overview',this)">&#128200; Annual Overview</button>
+    <button class="btn" onclick="showPayrollView('phus',this)">&#127987; PH vs. US Breakdown</button>
+    <button class="btn" onclick="showPayrollView('monthly',this)">&#128197; Monthly Detail by Year</button>
+  </div>
+
+  <!-- Year selector — shown only in Monthly view -->
+  <div id="payrollYrSel" class="btn-row" style="display:none;margin-bottom:1rem;align-items:center;gap:8px;">
+    <span style="font-size:11px;color:var(--muted);font-weight:600;">SELECT YEAR:</span>
+    <button class="btn" data-yr="2023" onclick="setPayrollYear('2023',this)">2023</button>
+    <button class="btn" data-yr="2024" onclick="setPayrollYear('2024',this)">2024</button>
+    <button class="btn active" data-yr="2025" onclick="setPayrollYear('2025',this)">2025</button>
+    <button class="btn" data-yr="2026" onclick="setPayrollYear('2026',this)">2026 YTD</button>
+  </div>
+
+  <!-- KPI cards — dynamic -->
+  <div id="payrollKpiCards" class="mg4" style="margin-bottom:1.25rem;"></div>
+
+  <!-- Chart pair — dynamic -->
+  <div class="two">
+    <div class="cc">
+      <div class="ct" id="payrollChart1Title">Annual payroll — PH &amp; US</div>
+      <div class="cs" id="payrollChart1Sub">2023 &middot; 2024 &middot; 2025 &middot; 2026 YTD</div>
+      <div class="cw" style="height:240px;"><canvas id="c_payroll_main"></canvas></div>
+    </div>
+    <div class="cc">
+      <div class="ct" id="payrollChart2Title">Year-over-year change</div>
+      <div class="cs" id="payrollChart2Sub">% change vs prior year</div>
+      <div class="cw" style="height:240px;"><canvas id="c_payroll_secondary"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Detail table — dynamic -->
+  <hr class="dv">
+  <p class="slabel" id="payrollTableLabel">Detailed breakdown</p>
+  <div class="cc"><div class="tscroll"><table class="dt">
+    <thead id="payrollTableHead"></thead>
+    <tbody id="payrollTableBody"></tbody>
+  </table></div></div>
+
+  <div class="ig ig-4">
+    <div class="ins neg-ins"><div class="it">2024 was peak payroll year</div>Total payroll reached $4.15M in 2024 — $533K above 2023 and the highest of any year tracked.</div>
+    <div class="ins good-ins"><div class="it">2025 savings: $706K vs 2024</div>Total payroll dropped 17.0% in 2025, driven primarily by a 26.0% reduction in US payroll.</div>
+    <div class="ins warn-ins"><div class="it">PH payroll growing as share</div>PH share shifted from 36% (2023) to 46% (2025) — reflecting the team restructure toward PH-based roles.</div>
+    <div class="ins good-ins"><div class="it">2026 on track for further reduction</div>Jan–Jun 2026 total of $1.01M annualises to ~$2.02M — a further ~41% decline vs 2025 if the trend holds.</div>
   </div>
 </div>
 
@@ -2026,6 +2037,9 @@ function initTab(name) {
 
   if (name === 'billing') { setTimeout(function() { initBilling(); }, 80); }
   if (name === 'ebitda') { setTimeout(function() { initEbitda(); }, 80); }
+  if (name === 'payroll') {
+    setTimeout(function(){ buildPayrollAnnual(); }, 80);
+  }
   if (name === 'opex') { setTimeout(function() { if(!opexInited){opexInited=true;initOpex();} }, 80); }
 }
 
