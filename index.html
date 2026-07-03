@@ -131,36 +131,34 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
 
 
 <div id="pane-overview" class="pane active">
-  <p class="slabel">Combined overview — all entities · Jan–May 2026</p>
+  <p class="slabel">Combined overview — all entities &middot; Jan&ndash;Jun 2026</p>
   <div class="mg4">
-    <div class="mc"><div class="lbl">Total sales (YTD)</div><div class="val amb">$1.992M</div><div class="sub">Avg $398.3K/mo</div></div>
-    <div class="mc"><div class="lbl">New sales (YTD)</div><div class="val pos">$149.1K</div><div class="sub">RTM + Unify</div></div>
-    <div class="mc"><div class="lbl">Cancellations (YTD)</div><div class="val neg">$102.3K</div><div class="sub">All entities</div></div>
-    <div class="mc"><div class="lbl">Net new vs. cancel</div><div class="val neg">-$52.0K</div><div class="sub">Recurring net loss</div></div>
-    <div class="mc"><div class="lbl">Active clients (May)</div><div class="val">217</div><div class="sub">Down from 246 in Jan</div></div>
-    <div class="mc"><div class="lbl">Clients cancelled (May)</div><div class="val neg">16</div><div class="sub">$23,996 in cancel value</div></div>
-    <div class="mc"><div class="lbl">Payroll (YTD)</div><div class="val">$817.8K</div><div class="sub">US + PH combined</div></div>
-    <div class="mc"><div class="lbl">Partnership commissions</div><div class="val teal">$10.7K</div><div class="sub">YTD all partners</div></div>
+    <div class="mc"><div class="lbl">Total sales (YTD)</div><div class="val amb">$2.394M</div><div class="sub">Avg $398.9K/mo &middot; 6 months</div></div>
+    <div class="mc"><div class="lbl">New sales (YTD)</div><div class="val pos">$235.6K</div><div class="sub">RTM + Unify</div></div>
+    <div class="mc"><div class="lbl">Cancellations (YTD)</div><div class="val neg">$160.0K</div><div class="sub">All entities</div></div>
+    <div class="mc"><div class="lbl">Net new vs. cancel</div><div class="val neg">-$76.1K</div><div class="sub">Recurring net loss</div></div>
+    <div class="mc"><div class="lbl">Active clients (Jun)</div><div class="val">226</div><div class="sub">Up from 217 in May</div></div>
+    <div class="mc"><div class="lbl">Clients cancelled (Jun)</div><div class="val neg">28</div><div class="sub">$57,712 in cancel value</div></div>
+    <div class="mc"><div class="lbl">Payroll (YTD)</div><div class="val">$962.7K</div><div class="sub">US + PH combined</div></div>
+    <div class="mc"><div class="lbl">Partnership commissions</div><div class="val teal">$10.7K</div><div class="sub">YTD Jan&ndash;May all partners</div></div>
   </div>
   <div class="three">
-    <div class="cc" style="margin-bottom:0;"><div class="ct">RTM</div><div class="cs" style="color:#FDA813;">$1.870M YTD · 93.9%</div><div class="cw" style="height:170px;"><canvas id="c_ov_rtm"></canvas></div></div>
-    <div class="cc" style="margin-bottom:0;"><div class="ct">Unify360</div><div class="cs" style="color:#0D7A8C;">$92.4K YTD · 4.6%</div><div class="cw" style="height:170px;"><canvas id="c_ov_u360"></canvas></div></div>
-    <div class="cc" style="margin-bottom:0;"><div class="ct">NoDig</div><div class="cs" style="color:#534AB7;">$29.2K YTD · 1.5%</div><div class="cw" style="height:170px;"><canvas id="c_ov_nodig"></canvas></div></div>
+    <div class="cc" style="margin-bottom:0;"><div class="ct">RTM</div><div class="cs" style="color:#FDA813;">$2.251M YTD &middot; 94.0%</div><div class="cw" style="height:170px;"><canvas id="c_ov_rtm"></canvas></div></div>
+    <div class="cc" style="margin-bottom:0;"><div class="ct">Unify360</div><div class="cs" style="color:#0D7A8C;">$108.8K YTD &middot; 4.5%</div><div class="cw" style="height:170px;"><canvas id="c_ov_u360"></canvas></div></div>
+    <div class="cc" style="margin-bottom:0;"><div class="ct">NoDig</div><div class="cs" style="color:#534AB7;">$34.3K YTD &middot; 1.4%</div><div class="cw" style="height:170px;"><canvas id="c_ov_nodig"></canvas></div></div>
   </div>
   <div style="margin-bottom:1rem;"></div>
   <div class="two">
-    <div class="cc" style="margin-bottom:0;"><div class="ct">New sales vs. cancellations</div><div class="cs">Combined · monthly</div><div class="leg"><span><span class="ld" style="background:#2ec48a;"></span>New</span><span><span class="ld" style="background:#f26b5b;"></span>Cancels</span></div><div class="cw" style="height:200px;"><canvas id="c_ov_nvc"></canvas></div></div>
+    <div class="cc" style="margin-bottom:0;"><div class="ct">New sales vs. cancellations</div><div class="cs">Combined &middot; monthly</div><div class="leg"><span><span class="ld" style="background:#2ec48a;"></span>New</span><span><span class="ld" style="background:#f26b5b;"></span>Cancels</span></div><div class="cw" style="height:200px;"><canvas id="c_ov_nvc"></canvas></div></div>
     <div class="cc" style="margin-bottom:0;"><div class="ct">Active client count</div><div class="cs">Month-end</div><div class="cw" style="height:200px;"><canvas id="c_ov_clients"></canvas></div></div>
   </div>
   <div style="margin-bottom:1rem;"></div>
-  <p class="slabel">Running sales summary — by entity · Jan–May 2026</p>
+  <p class="slabel">Running sales summary — by entity &middot; Jan&ndash;Jun 2026</p>
   <div class="cc"><div class="tscroll"><table class="dt" id="entitySummaryTable">
     <thead>
       <tr>
         <th>Entity</th>
         <th style="text-align:right;">Total Sales</th>
-        <th style="text-align:right;">Paid</th>
-        <th style="text-align:right;">Outstanding</th>
         <th style="text-align:right;">Cancellations</th>
         <th style="text-align:right;">New Sales</th>
       </tr>
@@ -168,46 +166,38 @@ hr.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
     <tbody>
       <tr>
         <td style="font-weight:600;color:var(--amber);">RTM</td>
-        <td class="td-warn" style="text-align:right;">$1,870,175</td>
-        <td class="td-pos" style="text-align:right;">$1,845,789</td>
-        <td style="text-align:right;color:var(--warn);">$18,406</td>
-        <td class="td-neg" style="text-align:right;">$101,313</td>
-        <td class="td-pos" style="text-align:right;">$52,574</td>
+        <td class="td-warn" style="text-align:right;">$2,250,769</td>
+        <td class="td-neg" style="text-align:right;">$153,316</td>
+        <td class="td-pos" style="text-align:right;">$233,347</td>
       </tr>
       <tr>
         <td style="font-weight:600;color:var(--teal2);">Unify360</td>
-        <td class="td-warn" style="text-align:right;">$92,369</td>
-        <td class="td-pos" style="text-align:right;">$88,680</td>
-        <td style="text-align:right;color:var(--warn);">$1,944</td>
-        <td class="td-neg" style="text-align:right;">$4,811</td>
-        <td style="text-align:right;color:var(--muted);">—</td>
+        <td class="td-warn" style="text-align:right;">$108,821</td>
+        <td class="td-neg" style="text-align:right;">$5,652</td>
+        <td class="td-pos" style="text-align:right;">$2,241</td>
       </tr>
       <tr>
         <td style="font-weight:600;color:#534AB7;">NoDig</td>
-        <td class="td-warn" style="text-align:right;">$29,151</td>
-        <td class="td-pos" style="text-align:right;">$27,736</td>
-        <td style="text-align:right;color:var(--warn);">$1,415</td>
-        <td class="td-neg" style="text-align:right;">$558</td>
-        <td class="td-pos" style="text-align:right;">$5,580</td>
+        <td class="td-warn" style="text-align:right;">$34,276</td>
+        <td class="td-neg" style="text-align:right;">$1,056</td>
+        <td style="text-align:right;color:var(--muted);">&mdash;</td>
       </tr>
       <tr class="tot">
         <td>Combined</td>
-        <td style="text-align:right;">$1,991,695</td>
-        <td style="text-align:right;">$1,962,205</td>
-        <td style="text-align:right;">$21,765</td>
-        <td style="text-align:right;">$106,682</td>
-        <td style="text-align:right;">$58,154</td>
+        <td style="text-align:right;">$2,393,866</td>
+        <td style="text-align:right;">$160,025</td>
+        <td style="text-align:right;">$235,588</td>
       </tr>
     </tbody>
   </table></div></div>
 
   <div class="ig">
-    <div class="ins neg-ins"><div class="it">Net recurring deficit</div>YTD new recurring ($50.3K) vs. cancellations ($102.3K) = -$52K net loss. April was the only profitable month.</div>
-    <div class="ins warn-ins"><div class="it">Client attrition</div>Active clients dropped 246→217 over 5 months (11.8%). At current pace ~70 clients lost annually.</div>
-    <div class="ins good-ins"><div class="it">Cancellation improvement</div>Cancel dollars dropped $36.1K→$9.8K in April before spiking in May. March and April showed real improvement.</div>
-    <div class="ins info-ins"><div class="it">NoDig is stable</div>Flat ~$5.9K/mo with near-zero cancellations. Small but reliable recurring contribution.</div>
-    <div class="ins warn-ins"><div class="it">RTM carries 93.9% of revenue</div>Heavy concentration. Any acceleration in cancellations directly threatens total revenue.</div>
-    <div class="ins good-ins"><div class="it">April recovery signal</div>RTM bounced from $363.9K in March to $375.8K in April — the one month the trend reversed.</div>
+    <div class="ins neg-ins"><div class="it">Cancellations spiked in June</div>Jun cancellations hit $57,712 — the highest single month of 2026, reversing the Apr improvement trend. SEO ($23.6K) and LSA ($10.1K) were the top drivers.</div>
+    <div class="ins warn-ins"><div class="it">Client count recovering</div>Active clients rose 217&rarr;226 in June after 5 months of decline from 246. But 28 cancellations in one month signals ongoing pressure.</div>
+    <div class="ins good-ins"><div class="it">New sales surge in June</div>Jun new sales hit $85,358 (RTM alone) — the highest month of 2026 by far. Needs to sustain to offset the cancel spike.</div>
+    <div class="ins info-ins"><div class="it">RTM carries 94.0% of revenue</div>$2.251M of $2.394M total YTD. Unify and NoDig are stable but marginal. Any RTM cancel acceleration is a direct revenue threat.</div>
+    <div class="ins warn-ins"><div class="it">Net recurring deficit widens</div>New recurring ($83.9K YTD) vs. cancellations ($160.0K) = -$76.1K net loss. All 6 months are in deficit except April.</div>
+    <div class="ins good-ins"><div class="it">Revenue holding near $400K/mo</div>Avg $398.9K/mo over 6 months despite a declining trend Jan ($415.8K) &rarr; Jun ($386.5K). Jul forecast: $334.3K.</div>
   </div>
 </div>
 
