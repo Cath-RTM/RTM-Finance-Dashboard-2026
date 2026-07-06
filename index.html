@@ -2065,11 +2065,31 @@ function _fetchBillingLive(){
 
 // ── LIVE GOOGLE SHEETS FEED ──────────────────────────────────────────────────
 var _newSalesFeedURL='https://script.google.com/macros/s/AKfycbyLcxco-jdUe0eVtn5FxGZAE8vv0nn9egDhghPbuded-e4O3mGZV7mw_4DEoPEc-qph/exec';
+// ── New Recurring (AM Upsell only, Column M) live wiring ──────────────────────
+var _liveNR=null;
+function _paintNRChart(id,obj){
+  var ch=_rtmCharts[id];
+  if(!ch||!obj)return;
+  var entries=Object.keys(obj).map(function(k){return [k,obj[k]];})
+    .filter(function(e){return typeof e[1]==='number'&&e[1]>0;})
+    .sort(function(a,b){return b[1]-a[1];});
+  if(!entries.length)return;
+  ch.data.labels=entries.map(function(e){return e[0];});
+  ch.data.datasets[0].data=entries.map(function(e){return e[1];});
+  ch.update();
+}
+function _applyLiveNR(){
+  if(!_liveNR)return;
+  _paintNRChart('c_nr_am',_liveNR.byAM);
+  _paintNRChart('c_nr_cat',_liveNR.byCategory);
+}
 function _fetchNewSalesLive(){
   fetch(_newSalesFeedURL)
     .then(function(r){return r.json();})
     .then(function(data){
-      if(!data||!data.newSales||data.newSales.length!==6)return;
+      if(!data)return;
+      if(data.newRecurring){_liveNR=data.newRecurring;_applyLiveNR();console.log('[RTM] Live New Recurring (AM Upsell):',data.newRecurring);}
+      if(!data.newSales||data.newSales.length!==6)return;
       var ns=data.newSales;
       var ytd=data.ytd;
       var cancelYtd=36108+17273+15091+9845+23996+57712;
@@ -2480,6 +2500,7 @@ if(name==='sales'){_safeChart(document.getElementById('c_s_rtm'),{type:'bar',dat
   _safeChart(document.getElementById('c_nr_cat'),{type:'bar',data:{labels:['RTM Pkg','SEO','GBP','LSA','PPC','Social','Call','LBO','Software','Yelp'],datasets:[
     {data:[18779,17600,12630,12501,6899,3548,3677,2998,2340,659],backgroundColor:'#2ec48a',borderRadius:3}
   ]},options:ho()});
+_applyLiveNR();
 if(name==='services'){
   var svcLabels=['SEO','LSA','LBO','GBP','PPC','RTM Package','Social','Design','Software','Hosting','Call','NoDig','Yelp','Email','Apps'];
   var svcVals=[620685,430550,242820,220628,161345,147083,128238,107903,107004,62239,32594,31895,21243,8363,9667];
