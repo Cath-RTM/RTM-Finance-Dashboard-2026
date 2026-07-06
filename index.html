@@ -212,6 +212,11 @@
  <div class="cw" style="height:210px;"><canvas id="c_nr_cat"></canvas></div>
  </div>
  </div>
+ <div class="cc">
+ <div class="ct">Sales by original sales rep</div>
+ <div class="cs">Total value &mdash; YTD Jan&ndash;Jun 2026</div>
+ <div class="cw" style="height:200px;"><canvas id="c_nr_rep"></canvas></div>
+ </div>
  <p class="slabel">Running sales summary — by entity · Jan–Jun 2026</p>
  <div class="cc"><div class="tscroll"><table class="dt">
  <thead>
@@ -2080,8 +2085,15 @@ function _paintNRChart(id,obj){
 }
 function _applyLiveNR(){
   if(!_liveNR)return;
+  if(_liveNR.monthly&&_liveNR.monthly.length){
+    var mch=_rtmCharts['c_nr_monthly'];
+    if(mch&&mch.data.datasets[0]){mch.data.datasets[0].data=_liveNR.monthly;mch.update();}
+    var vch=_rtmCharts['c_nr_vs_cancel'];
+    if(vch){vch.data.datasets.forEach(function(ds){if(ds.label==='New'||ds.label==='New recurring'){ds.data=_liveNR.monthly;}});vch.update();}
+  }
   _paintNRChart('c_nr_am',_liveNR.byAM);
   _paintNRChart('c_nr_cat',_liveNR.byCategory);
+  _paintNRChart('c_nr_rep',_liveNR.byRep);
 }
 function _fetchNewSalesLive(){
   fetch(_newSalesFeedURL)
@@ -2096,11 +2108,11 @@ function _fetchNewSalesLive(){
       var netYtd=ytd-cancelYtd;
       var netSign=netYtd>=0?'+':'';
       // Update all chart datasets labelled 'New'
-      ['c_nr_monthly','c_nr_vs_cancel','c_ov_nvc','c_ov_nvc2'].forEach(function(id){
+      ['c_ov_nvc','c_ov_nvc2'].forEach(function(id){
         var ch=_rtmCharts[id];
         if(!ch)return;
         ch.data.datasets.forEach(function(ds){
-          if(ds.label==='New'||ds.label==='New Sales'||id==='c_nr_monthly'){ds.data=ns;}
+          if(ds.label==='New'||ds.label==='New Sales'){ds.data=ns;}
         });
         ch.update();
       });
@@ -2488,17 +2500,20 @@ if(name==='sales'){_safeChart(document.getElementById('c_s_rtm'),{type:'bar',dat
     {label:'Cancels',data:[36108,17273,15091,9845,23996,57712],backgroundColor:'#f26b5b',borderRadius:3}
   ]},options:bo()});
   _safeChart(document.getElementById('c_nr_monthly'),{type:'bar',data:{labels:months,datasets:[
-    {data:[33625,28292,29248,35372,49071,86527],backgroundColor:'#2ec48a',borderRadius:3}
+    {data:[12340,4730,13336,11381,8476,33663],backgroundColor:'#2ec48a',borderRadius:3}
   ]},options:bo()});
   _safeChart(document.getElementById('c_nr_vs_cancel'),{type:'bar',data:{labels:months,datasets:[
-    {label:'New',data:[33625,28292,29248,35372,49071,86527],backgroundColor:'#2ec48a',borderRadius:3},
+    {label:'New',data:[12340,4730,13336,11381,8476,33663],backgroundColor:'#2ec48a',borderRadius:3},
     {label:'Cancel',data:[36108,17273,15091,9845,23996,57712],backgroundColor:'#f26b5b',borderRadius:3}
   ]},options:bo()});
-  _safeChart(document.getElementById('c_nr_am'),{type:'bar',data:{labels:['Madison','Melissa','Kelly','Jason','Veronica','Riza','Fay','Ada'],datasets:[
-    {data:[27683,17836,9306,8545,7618,6953,2330,1199],backgroundColor:'#2ec48a',borderRadius:3}
+  _safeChart(document.getElementById('c_nr_am'),{type:'bar',data:{labels:['Kelly','Jason','Melissa','Riza','Ada','Ann'],datasets:[
+    {data:[2214,1500,1479,1264,699,399],backgroundColor:'#2ec48a',borderRadius:3}
   ]},options:ho()});
-  _safeChart(document.getElementById('c_nr_cat'),{type:'bar',data:{labels:['RTM Pkg','SEO','GBP','LSA','PPC','Social','Call','LBO','Software','Yelp'],datasets:[
-    {data:[18779,17600,12630,12501,6899,3548,3677,2998,2340,659],backgroundColor:'#2ec48a',borderRadius:3}
+  _safeChart(document.getElementById('c_nr_cat'),{type:'bar',data:{labels:['PPC','SEO','Social','GBP','Other','LSA','Reviews'],datasets:[
+    {data:[3060,1500,1298,699,500,399,99],backgroundColor:'#2ec48a',borderRadius:3}
+  ]},options:ho()});
+  _safeChart(document.getElementById('c_nr_rep'),{type:'bar',data:{labels:['Courtlyn','House','Courtlyn/Sean'],datasets:[
+    {data:[216366,38451,18372],backgroundColor:'#FDA813',borderRadius:3}
   ]},options:ho()});
 _applyLiveNR();
 if(name==='services'){
