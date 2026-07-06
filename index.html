@@ -2269,11 +2269,12 @@ function showEbYear(yr,el){
   var head=document.getElementById('ebTableLabel');
   if(head)head.textContent=yr+' Monthly Breakdown';
   if(tb&&d.sales){tb.innerHTML='';d.months.forEach(function(m,i){
-    var s=d.sales[i],o=d.opex[i],e=d.ebitda[i],mg=s>0?Math.round(e/s*100):0;
-    var pCls=e>=0?'td-pos':'td-neg';
+    var s=d.sales[i],o=d.opex[i],e=d.ebitda[i],ni=s-o,mg=s>0?Math.round(e/s*100):0;
+    var pCls=e>=0?'td-pos':'td-neg';var niCls=ni>=0?'td-pos':'td-neg';
     tb.innerHTML+='<tr><td style="font-weight:500;">'+m+'</td>'+
       '<td class="td-warn" style="text-align:right;">$'+(s/1000).toFixed(0)+'K</td>'+
       '<td class="td-neg" style="text-align:right;">$'+(o/1000).toFixed(0)+'K</td>'+
+      '<td class="'+niCls+'" style="text-align:right;">$'+(ni/1000).toFixed(0)+'K</td>'+
       '<td class="'+pCls+'" style="text-align:right;">$'+(e/1000).toFixed(0)+'K</td>'+
       '<td class="'+pCls+'" style="text-align:right;">'+mg+'%</td></tr>';
   });}
