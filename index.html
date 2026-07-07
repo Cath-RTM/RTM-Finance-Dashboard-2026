@@ -16,10 +16,11 @@
 <div class="nav">
 <div class="tab active" onclick="sw(this,'overview')" data-group="sales-perf">Overview by Company <span id="_liveSplitBadge" style="display:none;font-size:10px;background:#FDA813;color:#042234;padding:2px 6px;border-radius:8px;font-weight:600;">● LIVE</span></div>
 <div class="tab" onclick="sw(this,'services')" data-group="sales-perf">Sales Activity <span id="_liveSvcBadge" title="Live from Google Sheets" style="display:none;font-size:10px;background:#0D7A8C;color:#fff;padding:2px 6px;border-radius:8px;font-weight:600;">● LIVE</span></div>
-<div class="tab" onclick="sw(this,'analytics')" data-group="sales-perf">Sales Analytics</div>
+
 <div class="tab" onclick="sw(this,'cancel')" data-group="sales-perf">Cancellations <span id="_liveCancelBadge" title="Live from Google Sheets" style="display:none;font-size:10px;background:#f26b5b;color:#fff;padding:2px 6px;border-radius:8px;font-weight:600;">● LIVE</span></div>
 <div class="tab" onclick="sw(this,'billing')" data-group="sales-perf">Billing Activity <span id="_liveBillingBadge" style="display:none;font-size:10px;background:#0D7A8C;color:#fff;padding:2px 6px;border-radius:8px;font-weight:600;">● LIVE</span></div>
-<div class="tab" onclick="sw(this,'forecast')" data-group="sales-perf">Monthly Forecast <span id="_liveForecastBadge" style="display:none;font-size:10px;background:#FDA813;color:#042234;padding:2px 6px;border-radius:8px;font-weight:600;">● LIVE</span></div>
+<div class="tab" onclick="sw(this,'forecast')" data-group="sales-perf">Recurring Forecast <span id="_liveForecastBadge" style="display:none;font-size:10px;background:#FDA813;color:#042234;padding:2px 6px;border-radius:8px;font-weight:600;">● LIVE</span></div>
+<div class="tab" onclick="sw(this,'analytics')" data-group="sales-perf">Sales Analytics</div>
 <div class="tab" onclick="sw(this,'annual')" data-group="sales-perf">Annual Performance Overview</div>
 <div class="tab" onclick="sw(this,'ebitda')" data-group="finance-perf" style="display:none;">EBITDA Overview</div>
 <div class="tab" onclick="sw(this,'opex')" data-group="finance-perf" style="display:none;">Operating Expenses <span id="_liveOpexBadge" title="Live from Google Sheets" style="display:none;font-size:10px;background:#534AB7;color:#fff;padding:2px 6px;border-radius:8px;font-weight:600;">● LIVE</span> <span id="_liveToolsBadge" title="Live Tools" style="display:none;font-size:10px;background:#0D7A8C;color:#fff;padding:2px 6px;border-radius:8px;font-weight:600;">🔧 LIVE</span></div>
@@ -651,111 +652,100 @@
 </div>
 </div>
 <div id="pane-analytics" class="pane">
-<p class="slabel">Sales velocity &mdash; AM campaign acquisition vs. attrition</p>
- <div class="good-box"><strong>&#9432; Methodology</strong> "Won" = campaigns billed for the first time after January (proxy for new client acquisition). "Lost" = campaigns cancelled. This is not a true close-rate (no lost-prospect data exists in source files) &mdash; it measures net portfolio growth per AM, not deal conversion.</div>
- <div id="amWinLossCards" class="mg3" style="margin-bottom:1rem;"></div>
- <div class="two">
- <div class="cc">
- <div class="ct">Campaigns won vs. lost by AM</div>
- <div class="cs">Feb&ndash;Jun 2026 (won) &middot; Jan&ndash;Jun 2026 (lost)</div>
- <div class="cw" style="height:260px;"><canvas id="c_am_winloss"></canvas></div>
- </div>
- <div class="cc">
- <div class="ct">AM net acquisition detail</div>
- <div class="cs">Sorted by net campaigns gained</div>
- <div class="tscroll"><table class="dt">
- <thead><tr><th>AM</th><th style="text-align:center;">Won</th><th style="text-align:center;">Lost</th><th style="text-align:center;">Net</th><th style="text-align:center;">Win Ratio</th></tr></thead>
- <tbody id="amWinLossTableBody"></tbody>
- </table></div>
- </div>
- </div>
- <hr class="dv">
- <p class="slabel">Pricing &amp; discount leakage &mdash; same-campaign price tracking</p>
- <div class="good-box"><strong>&#9432; Methodology</strong> Tracks campaigns billed in both January and May at the same service. Shows whether pricing held, increased, or eroded deal-by-deal &mdash; isolating true price drift from mix-shift effects.</div>
- <div id="priceErosionCards" class="mg3" style="margin-bottom:1rem;"></div>
- <div class="cc">
- <div class="ct">Net price change by service</div>
- <div class="cs">Jan&rarr;May, stable campaigns only</div>
- <div class="cw" style="height:220px;"><canvas id="c_price_erosion"></canvas></div>
- </div>
- <div class="cc"><div class="tscroll"><table class="dt">
- <thead><tr><th>Service</th><th style="text-align:center;">Stable Camps</th><th style="text-align:center;">Up</th><th style="text-align:center;">Down</th><th style="text-align:center;">Same</th><th style="text-align:right;">Jan Total</th><th style="text-align:right;">May Total</th><th style="text-align:right;">% Change</th></tr></thead>
- <tbody id="priceErosionTableBody"></tbody>
- </table></div></div>
- <p class="slabel">Price change attribution &mdash; upgrades, downgrades &amp; unflagged leakage</p>
- <div class="good-box"><strong>&#9432; Methodology</strong> Cross-references each stable campaign's price delta against its billing Remarks (Upgrade/Downgrade tags). "Unflagged" = a price moved but no corresponding Upgrade/Downgrade was logged in the billing master &mdash; this is the leakage that isn't formally tracked or approved anywhere. There is no separate "Discount" tag in source data, so unflagged decreases are the closest available proxy for untracked discounting.</div>
- <div id="priceAttributionCards" class="mg3" style="margin-bottom:1rem;"></div>
- <div class="cc">
- <div class="ct">Price change $ by attribution type</div>
- <div class="cs">Stacked &middot; logged vs. unflagged, up vs. down</div>
- <div class="cw" style="height:260px;"><canvas id="c_price_attribution"></canvas></div>
- </div>
- <div class="cc"><div class="tscroll"><table class="dt">
- <thead><tr><th>Service</th><th style="text-align:center;">Logged Upgrade</th><th style="text-align:center;">Unflagged Increase</th><th style="text-align:center;">Logged Downgrade</th><th style="text-align:center;">Unflagged Decrease</th><th style="text-align:right;">Unflagged $ at Risk</th></tr></thead>
- <tbody id="priceAttributionTableBody"></tbody>
- </table></div></div>
- <p class="slabel">Cancellation risk &mdash; unflagged price drops vs. baseline</p>
- <div class="good-box"><strong>&#9432; Methodology</strong> Checks whether campaigns with an unflagged price decrease (above) later appear in the cancellation data, compared to the cancellation rate among all stable campaigns. Sample size is small (9 campaigns), so treat this as directional only, not a statistically reliable signal.</div>
- <div id="cancelErosionCards" class="mg3" style="margin-bottom:1rem;"></div>
- <div class="cc"><div class="tscroll"><table class="dt">
- <thead><tr><th>Group</th><th style="text-align:center;">Campaigns</th><th style="text-align:center;">Cancelled</th><th style="text-align:center;">Cancellation Rate</th></tr></thead>
- <tbody id="cancelErosionTableBody"></tbody>
- </table></div></div>
- <hr class="dv">
- <p class="slabel">Profit per service &mdash; revenue minus allocated payroll, overhead &amp; tools</p>
- <div class="good-box"><strong>&#9432; Source: RTM_Dept_Expense_Allocation_by_Service.xlsx</strong> Cost = monthly allocated direct payroll + overhead + tools, &times;5 months. Profit = YTD revenue minus YTD allocated cost. Negative margins indicate services where allocated overhead currently exceeds direct revenue generated.</div>
- <div id="profitServiceCards" class="mg3" style="margin-bottom:1rem;"></div>
- <div class="cc">
- <div class="ct">YTD profit by service</div>
- <div class="cs">Revenue minus allocated cost &middot; Jan&ndash;Jun 2026</div>
- <div class="cw" style="height:340px;"><canvas id="c_profit_service"></canvas></div>
- </div>
- <div class="cc"><div class="tscroll"><table class="dt">
- <thead><tr><th>Service</th><th style="text-align:center;">Campaigns</th><th style="text-align:right;">Revenue</th><th style="text-align:right;">Allocated Cost</th><th style="text-align:right;">Profit</th><th style="text-align:right;">Margin</th></tr></thead>
- <tbody id="profitServiceTableBody"></tbody>
- </table></div></div>
- <p class="slabel">Profit per campaign &mdash; normalized by service size</p>
- <div class="good-box"><strong>&#9432; Why this view matters</strong> The aggregate view above treats each service as one unit regardless of how many campaigns it serves. Hosting (141 campaigns) and Software (120 campaigns) absorb the same flat overhead allocation as smaller services, which can understate their per-deal profitability. This view divides revenue, cost, and profit by active campaign count to show true unit economics per service.</div>
- <div id="perCampaignCards" class="mg3" style="margin-bottom:1rem;"></div>
- <div class="cc">
- <div class="ct">Profit per campaign by service</div>
- <div class="cs">YTD revenue and cost &divide; active campaign count</div>
- <div class="cw" style="height:340px;"><canvas id="c_per_campaign"></canvas></div>
- </div>
- <div class="cc"><div class="tscroll"><table class="dt">
- <thead><tr><th>Service</th><th style="text-align:center;">Campaigns</th><th style="text-align:right;">Revenue / Camp</th><th style="text-align:right;">Cost / Camp</th><th style="text-align:right;">Profit / Camp</th></tr></thead>
- <tbody id="perCampaignTableBody"></tbody>
- </table></div></div>
- <hr class="dv">
- <p class="slabel">AM profitability &mdash; revenue minus AM-attributed allocated cost</p>
- <div class="good-box"><strong>&#9432; Methodology</strong> Cost allocated using <strong>current month (Jun 2026)</strong> as the basis: each AM's share of May revenue per service determines their share of that service's monthly cost. YTD cost = monthly cost &times;5. This reflects the current portfolio mix rather than a YTD average, giving a more accurate view of each AM's cost footprint today.</div>
- <div id="amProfitCards" class="mg3" style="margin-bottom:1rem;"></div>
- <div class="cc">
- <div class="ct">YTD profit by AM</div>
- <div class="cs">Revenue minus AM-attributed allocated cost &middot; Jan&ndash;Jun 2026</div>
- <div class="cw" style="height:320px;"><canvas id="c_am_profit"></canvas></div>
- </div>
- <div class="cc"><div class="tscroll"><table class="dt">
- <thead><tr><th>AM</th><th style="text-align:right;">Revenue</th><th style="text-align:right;">Allocated Cost</th><th style="text-align:right;">Profit</th><th style="text-align:right;">Margin</th></tr></thead>
- <tbody id="amProfitTableBody"></tbody>
- </table></div></div>
- <hr class="dv">
- <p class="slabel">AM tenure vs. performance</p>
- <div class="good-box"><strong>&#9432; Name mapping (billing master first name &rarr; full HR name)</strong> Kelly = Racquel T. Rafal &middot; Veronica = Veronica Kott (US) &middot; Ada = Ada Fleur A. Limbaga &middot; Mabua = Judy B. Mabua &middot; Judy = Judy C. Mahinay &middot; all others matched by first name. Sean Kelly (resigned) excluded. Bubble size = relative YTD revenue.</div>
- <div id="amTenureCards" class="mg3" style="margin-bottom:1rem;"></div>
- <div class="cc">
- <div class="ct">Tenure vs. win rate (bubble size = revenue)</div>
- <div class="cs">Longer tenure right &middot; higher win rate up &middot; larger bubble = more revenue</div>
- <div class="cw" style="height:320px;"><canvas id="c_am_tenure"></canvas></div>
- </div>
- <div class="cc"><div class="tscroll"><table class="dt">
- <thead><tr><th>AM</th><th style="text-align:center;">Start</th><th style="text-align:center;">Tenure</th><th style="text-align:right;">Revenue</th><th style="text-align:right;">Margin</th><th style="text-align:center;">Win Rate</th><th style="text-align:center;">Won / Lost</th></tr></thead>
- <tbody id="amTenureTableBody"></tbody>
- </table></div></div>
+<p class="slabel">Sales analytics &mdash; AM performance &amp; service changes &middot; YTD Jan&ndash;Jul 2026</p>
+<div class="mg4">
+<div class="mc"><div class="lbl">Recurring Value (YTD)</div><div class="val pos">$2.30M</div><div class="sub">Active recurring billing</div></div>
+<div class="mc"><div class="lbl">Cancellations (YTD)</div><div class="val neg">$168.4K</div><div class="sub">352 campaigns lost</div></div>
+<div class="mc"><div class="lbl">Combined Win Ratio</div><div class="val amb">93.0%</div><div class="sub">Retained vs. cancelled</div></div>
+<div class="mc"><div class="lbl">Most Profitable AM</div><div class="val" style="font-size:22px;">Madison</div><div class="sub">$440.4K net</div></div>
+</div>
+<hr class="dv">
+<p class="slabel">AM recurring campaigns vs. attrition &middot; YTD Jan&ndash;Jul 2026</p>
+<div class="cc"><div class="tscroll"><table class="dt" style="width:100%;">
+<thead><tr><th>Account Manager</th><th style="text-align:right;">Rec. Campaigns</th><th style="text-align:right;">Rec. Value</th><th style="text-align:right;">Cancellations</th><th style="text-align:right;">Cancel Value</th><th style="text-align:right;">Win Ratio</th></tr></thead>
+<tbody>
+<tr><td style="font-weight:600;">Madison</td><td style="text-align:right;">784</td><td style="text-align:right;color:var(--pos,#4caf82);">$447,704</td><td style="text-align:right;">16</td><td style="text-align:right;color:var(--neg,#e8705f);">$7,291</td><td style="text-align:right;font-weight:600;color:var(--amber);">98.0%</td></tr>
+<tr><td style="font-weight:600;">Melissa</td><td style="text-align:right;">779</td><td style="text-align:right;color:var(--pos,#4caf82);">$403,353</td><td style="text-align:right;">46</td><td style="text-align:right;color:var(--neg,#e8705f);">$21,141</td><td style="text-align:right;font-weight:600;color:var(--amber);">94.4%</td></tr>
+<tr><td style="font-weight:600;">Riza</td><td style="text-align:right;">719</td><td style="text-align:right;color:var(--pos,#4caf82);">$324,841</td><td style="text-align:right;">48</td><td style="text-align:right;color:var(--neg,#e8705f);">$22,000</td><td style="text-align:right;font-weight:600;color:var(--amber);">93.7%</td></tr>
+<tr><td style="font-weight:600;">Kelly</td><td style="text-align:right;">607</td><td style="text-align:right;color:var(--pos,#4caf82);">$328,772</td><td style="text-align:right;">63</td><td style="text-align:right;color:var(--neg,#e8705f);">$27,846</td><td style="text-align:right;font-weight:600;color:var(--amber);">90.6%</td></tr>
+<tr><td style="font-weight:600;">Jason</td><td style="text-align:right;">648</td><td style="text-align:right;color:var(--pos,#4caf82);">$321,930</td><td style="text-align:right;">47</td><td style="text-align:right;color:var(--neg,#e8705f);">$26,379</td><td style="text-align:right;font-weight:600;color:var(--amber);">93.2%</td></tr>
+<tr><td style="font-weight:600;">Veronica</td><td style="text-align:right;">488</td><td style="text-align:right;color:var(--pos,#4caf82);">$220,373</td><td style="text-align:right;">86</td><td style="text-align:right;color:var(--neg,#e8705f);">$42,410</td><td style="text-align:right;font-weight:600;color:var(--amber);">85.0%</td></tr>
+<tr><td style="font-weight:600;">John</td><td style="text-align:right;">134</td><td style="text-align:right;color:var(--pos,#4caf82);">$96,168</td><td style="text-align:right;">15</td><td style="text-align:right;color:var(--neg,#e8705f);">$8,139</td><td style="text-align:right;font-weight:600;color:var(--amber);">89.9%</td></tr>
+<tr><td style="font-weight:600;">Ada</td><td style="text-align:right;">166</td><td style="text-align:right;color:var(--pos,#4caf82);">$53,475</td><td style="text-align:right;">0</td><td style="text-align:right;color:var(--neg,#e8705f);">$0</td><td style="text-align:right;font-weight:600;color:var(--amber);">100.0%</td></tr>
+<tr><td style="font-weight:600;">Ann</td><td style="text-align:right;">133</td><td style="text-align:right;color:var(--pos,#4caf82);">$49,255</td><td style="text-align:right;">25</td><td style="text-align:right;color:var(--neg,#e8705f);">$11,547</td><td style="text-align:right;font-weight:600;color:var(--amber);">84.2%</td></tr>
+<tr><td style="font-weight:600;">Judy</td><td style="text-align:right;">127</td><td style="text-align:right;color:var(--pos,#4caf82);">$24,789</td><td style="text-align:right;">0</td><td style="text-align:right;color:var(--neg,#e8705f);">$0</td><td style="text-align:right;font-weight:600;color:var(--amber);">100.0%</td></tr>
+<tr><td style="font-weight:600;">Fay</td><td style="text-align:right;">47</td><td style="text-align:right;color:var(--pos,#4caf82);">$18,450</td><td style="text-align:right;">2</td><td style="text-align:right;color:var(--neg,#e8705f);">$699</td><td style="text-align:right;font-weight:600;color:var(--amber);">95.9%</td></tr>
+<tr><td style="font-weight:600;">Mabua</td><td style="text-align:right;">59</td><td style="text-align:right;color:var(--pos,#4caf82);">$8,377</td><td style="text-align:right;">4</td><td style="text-align:right;color:var(--neg,#e8705f);">$646</td><td style="text-align:right;font-weight:600;color:var(--amber);">93.7%</td></tr>
+</tbody>
+</table></div></div>
+<hr class="dv">
+<p class="slabel">Profitability analysis by AM &middot; recurring &minus; cancellations &middot; ranked</p>
+<div class="cc"><div class="cw" style="height:320px;"><canvas id="c_an_profit"></canvas></div></div>
+<hr class="dv">
+<p class="slabel">Service performance overview &mdash; recurring, attrition &amp; net &middot; YTD Jan&ndash;Jul 2026</p>
+<div class="mg4">
+<div class="mc"><div class="lbl">Total Recurring (YTD)</div><div class="val pos">$2.30M</div><div class="sub">All services</div></div>
+<div class="mc"><div class="lbl">Total Attrition (YTD)</div><div class="val neg">$168.4K</div><div class="sub">Cancellations</div></div>
+<div class="mc"><div class="lbl">Blended Attrition Rate</div><div class="val amb">6.8%</div><div class="sub">Cancel / (rec + cancel)</div></div>
+<div class="mc"><div class="lbl">Highest Attrition Service</div><div class="val" style="font-size:22px;">LSA</div><div class="sub">9.6% &middot; $39.3K lost</div></div>
+</div>
+<div class="cc"><div class="tscroll"><table class="dt" style="width:100%;">
+<thead><tr><th>Service</th><th style="text-align:right;">Recurring</th><th style="text-align:right;">Cancellations</th><th style="text-align:right;">Attrition %</th><th style="text-align:right;">Net Recurring</th></tr></thead>
+<tbody>
+<tr><td style="font-weight:600;">SEO</td><td style="text-align:right;color:var(--pos,#4caf82);">$678,023</td><td style="text-align:right;color:var(--neg,#e8705f);">$45,294</td><td style="text-align:right;font-weight:600;color:var(--amber);">6.3%</td><td style="text-align:right;">$632,729</td></tr>
+<tr><td style="font-weight:600;">LSA</td><td style="text-align:right;color:var(--pos,#4caf82);">$371,576</td><td style="text-align:right;color:var(--neg,#e8705f);">$39,298</td><td style="text-align:right;font-weight:600;color:var(--neg,#e8705f);">9.6%</td><td style="text-align:right;">$332,279</td></tr>
+<tr><td style="font-weight:600;">LBO</td><td style="text-align:right;color:var(--pos,#4caf82);">$244,458</td><td style="text-align:right;color:var(--neg,#e8705f);">$18,534</td><td style="text-align:right;font-weight:600;color:var(--amber);">7.0%</td><td style="text-align:right;">$225,924</td></tr>
+<tr><td style="font-weight:600;">GBP</td><td style="text-align:right;color:var(--pos,#4caf82);">$242,936</td><td style="text-align:right;color:var(--neg,#e8705f);">$23,052</td><td style="text-align:right;font-weight:600;color:var(--neg,#e8705f);">8.7%</td><td style="text-align:right;">$219,885</td></tr>
+<tr><td style="font-weight:600;">PPC</td><td style="text-align:right;color:var(--pos,#4caf82);">$158,174</td><td style="text-align:right;color:var(--neg,#e8705f);">$9,468</td><td style="text-align:right;font-weight:600;color:var(--amber);">5.6%</td><td style="text-align:right;">$148,706</td></tr>
+<tr><td style="font-weight:600;">RTM Package</td><td style="text-align:right;color:var(--pos,#4caf82);">$149,178</td><td style="text-align:right;color:var(--neg,#e8705f);">$0</td><td style="text-align:right;font-weight:600;color:var(--pos,#4caf82);">0.0%</td><td style="text-align:right;">$149,178</td></tr>
+<tr><td style="font-weight:600;">Social</td><td style="text-align:right;color:var(--pos,#4caf82);">$132,811</td><td style="text-align:right;color:var(--neg,#e8705f);">$6,945</td><td style="text-align:right;font-weight:600;color:var(--amber);">5.0%</td><td style="text-align:right;">$125,866</td></tr>
+<tr><td style="font-weight:600;">Software</td><td style="text-align:right;color:var(--pos,#4caf82);">$121,490</td><td style="text-align:right;color:var(--neg,#e8705f);">$5,950</td><td style="text-align:right;font-weight:600;color:var(--pos,#4caf82);">4.7%</td><td style="text-align:right;">$115,541</td></tr>
+<tr><td style="font-weight:600;">Design</td><td style="text-align:right;color:var(--pos,#4caf82);">$64,861</td><td style="text-align:right;color:var(--neg,#e8705f);">$0</td><td style="text-align:right;font-weight:600;color:var(--pos,#4caf82);">0.0%</td><td style="text-align:right;">$64,861</td></tr>
+<tr><td style="font-weight:600;">Call</td><td style="text-align:right;color:var(--pos,#4caf82);">$33,346</td><td style="text-align:right;color:var(--neg,#e8705f);">$2,132</td><td style="text-align:right;font-weight:600;color:var(--amber);">6.0%</td><td style="text-align:right;">$31,214</td></tr>
+</tbody>
+</table></div></div>
+<hr class="dv">
+<p class="slabel">Attrition rate by service &middot; ranked (higher = greater churn risk)</p>
+<div class="cc"><div class="cw" style="height:290px;"><canvas id="c_an_attrition"></canvas></div></div>
+<hr class="dv">
+<div class="mg4">
+<div class="mc"><div class="lbl">Total Upgrades (YTD)</div><div class="val pos">$77.3K</div><div class="sub">All services</div></div>
+<div class="mc"><div class="lbl">Total Downgrades (YTD)</div><div class="val neg">$43.5K</div><div class="sub">All services</div></div>
+<div class="mc"><div class="lbl">Net Change</div><div class="val amb">+$33.8K</div><div class="sub">Upgrades &minus; downgrades</div></div>
+<div class="mc"><div class="lbl">Top Upgrade Service</div><div class="val" style="font-size:22px;">LSA</div><div class="sub">+$15.7K net</div></div>
+</div>
+<hr class="dv">
+<p class="slabel">Service upgrade vs. downgrade &middot; monthly trend &middot; Jan&ndash;Jul 2026</p>
+<div class="cc"><div class="cw" style="height:230px;"><canvas id="c_an_updown"></canvas></div></div>
+<hr class="dv">
+<p class="slabel">Upgrade vs. downgrade by service &middot; YTD</p>
+<div class="cc"><div class="tscroll"><table class="dt" style="width:100%;">
+<thead><tr><th>Service</th><th style="text-align:right;">Upgrades</th><th style="text-align:right;">Downgrades</th><th style="text-align:right;">Net</th></tr></thead>
+<tbody>
+<tr><td style="font-weight:600;">LSA</td><td style="text-align:right;color:var(--pos,#4caf82);">$44,404</td><td style="text-align:right;color:var(--neg,#e8705f);">$28,662</td><td style="text-align:right;font-weight:600;color:var(--pos,#4caf82);">$15,742</td></tr>
+<tr><td style="font-weight:600;">SEO</td><td style="text-align:right;color:var(--pos,#4caf82);">$15,468</td><td style="text-align:right;color:var(--neg,#e8705f);">$4,782</td><td style="text-align:right;font-weight:600;color:var(--pos,#4caf82);">$10,686</td></tr>
+<tr><td style="font-weight:600;">PPC</td><td style="text-align:right;color:var(--pos,#4caf82);">$9,528</td><td style="text-align:right;color:var(--neg,#e8705f);">$4,441</td><td style="text-align:right;font-weight:600;color:var(--pos,#4caf82);">$5,087</td></tr>
+<tr><td style="font-weight:600;">GBP</td><td style="text-align:right;color:var(--pos,#4caf82);">$4,529</td><td style="text-align:right;color:var(--neg,#e8705f);">$1,992</td><td style="text-align:right;font-weight:600;color:var(--pos,#4caf82);">$2,537</td></tr>
+<tr><td style="font-weight:600;">Social</td><td style="text-align:right;color:var(--pos,#4caf82);">$1,799</td><td style="text-align:right;color:var(--neg,#e8705f);">$899</td><td style="text-align:right;font-weight:600;color:var(--pos,#4caf82);">$900</td></tr>
+<tr><td style="font-weight:600;">Call</td><td style="text-align:right;color:var(--pos,#4caf82);">$1,365</td><td style="text-align:right;color:var(--neg,#e8705f);">$0</td><td style="text-align:right;font-weight:600;color:var(--pos,#4caf82);">$1,365</td></tr>
+<tr><td style="font-weight:600;">RTM Package</td><td style="text-align:right;color:var(--pos,#4caf82);">$0</td><td style="text-align:right;color:var(--neg,#e8705f);">$1,900</td><td style="text-align:right;font-weight:600;color:var(--neg,#e8705f);">&minus;$1,900</td></tr>
+<tr><td style="font-weight:600;">LBO</td><td style="text-align:right;color:var(--pos,#4caf82);">$0</td><td style="text-align:right;color:var(--neg,#e8705f);">$599</td><td style="text-align:right;font-weight:600;color:var(--neg,#e8705f);">&minus;$599</td></tr>
+</tbody>
+</table></div></div>
+<hr class="dv">
+<p class="slabel">Key insights</p>
+<div class="ig">
+<div class="ins good-ins"><div class="it">Madison leads profitability</div>Madison nets $440.4K with a 98% win ratio &mdash; 784 recurring campaigns and only 16 cancellations.</div>
+<div class="ins neg-ins"><div class="it">Veronica carries the most attrition</div>86 cancellations ($42.4K) and the lowest win ratio (85.0%) &mdash; the clearest AM-level retention risk.</div>
+<div class="ins good-ins"><div class="it">SEO is the service anchor</div>SEO is the largest recurring service ($678.0K) yet holds a low 6.3% attrition rate &mdash; the stable core of the book.</div>
+<div class="ins warn-ins"><div class="it">LSA is the attrition watch-item</div>LSA has the highest attrition (9.6%, $39.3K lost) and churns in both directions (top upgrades &amp; downgrades) &mdash; nets positive but needs monitoring.</div>
+<div class="ins good-ins"><div class="it">Upgrades outpace downgrades</div>+$33.8K net YTD ($77.3K upgrades vs $43.5K downgrades) &mdash; expansion is outrunning contraction.</div>
+<div class="ins info-ins"><div class="it">Blended attrition stays healthy</div>6.8% blended attrition across services; most sit under 8%, and RTM Package &amp; Design show 0% churn YTD.</div>
+</div>
 </div>
 <div id="pane-cancel" class="pane">
  <p class="slabel">Cancellation analysis — Jan–Jun 2026</p>
- <div class="mg4" style="grid-template-columns:1fr 1fr;">
+ <div class="mg4">
 <div class="mc"><div class="lbl">YTD Total Cancellations</div><div class="val neg">$168.4K</div><div class="sub">353 cancellations</div></div>
 <div class="mc"><div class="lbl">YTD Top Service Cancellation (Value)</div><div class="val" style="color:#FDA813;font-size:22px;">SEO</div><div class="sub">$45.3K cancelled</div></div>
 <div class="mc"><div class="lbl">YTD Top Service Cancellation (Count)</div><div class="val" style="color:#FDA813;font-size:22px;">Hosting</div><div class="sub">65 cancellations</div></div>
@@ -837,117 +827,59 @@
  </div>
  </div>
  <div class="ig">
- <div class="ins good-ins"><div class="it">Strong Jan&#8594;Apr improvement</div>Cancel dollars spiked to $57.7K in Jun — the highest month. April was the lowest at $9.8K.</div>
- <div class="ins neg-ins"><div class="it">May spike warrants review</div>$24.0K in May. Monitor June closely.</div>
- <div class="ins warn-ins"><div class="it">In-House &amp; Provider Change dominate</div>Combined $160.0K YTD — Jun was the peak month at $57.7K.</div>
- </div>
+<div class="ins neg-ins"><div class="it">Cancellations peaked in June</div>Cancel dollars hit $57.7K in June &mdash; the highest month; $168.4K YTD. June churn drivers warrant review.</div>
+<div class="ins good-ins"><div class="it">Strong Jan&rarr;Apr improvement</div>Cancellations fell from $36.1K (Jan) to a low of $9.8K (Apr) &mdash; a strong decline before the June reversal.</div>
+<div class="ins info-ins"><div class="it">Changing Providers &amp; In-House lead</div>The top two reasons &mdash; Changing Providers ($50.2K, 120 requests) and In-House ($49.9K) &mdash; drive ~60% of the $168.4K YTD.</div>
+</div>
 </div>
 <div id="pane-forecast" class="pane">
- <p class="slabel">Revenue forecast — Jan–Jun 2026 actual &middot; Jul 2026 projected</p>
- <div class="mg4" style="margin-bottom:1.25rem;">
- <div class="mc"><div class="lbl">RTM Jun actual</div><div class="val" style="color:#FDA813;">$364.9K</div><div class="sub">vs $380.7K in May</div></div>
- <div class="mc"><div class="lbl">U360 Jun actual</div><div class="val" style="color:#0D7A8C;">$16.5K</div><div class="sub">vs $16.2K in May</div></div>
- <div class="mc"><div class="lbl">NoDig Jun actual</div><div class="val" style="color:#534AB7;">$5.1K</div><div class="sub">vs $5.6K in May</div></div>
- <div class="mc"><div class="lbl">Combined Jun actual</div><div class="val neg">$386.5K</div><div class="sub">vs $402.5K in May</div></div>
- <div class="mc"><div class="lbl">RTM Jul (F)</div><div class="val" style="color:#FDA813;">$313.8K</div><div class="sub">Forecasted next month</div></div>
- <div class="mc"><div class="lbl">U360 Jul (F)</div><div class="val" style="color:#0D7A8C;">$16.0K</div><div class="sub">Forecasted next month</div></div>
- <div class="mc"><div class="lbl">NoDig Jul (F)</div><div class="val" style="color:#534AB7;">$4.6K</div><div class="sub">Forecasted next month</div></div>
- <div class="mc"><div class="lbl">Combined Jul (F)</div><div class="val amb">$334.3K</div><div class="sub">Total projected for July</div></div>
- </div>
- <div class="three">
- <div class="cc">
- <div class="ct" style="color:#FDA813;">RTM</div>
- <div class="cs">$1.886M actual · $313.8K Jul (F)</div>
- <div class="cw" style="height:160px;"><canvas id="c_fc_rtm"></canvas></div>
- </div>
- <div class="cc">
- <div class="ct" style="color:#0D7A8C;">Unify360</div>
- <div class="cs">$108.7K actual · $16.0K Jul (F)</div>
- <div class="cw" style="height:160px;"><canvas id="c_fc_u360"></canvas></div>
- </div>
- <div class="cc">
- <div class="ct" style="color:#534AB7;">NoDig</div>
- <div class="cs">$34.0K actual · $4.6K Jul (F)</div>
- <div class="cw" style="height:160px;"><canvas id="c_fc_nodig"></canvas></div>
- </div>
- </div>
- <div class="cc">
- <div class="ct">Combined forecast — all entities</div>
- <div class="cs">Stacked · Jan–Jun actual · Jul projected (faded)</div>
- <div class="leg">
- <span><span class="ld" style="background:#FDA813;"></span>RTM</span>
- <span><span class="ld" style="background:#0D7A8C;"></span>Unify360</span>
- <span><span class="ld" style="background:#534AB7;"></span>NoDig</span>
- </div>
- <div class="cw" style="height:260px;"><canvas id="c_fc_bar"></canvas></div>
- </div>
- <p class="slabel">Monthly forecast detail — by entity</p>
- <div class="cc"><div class="tscroll"><table class="dt">
- <thead>
- <tr>
- <th>Entity</th>
- <th style="text-align:right;">Jan</th>
- <th style="text-align:right;">Feb</th>
- <th style="text-align:right;">Mar</th>
- <th style="text-align:right;">Apr</th>
- <th style="text-align:right;">May</th>
- <th style="text-align:right;color:var(--muted);">Jun (F)</th>
- <th style="text-align:right;">Total (YTD)</th>
- </tr>
- </thead>
- <tbody>
- <tr>
- <td style="font-weight:600;color:#FDA813;">RTM</td>
- <td style="text-align:right;">$384,530</td>
- <td style="text-align:right;">$361,674</td>
- <td style="text-align:right;">$327,639</td>
- <td style="text-align:right;">$340,580</td>
- <td style="text-align:right;">$326,488</td>
- <td style="text-align:right;">$364,875</td>
- <td style="text-align:right;color:rgba(253,168,19,0.5);">$313,800</td>
- <td class="td-warn" style="text-align:right;">$2,105,786</td>
- </tr>
- <tr>
- <td style="font-weight:600;color:#0D7A8C;">Unify360</td>
- <td style="text-align:right;">$21,046</td>
- <td style="text-align:right;">$20,185</td>
- <td style="text-align:right;">$18,273</td>
- <td style="text-align:right;">$18,011</td>
- <td style="text-align:right;">$16,871</td>
- <td style="text-align:right;">$15,197</td>
- <td style="text-align:right;color:rgba(13,122,140,0.6);">$15,955</td>
- <td class="td-warn" style="text-align:right;">$109,583</td>
- </tr>
- <tr>
- <td style="font-weight:600;color:#534AB7;">NoDig</td>
- <td style="text-align:right;">$5,902</td>
- <td style="text-align:right;">$5,902</td>
- <td style="text-align:right;">$5,623</td>
- <td style="text-align:right;">$5,623</td>
- <td style="text-align:right;">$5,334</td>
- <td style="text-align:right;">$5,055</td>
- <td style="text-align:right;color:rgba(83,74,183,0.6);">$4,557</td>
- <td class="td-warn" style="text-align:right;">$33,439</td>
- </tr>
- <tr class="tot">
- <td>Combined</td>
- <td style="text-align:right;">$411,478</td>
- <td style="text-align:right;">$387,761</td>
- <td style="text-align:right;">$351,535</td>
- <td style="text-align:right;">$364,214</td>
- <td style="text-align:right;">$348,693</td>
- <td style="text-align:right;">$386,450</td>
- <td style="text-align:right;color:var(--muted);">$334,313</td>
- <td style="text-align:right;">$2,253,946</td>
- </tr>
- </tbody>
- </table></div></div>
- <div class="ig ig-4">
- <div class="ins warn-ins"><div class="it">Revenue declining month-over-month</div>Combined actual dropped from $411.5K (Jan) to $348.7K (May) — a 15.3% decline over 5 months. June projected at $299.5K.</div>
- <div class="ins neg-ins"><div class="it">RTM drives the decline</div>RTM fell from $389.3K to $377.7K (Jan–Jun). July projection of $279.3K reflects continued cancellation pressure outpacing new sales.</div>
- <div class="ins info-ins"><div class="it">NoDig most stable</div>NoDig held between $5.3–$5.9K/mo with minimal variance and very low attrition — reliable small contributor.</div>
- <div class="ins warn-ins"><div class="it">U360 on steady decline</div>Unify360 dropped from $20.6K to $16.5K (Jan–Jun), projected at $15.1K Jul — a 19.6% decline since January.</div>
- </div>
+<p class="slabel">Recurring forecast &mdash; Combined June actual $303.3K &rarr; July forecast $231.9K &middot; RTM + Unify360 + NoDig = Combined &middot; Billing Master</p>
+<div class="mg4" style="grid-template-columns:1fr 1fr 1fr;">
+<div class="mc"><div class="lbl">Previous Month Actual &ndash; RTM</div><div class="val" style="color:var(--amber);">$284.0K</div><div class="sub">June recurring</div></div>
+<div class="mc"><div class="lbl">Previous Month Actual &ndash; Unify360</div><div class="val" style="color:var(--teal2);">$15.3K</div><div class="sub">June recurring</div></div>
+<div class="mc"><div class="lbl">Previous Month Actual &ndash; NoDig</div><div class="val" style="color:#8b7ff0;">$4.0K</div><div class="sub">June recurring</div></div>
+<div class="mc"><div class="lbl">Current Month Forecast &ndash; RTM</div><div class="val" style="color:var(--amber);">$213.3K</div><div class="sub">July forecast</div></div>
+<div class="mc"><div class="lbl">Current Month Forecast &ndash; Unify360</div><div class="val" style="color:var(--teal2);">$14.1K</div><div class="sub">July forecast</div></div>
+<div class="mc"><div class="lbl">Current Month Forecast &ndash; NoDig</div><div class="val" style="color:#8b7ff0;">$4.4K</div><div class="sub">July forecast</div></div>
+</div>
+<hr class="dv">
+<p class="slabel">Monthly recurring forecast &mdash; Feb&ndash;Jul 2026 &middot; per-month waterfall (prev-month base + this-month churn)</p>
+<div class="cc"><div class="tscroll"><table class="dt" style="width:100%;">
+<thead><tr><th>Forecast Month</th><th style="text-align:right;">Prev Recurring</th><th style="text-align:right;">+ Outstanding</th><th style="text-align:right;">&minus; Completed</th><th style="text-align:right;">&minus; Cancellations</th><th style="text-align:right;">&minus; On Hold</th><th style="text-align:right;">= Forecast</th></tr></thead>
+<tbody>
+<tr><td style="font-weight:600;">Feb</td><td style="text-align:right;">$344,981</td><td style="text-align:right;color:var(--pos,#4caf82);">+$1,944</td><td style="text-align:right;color:var(--neg,#e8705f);">&minus;$32,936</td><td style="text-align:right;color:var(--neg,#e8705f);">&minus;$17,273</td><td style="text-align:right;color:var(--neg,#e8705f);">&minus;$0</td><td style="text-align:right;font-weight:600;color:var(--amber);">$296,716</td></tr>
+<tr><td style="font-weight:600;">Mar</td><td style="text-align:right;">$329,418</td><td style="text-align:right;color:var(--pos,#4caf82);">+$1,794</td><td style="text-align:right;color:var(--neg,#e8705f);">&minus;$25,470</td><td style="text-align:right;color:var(--neg,#e8705f);">&minus;$15,091</td><td style="text-align:right;color:var(--neg,#e8705f);">&minus;$1,545</td><td style="text-align:right;font-weight:600;color:var(--amber);">$289,106</td></tr>
+<tr><td style="font-weight:600;">Apr</td><td style="text-align:right;">$310,946</td><td style="text-align:right;color:var(--pos,#4caf82);">+$1,627</td><td style="text-align:right;color:var(--neg,#e8705f);">&minus;$28,223</td><td style="text-align:right;color:var(--neg,#e8705f);">&minus;$9,845</td><td style="text-align:right;color:var(--neg,#e8705f);">&minus;$1,099</td><td style="text-align:right;font-weight:600;color:var(--amber);">$273,406</td></tr>
+<tr><td style="font-weight:600;">May</td><td style="text-align:right;">$331,838</td><td style="text-align:right;color:var(--pos,#4caf82);">+$18,406</td><td style="text-align:right;color:var(--neg,#e8705f);">&minus;$36,135</td><td style="text-align:right;color:var(--neg,#e8705f);">&minus;$23,996</td><td style="text-align:right;color:var(--neg,#e8705f);">&minus;$0</td><td style="text-align:right;font-weight:600;color:var(--amber);">$290,113</td></tr>
+<tr><td style="font-weight:600;">Jun</td><td style="text-align:right;">$339,165</td><td style="text-align:right;color:var(--pos,#4caf82);">+$25,991</td><td style="text-align:right;color:var(--neg,#e8705f);">&minus;$34,713</td><td style="text-align:right;color:var(--neg,#e8705f);">&minus;$57,712</td><td style="text-align:right;color:var(--neg,#e8705f);">&minus;$0</td><td style="text-align:right;font-weight:600;color:var(--amber);">$272,731</td></tr>
+<tr><td style="font-weight:600;">Jul</td><td style="text-align:right;">$303,260</td><td style="text-align:right;color:var(--pos,#4caf82);">+$5,892</td><td style="text-align:right;color:var(--neg,#e8705f);">&minus;$66,454</td><td style="text-align:right;color:var(--neg,#e8705f);">&minus;$8,373</td><td style="text-align:right;color:var(--neg,#e8705f);">&minus;$2,464</td><td style="text-align:right;font-weight:600;color:var(--amber);">$231,861</td></tr>
+</tbody>
+</table></div></div>
+<hr class="dv">
+<p class="slabel">Monthly recurring forecast &mdash; per entity &middot; Feb&ndash;Jul 2026 &middot; entities sum to Combined</p>
+<div class="cc"><div class="tscroll"><table class="dt" style="width:100%;">
+<thead><tr><th>Forecast Month</th><th style="text-align:right;">RTM</th><th style="text-align:right;">Unify360</th><th style="text-align:right;">NoDig</th><th style="text-align:right;">Combined</th></tr></thead>
+<tbody>
+<tr><td style="font-weight:600;">Feb</td><td style="text-align:right;color:var(--amber);">$272,371</td><td style="text-align:right;color:var(--teal2);">$19,838</td><td style="text-align:right;color:#8b7ff0;">$4,507</td><td style="text-align:right;font-weight:600;">$296,716</td></tr>
+<tr><td style="font-weight:600;">Mar</td><td style="text-align:right;color:var(--amber);">$265,979</td><td style="text-align:right;color:var(--teal2);">$18,620</td><td style="text-align:right;color:#8b7ff0;">$4,507</td><td style="text-align:right;font-weight:600;">$289,106</td></tr>
+<tr><td style="font-weight:600;">Apr</td><td style="text-align:right;color:var(--amber);">$252,526</td><td style="text-align:right;color:var(--teal2);">$15,815</td><td style="text-align:right;color:#8b7ff0;">$5,065</td><td style="text-align:right;font-weight:600;">$273,406</td></tr>
+<tr><td style="font-weight:600;">May</td><td style="text-align:right;color:var(--amber);">$269,558</td><td style="text-align:right;color:var(--teal2);">$15,480</td><td style="text-align:right;color:#8b7ff0;">$5,075</td><td style="text-align:right;font-weight:600;">$290,113</td></tr>
+<tr><td style="font-weight:600;">Jun</td><td style="text-align:right;color:var(--amber);">$252,873</td><td style="text-align:right;color:var(--teal2);">$15,281</td><td style="text-align:right;color:#8b7ff0;">$4,577</td><td style="text-align:right;font-weight:600;">$272,731</td></tr>
+<tr><td style="font-weight:600;">Jul</td><td style="text-align:right;color:var(--amber);">$213,309</td><td style="text-align:right;color:var(--teal2);">$14,145</td><td style="text-align:right;color:#8b7ff0;">$4,407</td><td style="text-align:right;font-weight:600;">$231,861</td></tr>
+</tbody>
+</table></div></div>
+
+
+<hr class="dv">
+<p class="slabel">Key insights</p>
+<div class="ig">
+<div class="ins neg-ins"><div class="it">Forecast trending down</div>Recurring forecast fell from $296.7K (Feb) to $231.9K (Jul) &mdash; a ~22% decline as cumulative churn outpaces retention.</div>
+<div class="ins warn-ins"><div class="it">RTM drives the decline</div>RTM forecast dropped $272.4K to $213.3K, while Unify360 and NoDig held near flat &mdash; the decline is concentrated in RTM.</div>
+<div class="ins neg-ins"><div class="it">June churn hit hardest</div>June's $57.7K cancellation spike is the single largest drag, pulling the July forecast down the most of any month.</div>
+<div class="ins info-ins"><div class="it">Completed sales is the biggest deduction</div>One-time completed sales (non-recurring) are the largest monthly deduction &mdash; e.g. &minus;$66.5K in the June&rarr;July step.</div>
+<div class="ins good-ins"><div class="it">Forecast is a conservative floor</div>The model runs below actual recurring each month &mdash; it deducts all churn but adds no new recurring wins, so treat it as a floor, not a midpoint.</div>
+<div class="ins good-ins"><div class="it">Small entities stay stable</div>Unify360 (~$14&ndash;20K) and NoDig (~$4&ndash;5K) hold steady across every month &mdash; low volatility, reliable base.</div>
+</div>
 </div>
 <div id="pane-salary" class="pane">
  <p class="slabel">Salary feasibility analysis — June 2026</p>
@@ -1081,17 +1013,13 @@
  </div>
 </div>
 <div id="pane-billing" class="pane">
- <p class="slabel">Billing activity — Jan–Jun 2026</p>
+ <p class="slabel">Billing activity — Jan–Jul 2026</p>
  <div class="mg4">
- <div class="mc"><div class="lbl">Total paid (YTD)</div><div class="val amb">$2.332M</div><div class="sub">Jan–Jun 2026 &middot; 6 months</div></div>
- <div class="mc"><div class="lbl">Outstanding (Jun)</div><div class="val neg">$265.7K</div><div class="sub">Unpaid recurring, MTD</div></div>
- <div class="mc"><div class="lbl">Campaigns paid (Jan)</div><div class="val pos">885</div><div class="sub">Down to 726 in Jun</div></div>
- <div class="mc"><div class="lbl">Campaigns cancelled (YTD)</div><div class="val neg">100</div><div class="sub">103 in Jun alone</div></div>
- <div class="mc"><div class="lbl">Top campaign</div><div class="val" style="font-size:13px;">StraightShooter</div><div class="sub">$94,853 YTD &middot; Melissa</div></div>
- <div class="mc"><div class="lbl">New sales value</div><div class="val pos">$157,230</div><div class="sub">All 7 months combined</div></div>
- <div class="mc"><div class="lbl">Upgrades YTD</div><div class="val pos">$76,292</div><div class="sub">vs. $41,926 downgrades</div></div>
- <div class="mc"><div class="lbl">Recurring base (Jun)</div><div class="val">$288,618</div><div class="sub">Down from $343K in Jan</div></div>
- </div>
+<div class="mc"><div class="lbl">YTD Total Paid</div><div class="val pos">$2.417M</div><div class="sub">Jan&ndash;Jul collected</div></div>
+<div class="mc"><div class="lbl">YTD Total Outstanding</div><div class="val amb">$327.4K</div><div class="sub">Unpaid + pending</div></div>
+<div class="mc"><div class="lbl">Current Month Recurring</div><div class="val">$337.9K</div><div class="sub">July 2026 &middot; active recurring</div></div>
+<div class="mc"><div class="lbl">Current Month Active Clients</div><div class="val">203</div><div class="sub">Jul MTD</div></div>
+</div>
  <div class="two">
  <div class="cc">
  <div class="ct">Monthly billing by status</div>
@@ -1110,34 +1038,10 @@
  <div class="cw" style="height:220px;"><canvas id="c_bi_count"></canvas></div>
  </div>
  </div>
- <div class="two">
- <div class="cc">
- <div class="ct">Monthly billing by type</div>
- <div class="cs">Recurring, new, upgrade, downgrade</div>
- <div class="leg">
- <span><span class="ld" style="background:#0D7A8C;"></span>Recurring</span>
- <span><span class="ld" style="background:#2ec48a;"></span>New</span>
- <span><span class="ld" style="background:#FDA813;"></span>Upgrade</span>
- <span><span class="ld" style="background:#f26b5b;"></span>Downgrade</span>
- </div>
- <div class="cw" style="height:220px;"><canvas id="c_bi_remarks"></canvas></div>
- </div>
- <div class="cc">
- <div class="ct">Revenue by service category (paid)</div>
- <div class="cs">Top categories · Jan–Jun 2026</div>
- <div class="cw" style="height:220px;"><canvas id="c_bi_cat"></canvas></div>
- </div>
- </div>
- <div class="cc">
- <div class="ct">Outstanding & paid trend</div>
- <div class="cs">Monthly paid revenue vs. outstanding balance</div>
- <div class="leg">
- <span><span class="ld" style="background:#2ec48a;"></span>Paid</span>
- <span><span class="ld" style="background:#f26b5b;"></span>Outstanding</span>
- </div>
- <div class="cw" style="height:200px;"><canvas id="c_bi_trend"></canvas></div>
- </div>
- <p class="slabel">Top 15 campaigns by paid revenue — Jan–Jun 2026</p>
+ 
+<div class="cc"><div class="ct">Revenue by service category (paid)</div><div class="cw" style="height:320px;"><canvas id="c_bi_cat"></canvas></div></div>
+ 
+ <p class="slabel">Top 10 campaigns by paid revenue — Jan–Jul 2026</p>
  <div class="cc">
  <div class="ct">Top campaign revenue chart</div>
  <div class="cs">Paid billings only</div>
@@ -1145,7 +1049,7 @@
  </div>
  <p class="slabel">Campaign monthly detail</p>
  <div class="btn-row" id="cmpBtnRow">
- <button class="btn active" onclick="showCampaign('all',this)">All Top 15</button>
+ <button class="btn active" onclick="showCampaign('all',this)">All Top 10</button>
  <button class="btn" onclick="showCampaign('StraightShooterPlumbing.com',this)">StraightShooter</button>
  <button class="btn" onclick="showCampaign('Goldstarplumbingaz.com',this)">Goldstar</button>
  <button class="btn" onclick="showCampaign('Eielectrical.com',this)">EI Electrical</button>
@@ -1163,12 +1067,8 @@
  <button class="btn" onclick="showCampaign('1800heaters.com',this)">1800 Heaters</button>
  </div>
  <div id="cmpCards" class="mg3" style="margin-bottom:1rem;"></div>
- <div class="cc">
- <div class="ct" id="cmpChartTitle">Monthly billing — all top 15</div>
- <div class="cs" id="cmpChartSub">Paid revenue Jan–Jun 2026</div>
- <div class="cw" style="height:240px;"><canvas id="c_bi_cmpmonth"></canvas></div>
- </div>
- <p class="slabel">Top 15 campaigns — monthly paid table</p>
+ 
+ <p class="slabel">Top 10 campaigns — monthly paid table</p>
  <div class="cc"><div class="tscroll"><table class="dt" id="cmpTable">
  <thead><tr><th>Campaign</th><th>AM</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th><th>Total</th></tr></thead>
  <tbody id="cmpTableBody"></tbody>
@@ -1241,31 +1141,104 @@
  <tbody id="moTableBody"></tbody>
  </table></div></div>
  <div class="ig">
- <div class="ins neg-ins"><div class="it">Paid base declining</div>Paid revenue fell from $413.9K (Jan) to $373.7K (Jun) — a $40.2K or 9.7% reduction over 6 months.</div>
- <div class="ins good-ins"><div class="it">Outstanding improved in June</div>Outstanding dropped from $26.0K in May to $12.8K in June — a positive collection sign despite the cancel spike.</div>
+ <div class="ins neg-ins"><div class="it">Paid base declining</div>Paid revenue fell from $413.9K (Jan) to $382.4K (Jun) — a $31.4K or 7.6% reduction over 6 months.</div>
+ <div class="ins good-ins"><div class="it">Outstanding improved in June</div>Outstanding dropped from $26.0K in May to $12.0K in June — a positive collection sign despite the cancel spike.</div>
  <div class="ins warn-ins"><div class="it">Paid campaign count dropping</div>Active paying campaigns fell from 885 (Jan) to 726 (Jun) — a loss of 159 paying campaign lines in 6 months.</div>
  <div class="ins neg-ins"><div class="it">Jun cancellations highest YTD</div>103 cancelled campaign rows in June totalling $57,712 — the largest single-month cancel event of 2026.</div>
  <div class="ins good-ins"><div class="it">ActionRoofing recovered in June</div>Bounced from just $330 in May back to $7,824 in June — monitoring needed but June shows recovery.</div>
- <div class="ins info-ins"><div class="it">SEO is the top category</div>SEO drives $620.7K of paid billings YTD Jan–Jun (26.6% of total) — the single largest revenue category.</div>
+ <div class="ins info-ins"><div class="it">SEO is the top category</div>SEO drives $620.7K of paid billings YTD Jan–Jul (26.6% of total) — the single largest revenue category.</div>
  </div>
 </div>
 <div id="pane-annual" class="pane">
- <p class="slabel">Annual performance overview &mdash; 2023 &middot; 2024 &middot; 2025 &middot; Source: Yearly Comparison</p>
- <div class="btn-row" id="annualViewBtns" style="margin-bottom:1.25rem;">
- <button class="btn active" onclick="showAnnualView('sales',this)">&#128200; Sales Overview</button>
- <button class="btn" onclick="showAnnualView('service',this)">&#128203; Service Breakdown</button>
- <button class="btn" onclick="showAnnualView('newsales',this)">&#128184; New Sales &amp; Attrition</button>
- <button class="btn" onclick="showAnnualView('top',this)">&#127942; Top Performers &amp; Cancellations</button>
- </div>
- <div id="annualYrSel" class="btn-row" style="display:none;margin-bottom:1rem;align-items:center;gap:8px;">
- <span style="font-size:11px;color:var(--muted);font-weight:600;">VIEW YEAR:</span>
- <button class="btn" data-yr="2023" onclick="setAnnualTopYear('2023')">2023</button>
- <button class="btn" data-yr="2024" onclick="setAnnualTopYear('2024')">2024</button>
- <button class="btn active" data-yr="2025" onclick="setAnnualTopYear('2025')">2025</button>
- <button class="btn" data-yr="2026 YTD" onclick="setAnnualTopYear('2026 YTD')">2026 YTD</button>
- </div>
- <div id="annualKpiCards" class="mg4" style="margin-bottom:1.25rem;"></div>
- <div class="two">
+<p class="slabel">Sales overview &mdash; total sales by year &middot; 2025 vs 2026 YTD</p>
+<div class="mg4" style="grid-template-columns:1fr 1fr;">
+<div class="mc"><div class="lbl">2023 Total Sales</div><div class="val">$6.51M</div><div class="sub">Full year</div></div>
+<div class="mc"><div class="lbl">2024 Total Sales</div><div class="val">$6.36M</div><div class="sub">Full year</div></div>
+<div class="mc"><div class="lbl">2025 Total Sales</div><div class="val">$5.89M</div><div class="sub">Full year</div></div>
+<div class="mc"><div class="lbl">2026 YTD Total Sales</div><div class="val" style="color:var(--amber);">$2.74M</div><div class="sub">Jan&ndash;Jul</div></div>
+</div>
+<hr class="dv">
+<p class="slabel">Detailed breakdown &mdash; 2025 vs 2026 (YTD Jan&ndash;Jul aligned)</p>
+<div class="cc"><div class="tscroll"><table class="dt" style="width:100%;">
+<thead><tr><th>Metric</th><th style="text-align:right;">2025 (Jan&ndash;Jul)</th><th style="text-align:right;">2026 YTD</th><th style="text-align:right;">Change</th></tr></thead>
+<tbody>
+<tr><td style="font-weight:600;">Total Sales</td><td style="text-align:right;">$3.50M</td><td style="text-align:right;">$2.74M</td><td style="text-align:right;font-weight:600;color:var(--neg,#e8705f);">&minus;21.5%</td></tr>
+<tr><td style="font-weight:600;">Recurring Sales*</td><td style="text-align:right;">$3.29M</td><td style="text-align:right;">$1.98M</td><td style="text-align:right;font-weight:600;color:var(--neg,#e8705f);">&minus;39.6%</td></tr>
+<tr><td style="font-weight:600;">New Sales*</td><td style="text-align:right;">$289.0K</td><td style="text-align:right;">$268.4K</td><td style="text-align:right;font-weight:600;color:var(--neg,#e8705f);">&minus;7.2%</td></tr>
+<tr><td style="font-weight:600;">Cancellations</td><td style="text-align:right;">$103.8K</td><td style="text-align:right;">$168.4K</td><td style="text-align:right;font-weight:600;color:var(--neg,#e8705f);">+62.2%</td></tr>
+</tbody>
+</table></div><div class="sub" style="padding:6px 4px;">* Recurring &amp; New Sales for 2025 are prorated to Jan&ndash;Jul; % comparisons shown only for 2025 vs 2026.</div></div>
+<hr class="dv">
+
+ 
+<p class="slabel">Service breakdown &mdash; sales by service &middot; 2023&ndash;2026 YTD</p>
+<div class="mg4" style="grid-template-columns:1fr 1fr;">
+<div class="mc"><div class="lbl">2023&ndash;2026 YTD #1 Service</div><div class="val" style="color:var(--amber);">SEO</div><div class="sub">Top service every year &middot; $1.6M+ annually</div></div>
+<div class="mc"><div class="lbl">2023&ndash;2026 #1 Sharpest Decline</div><div class="val" style="color:var(--neg,#e8705f);">GBP</div><div class="sub">&minus;59% &middot; $1.63M (2023) &rarr; $673K (2025)</div></div>
+</div>
+<hr class="dv">
+<p class="slabel">Sales by service by year &middot; 2023&ndash;2026 YTD</p>
+<div class="cc"><div class="tscroll"><table class="dt" style="width:100%;">
+<thead><tr><th>Service</th><th style="text-align:right;">2023</th><th style="text-align:right;">2024</th><th style="text-align:right;">2025</th><th style="text-align:right;">2026 YTD</th></tr></thead>
+<tbody>
+<tr><td style="font-weight:600;">SEO</td><td style="text-align:right;">$1.68M</td><td style="text-align:right;">$1.74M</td><td style="text-align:right;">$1.62M</td><td style="text-align:right;color:var(--amber);">$621K</td></tr>
+<tr><td style="font-weight:600;">LSA</td><td style="text-align:right;">$1.52M</td><td style="text-align:right;">$1.31M</td><td style="text-align:right;">$1.13M</td><td style="text-align:right;color:var(--amber);">$431K</td></tr>
+<tr><td style="font-weight:600;">LBO</td><td style="text-align:right;">$0K</td><td style="text-align:right;">$497K</td><td style="text-align:right;">$784K</td><td style="text-align:right;color:var(--amber);">$243K</td></tr>
+<tr><td style="font-weight:600;">GBP</td><td style="text-align:right;">$1.63M</td><td style="text-align:right;">$1.28M</td><td style="text-align:right;">$673K</td><td style="text-align:right;color:var(--amber);">$221K</td></tr>
+<tr><td style="font-weight:600;">Design</td><td style="text-align:right;">$479K</td><td style="text-align:right;">$588K</td><td style="text-align:right;">$419K</td><td style="text-align:right;color:var(--amber);">$108K</td></tr>
+<tr><td style="font-weight:600;">PPC</td><td style="text-align:right;">$517K</td><td style="text-align:right;">$545K</td><td style="text-align:right;">$355K</td><td style="text-align:right;color:var(--amber);">$161K</td></tr>
+<tr><td style="font-weight:600;">Software</td><td style="text-align:right;">$303K</td><td style="text-align:right;">$317K</td><td style="text-align:right;">$294K</td><td style="text-align:right;color:var(--amber);">$107K</td></tr>
+<tr><td style="font-weight:600;">Social</td><td style="text-align:right;">$168K</td><td style="text-align:right;">$320K</td><td style="text-align:right;">$259K</td><td style="text-align:right;color:var(--amber);">$128K</td></tr>
+</tbody>
+</table></div><div class="sub" style="padding:6px 4px;">2026 is YTD (Jan&ndash;Jul); 2023&ndash;2025 are full years. Rankings by actual sales value.</div></div>
+<hr class="dv">
+
+<p class="slabel">New sales &amp; attrition &mdash; by year &middot; 2023&ndash;2026 YTD</p>
+<div class="lbl" style="margin:0 0 6px;padding-left:2px;opacity:.75;">New Sales</div>
+<div class="mg4"><div class="mc"><div class="lbl">2023 New Sales</div><div class="val" style="color:var(--pos,#4caf82);">$676K</div><div class="sub">Top: SEO</div></div><div class="mc"><div class="lbl">2024 New Sales</div><div class="val" style="color:var(--pos,#4caf82);">$603K</div><div class="sub">Top: SEO</div></div><div class="mc"><div class="lbl">2025 New Sales</div><div class="val" style="color:var(--pos,#4caf82);">$487K</div><div class="sub">Top: SEO</div></div><div class="mc"><div class="lbl">2026 YTD New Sales</div><div class="val" style="color:var(--pos,#4caf82);">$268K</div><div class="sub">Top: SEO</div></div></div>
+<div class="lbl" style="margin:14px 0 6px;padding-left:2px;opacity:.75;">Cancellations</div>
+<div class="mg4"><div class="mc"><div class="lbl">2023 Cancellations</div><div class="val" style="color:var(--neg,#e8705f);">$210K</div><div class="sub">Top: GBP</div></div><div class="mc"><div class="lbl">2024 Cancellations</div><div class="val" style="color:var(--neg,#e8705f);">$266K</div><div class="sub">Top: GBP</div></div><div class="mc"><div class="lbl">2025 Cancellations</div><div class="val" style="color:var(--neg,#e8705f);">$238K</div><div class="sub">Top: SEO</div></div><div class="mc"><div class="lbl">2026 YTD Cancellations</div><div class="val" style="color:var(--neg,#e8705f);">$168K</div><div class="sub">Top: SEO</div></div></div>
+<hr class="dv">
+<p class="slabel">Cancellation per service per year &middot; 2023&ndash;2026 YTD</p>
+<div class="cc"><div class="tscroll"><table class="dt" style="width:100%;">
+<thead><tr><th>Service</th><th style="text-align:right;">2023</th><th style="text-align:right;">2024</th><th style="text-align:right;">2025</th><th style="text-align:right;">2026 YTD</th></tr></thead>
+<tbody>
+<tr><td style="font-weight:600;">SEO</td><td style="text-align:right;">$48K</td><td style="text-align:right;">$47K</td><td style="text-align:right;">$56K</td><td style="text-align:right;color:var(--amber);">$45K</td></tr>
+<tr><td style="font-weight:600;">LSA</td><td style="text-align:right;">$47K</td><td style="text-align:right;">$55K</td><td style="text-align:right;">$41K</td><td style="text-align:right;color:var(--amber);">$39K</td></tr>
+<tr><td style="font-weight:600;">GBP</td><td style="text-align:right;">$66K</td><td style="text-align:right;">$70K</td><td style="text-align:right;">$37K</td><td style="text-align:right;color:var(--amber);">$23K</td></tr>
+<tr><td style="font-weight:600;">LBO</td><td style="text-align:right;">$0K</td><td style="text-align:right;">$12K</td><td style="text-align:right;">$31K</td><td style="text-align:right;color:var(--amber);">$19K</td></tr>
+<tr><td style="font-weight:600;">Hosting</td><td style="text-align:right;">$1K</td><td style="text-align:right;">$1K</td><td style="text-align:right;">$22K</td><td style="text-align:right;color:var(--amber);">$13K</td></tr>
+<tr><td style="font-weight:600;">PPC</td><td style="text-align:right;">$20K</td><td style="text-align:right;">$48K</td><td style="text-align:right;">$22K</td><td style="text-align:right;color:var(--amber);">$9K</td></tr>
+<tr><td style="font-weight:600;">Software</td><td style="text-align:right;">$7K</td><td style="text-align:right;">$16K</td><td style="text-align:right;">$12K</td><td style="text-align:right;color:var(--amber);">$6K</td></tr>
+<tr><td style="font-weight:600;">Social</td><td style="text-align:right;">$12K</td><td style="text-align:right;">$7K</td><td style="text-align:right;">$8K</td><td style="text-align:right;color:var(--amber);">$7K</td></tr>
+</tbody>
+</table></div><div class="sub" style="padding:6px 4px;">Cancellation values by service; New Sales &ldquo;Top&rdquo; reflects SEO&rsquo;s overall sales leadership (per-service new-sales splits not separately tracked pre-2026).</div></div>
+<hr class="dv">
+
+<p class="slabel">Top performers &amp; cancellations &mdash; YTD 2026 &middot; 2025 vs 2026 comparison</p>
+<div class="lbl" style="margin:0 0 6px;padding-left:2px;opacity:.75;">New Sales</div>
+<div class="mg4" style="grid-template-columns:1fr 1fr;">
+<div class="mc"><div class="lbl">YTD Total New Sales</div><div class="val pos">$268.4K</div><div class="sub">Jan&ndash;Jul 2026</div></div>
+<div class="mc"><div class="lbl">YTD Top Service</div><div class="val" style="color:var(--amber);">SEO</div><div class="sub">Leading service</div></div>
+</div>
+<div class="lbl" style="margin:14px 0 6px;padding-left:2px;opacity:.75;">Cancellations</div>
+<div class="mg4" style="grid-template-columns:1fr 1fr;">
+<div class="mc"><div class="lbl">YTD Total Cancellations</div><div class="val neg">$168.4K</div><div class="sub">Jan&ndash;Jul 2026</div></div>
+<div class="mc"><div class="lbl">YTD Top Service</div><div class="val" style="color:var(--neg,#e8705f);">SEO</div><div class="sub">$45.3K &middot; 26.9% of total</div></div>
+</div>
+<hr class="dv">
+<p class="slabel">Detailed breakdown &mdash; 2025 vs 2026 (YTD Jan&ndash;Jul aligned)</p>
+<div class="cc"><div class="tscroll"><table class="dt" style="width:100%;">
+<thead><tr><th>Metric</th><th style="text-align:right;">2025 (Jan&ndash;Jul)</th><th style="text-align:right;">2026 YTD</th><th style="text-align:right;">Change</th></tr></thead>
+<tbody>
+<tr><td style="font-weight:600;">New Sales</td><td style="text-align:right;">$289.0K</td><td style="text-align:right;">$268.4K</td><td style="text-align:right;font-weight:600;color:var(--neg,#e8705f);">&minus;7.2%</td></tr>
+<tr><td style="font-weight:600;">Cancellations</td><td style="text-align:right;">$103.8K</td><td style="text-align:right;">$168.4K</td><td style="text-align:right;font-weight:600;color:var(--neg,#e8705f);">+62.2%</td></tr>
+<tr><td style="font-weight:600;">SEO cancel contribution</td><td style="text-align:right;">23.6%</td><td style="text-align:right;">26.9%</td><td style="text-align:right;font-weight:600;color:var(--neg,#e8705f);">+3.3 pts</td></tr>
+</tbody>
+</table></div></div>
+<hr class="dv">
+<p class="slabel">Annual sales &amp; monthly trend &middot; 2023&ndash;2025</p>
+<div class="two">
  <div class="cc">
  <div class="ct" id="annualChart1Title">Sales overview</div>
  <div class="cs" id="annualChart1Sub">2023 &middot; 2024 &middot; 2025</div>
@@ -1277,20 +1250,16 @@
  <div class="cw" style="height:240px;"><canvas id="c_annual_secondary"></canvas></div>
  </div>
  </div>
- <hr class="dv">
- <p class="slabel" id="annualTableLabel">Detailed breakdown</p>
- <div class="cc"><div class="tscroll"><table class="dt">
- <thead id="annualTableHead"></thead>
- <tbody id="annualTableBody"></tbody>
- </table></div></div>
- <div class="ig">
- <div class="ins good-ins"><div class="it">SEO remains #1 service</div>Consistent top performer all 3 years — peaking at $1.74M in 2024, holding $1.62M in 2025.</div>
- <div class="ins good-ins"><div class="it">LBO — fastest growing</div>From $0 in 2023 to $497K (2024) and $784K (2025) — strongest growth trajectory of any service.</div>
- <div class="ins neg-ins"><div class="it">GBP declining sharply</div>Revenue fell from $1.63M (2023) to $673K (2025) — a 58.8% two-year decline. Needs strategic review.</div>
- <div class="ins neg-ins"><div class="it">New recurring pipeline at risk</div>New recurring sales dropped 44.3% from $353K (2023) to $197K (2025) — the steepest sustained decline.</div>
- <div class="ins warn-ins"><div class="it">Attrition elevated but improving</div>Rose 3.2%&rarr;4.2% in 2024, pulled back to 4.0% in 2025. Still above the 2023 baseline.</div>
- <div class="ins good-ins"><div class="it">Payroll savings in 2025</div>Total payroll with charges dropped from $4.15M (2024) to $3.44M (2025) — $706.5K saved YoY.</div>
- </div>
+<hr class="dv">
+<p class="slabel">Key insights</p>
+<div class="ig">
+<div class="ins neg-ins"><div class="it">Sales declining year over year</div>Total sales fell $6.51M (2023) &rarr; $5.89M (2025); 2026 YTD ($2.74M) tracks ~21% below 2025&rsquo;s Jan&ndash;Jul pace.</div>
+<div class="ins neg-ins"><div class="it">GBP is the sharpest decline</div>GBP collapsed &minus;59% ($1.63M &rarr; $673K, 2023&rarr;2025) &mdash; the single biggest drag on the service mix.</div>
+<div class="ins good-ins"><div class="it">SEO remains the anchor</div>SEO is the #1 service every year and still the largest revenue driver &mdash; the stable core despite market softness.</div>
+<div class="ins neg-ins"><div class="it">Cancellations accelerating</div>2026 YTD cancellations ($168.4K) are +62% vs 2025 YTD ($103.8K) &mdash; the clearest risk signal in the book.</div>
+<div class="ins warn-ins"><div class="it">Attrition mix has shifted</div>The top cancellation service moved from GBP (2023&ndash;24) to SEO (2025&ndash;26) &mdash; churn now follows the largest service.</div>
+<div class="ins good-ins"><div class="it">New sales more resilient</div>New sales are only &minus;7% YTD vs 2025 &mdash; holding up far better than recurring, a foundation to rebuild from.</div>
+</div>
 </div>
 <div id="pane-payroll" class="pane">
  <p class="slabel">Annual payroll comparison &mdash; 2023 &middot; 2024 &middot; 2025 &middot; 2026 YTD &middot; Source: PH Team Payroll Breakdown</p>
@@ -2060,9 +2029,9 @@ var moData_JUL={"st": {"paid": 84351.3, "cancelled": 8373, "outstanding": 265670
 function bo(cb){return{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},ticks:{color:tc,callback:cb||k}}}};}
 function ho(){return{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc,callback:k}},y:{grid:{color:gc},ticks:{color:tc,font:{size:11}}}}};}
 function donut(pos,sz){return{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{display:true,position:pos||'right',labels:{color:tc,boxWidth:10,padding:8,font:{size:sz||11}}},tooltip:{callbacks:{label:function(ctx){return' $'+ctx.parsed.toLocaleString();}}}}};}
-var biCampaigns={"StraightShooterPlumbing.com": {"am": "Melissa", "total": 94853, "monthly": [19518, 15067, 15067, 15067, 15067, 15067, 249]}, "Goldstarplumbingaz.com": {"am": "Melissa", "total": 84269, "monthly": [15277, 15058, 14772, 12695, 13776, 12691, 11511]}, "Eielectrical.com": {"am": "Kelly", "total": 56915, "monthly": [8875, 9968, 9068, 9968, 9968, 9068, 0]}, "PPM.us": {"am": "Madison", "total": 52552, "monthly": [10864, 7952, 7523, 9769, 8222, 8222, 0]}, "Pricebustersplumbing.com": {"am": "Kelly", "total": 45705, "monthly": [6271, 6344, 6861, 9436, 8380, 8413, 199]}, "Prideplumbingphc.com": {"am": "Melissa", "total": 45531, "monthly": [8225, 8545, 8125, 7746, 7345, 5544, 0]}, "Tridentplumbingllc.com": {"am": "Kelly", "total": 43311, "monthly": [6344, 7743, 10208, 10458, 8558, 0, 0]}, "Deltronelectricfl.com": {"am": "Melissa", "total": 38554, "monthly": [7874, 7445, 7445, 7695, 8095, 0, 0]}, "Yourbellplumbing.com": {"am": "Veronica", "total": 38187, "monthly": [6423, 6648, 6475, 6347, 6347, 5947, 6147]}, "Bullseyeplumbing.com": {"am": "Kelly", "total": 37710, "monthly": [6449, 6011, 6305, 6325, 6308, 6312, 0]}, "ActionRoofing.com": {"am": "Kelly", "total": 36941, "monthly": [5938, 5938, 8595, 8317, 330, 7824, 0]}, "LBSProAdvanced.com": {"am": "Jason", "total": 36823, "monthly": [0, 0, 1720, 0, 9103, 26000, 0]}, "Drainsbyjames.com": {"am": "Kelly", "total": 34136, "monthly": [5616, 6025, 5596, 5596, 5596, 5707, 4847]}, "SpeedyRooter.com": {"am": "Jason", "total": 32376, "monthly": [4646, 4947, 4947, 7942, 4947, 4947, 5146]}, "1800heaters.com": {"am": "Mabua", "total": 31341, "monthly": [5576, 5147, 5147, 5147, 5147, 5177, 0]}};var biCh1=null,biCh2=null,biCh3=null,biCh4=null,biCh5=null,biCh6=null,biCh7=null;var moRows=[],moSortCol=4,moSortAsc=false;var biCmpNames=[];var biColors=['#FDA813','#0D7A8C','#534AB7','#2ec48a','#f26b5b','#11a0b8','#c4830a','#8ba3b8','#3C3489','#e8a87c','#FDA813','#0D7A8C','#f26b5b','#2ec48a','#534AB7'];var biCmpChart=null;function initBilling(){biCmpNames=Object.keys(biCampaigns);var paid_mo=[413854,400577,386248,381366,368529,382434,84351];var cancel_mo=[36108,17273,15091,9845,23996,57712,8373];var outst_mo=[1944,1794,1627,18406,25991,12016,265670];var recur_mo=[343037,327873,309319,313432,313174,296618,80684];var new_mo=[33625,28292,29248,35372,49071,86527,6239];var upgrade_mo=[11066,24260,11323,12257,9436,7950,0];var dngrd_mo=[6128,7511,13495,3996,4615,6181,0];var camp_mo=[885,841,789,773,694,726,666];if(biCh1){biCh1.destroy();}biCh1=_safeChart(document.getElementById('c_bi_status'),{type:'bar',data:{labels:months,datasets:[{label:'Paid',data:paid_mo,backgroundColor:'#2ec48a',borderRadius:3},{label:'Cancelled',data:cancel_mo,backgroundColor:'#f26b5b',borderRadius:3},{label:'Outstanding',data:outst_mo,backgroundColor:'#FDA813',borderRadius:3}]},options:bo()});if(biCh2){biCh2.destroy();}biCh2=_safeChart(document.getElementById('c_bi_count'),{type:'line',data:{labels:months,datasets:[{data:camp_mo,borderColor:'#FDA813',backgroundColor:'rgba(253,168,19,0.1)',fill:true,tension:0.35,pointBackgroundColor:'#FDA813',pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},min:600,max:950,ticks:{color:tc}}}}});if(biCh3){biCh3.destroy();}biCh3=_safeChart(document.getElementById('c_bi_remarks'),{type:'bar',data:{labels:months,datasets:[{label:'Recurring',data:recur_mo,backgroundColor:'#0D7A8C',borderRadius:3},{label:'New',data:new_mo,backgroundColor:'#2ec48a',borderRadius:3},{label:'Upgrade',data:upgrade_mo,backgroundColor:'#FDA813',borderRadius:3},{label:'Downgrade',data:dngrd_mo,backgroundColor:'#f26b5b',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,padding:8,font:{size:11}}}},scales:{x:{stacked:true,grid:{color:gc},ticks:{color:tc}},y:{stacked:true,grid:{color:gc},ticks:{color:tc,callback:k}}}}});if(biCh4){biCh4.destroy();}biCh4=_safeChart(document.getElementById('c_bi_cat'),{type:'doughnut',data:{labels:['SEO','LSA','LBO','GBP','PPC','RTM Pkg','Social','Design','Software','Other'],datasets:[{data:[620685,430550,242820,220628,161345,147083,128238,107903,107004,165970],backgroundColor:['#FDA813','#0D7A8C','#534AB7','#2ec48a','#f26b5b','#11a0b8','#c4830a','#8ba3b8','#3C3489','#e8a87c'],borderWidth:0}]},options:donut('right',11)});if(biCh5){biCh5.destroy();}biCh5=_safeChart(document.getElementById('c_bi_trend'),{type:'line',data:{labels:months,datasets:[{data:[415798,402371,387875,399772,402520,394450],borderColor:'#FDA813',backgroundColor:'rgba(253,168,19,0.08)',fill:true,tension:0.35,pointRadius:4,pointBackgroundColor:'#FDA813'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},ticks:{color:tc,callback:k}}}}});buildCmpChart('all');buildCmpTable('all');showMonth('JAN',document.querySelector('#moBtnRow .btn'));}
-function buildCmpChart(n){var list=n==='all'?biCmpNames:[n];var datasets=list.map(function(nm,i){var d=biCampaigns[nm];return{label:nm,data:d?d.monthly:[0,0,0,0,0,0],backgroundColor:biColors[i%biColors.length],borderRadius:2};});if(biCh6){biCh6.destroy();}biCh6=_safeChart(document.getElementById('c_bi_topcmp'),{type:'bar',data:{labels:months,datasets:datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:list.length>1,labels:{color:tc,boxWidth:8,padding:6,font:{size:10}}}},scales:{x:{stacked:true,grid:{color:gc},ticks:{color:tc}},y:{stacked:true,grid:{color:gc},ticks:{color:tc,callback:k}}}}});}
-function buildCmpTable(n){var tb=document.getElementById('cmpTableBody');if(!tb)return;tb.innerHTML='';var list=n==='all'?biCmpNames:[n];list.forEach(function(nm){var d=biCampaigns[nm];if(!d||!d.monthly)return;tb.innerHTML+='<tr><td style="font-size:11px;font-weight:500;">'+nm+'</td><td style="color:var(--muted);">'+d.am+'</td>'+d.monthly.map(function(v){return'<td>'+(v>0?'$'+v.toLocaleString():'&mdash;')+'</td>';}).join('')+'<td class="td-warn" style="font-weight:600;">$'+d.total.toLocaleString()+'</td></tr>';});}
+var biCampaigns={"StraightShooterPlumbing.com": {"am": "Melissa", "total": 94853, "monthly": [19518, 15067, 15067, 15067, 15067, 15067, 249]}, "Goldstarplumbingaz.com": {"am": "Melissa", "total": 84269, "monthly": [15277, 15058, 14772, 12695, 13776, 12691, 11511]}, "Eielectrical.com": {"am": "Kelly", "total": 56915, "monthly": [8875, 9968, 9068, 9968, 9968, 9068, 0]}, "PPM.us": {"am": "Madison", "total": 52552, "monthly": [10864, 7952, 7523, 9769, 8222, 8222, 0]}, "Pricebustersplumbing.com": {"am": "Kelly", "total": 45705, "monthly": [6271, 6344, 6861, 9436, 8380, 8413, 199]}, "Prideplumbingphc.com": {"am": "Melissa", "total": 45531, "monthly": [8225, 8545, 8125, 7746, 7345, 5544, 0]}, "Tridentplumbingllc.com": {"am": "Kelly", "total": 43311, "monthly": [6344, 7743, 10208, 10458, 8558, 0, 0]}, "Deltronelectricfl.com": {"am": "Melissa", "total": 38554, "monthly": [7874, 7445, 7445, 7695, 8095, 0, 0]}, "Yourbellplumbing.com": {"am": "Veronica", "total": 38187, "monthly": [6423, 6648, 6475, 6347, 6347, 5947, 6147]}, "Bullseyeplumbing.com": {"am": "Kelly", "total": 37710, "monthly": [6449, 6011, 6305, 6325, 6308, 6312, 0]}, "ActionRoofing.com": {"am": "Kelly", "total": 36941, "monthly": [5938, 5938, 8595, 8317, 330, 7824, 0]}, "LBSProAdvanced.com": {"am": "Jason", "total": 36823, "monthly": [0, 0, 1720, 0, 9103, 26000, 0]}, "Drainsbyjames.com": {"am": "Kelly", "total": 34136, "monthly": [5616, 6025, 5596, 5596, 5596, 5707, 4847]}, "SpeedyRooter.com": {"am": "Jason", "total": 32376, "monthly": [4646, 4947, 4947, 7942, 4947, 4947, 5146]}, "1800heaters.com": {"am": "Mabua", "total": 31341, "monthly": [5576, 5147, 5147, 5147, 5147, 5177, 0]}};var biCh1=null,biCh2=null,biCh3=null,biCh4=null,biCh5=null,biCh6=null,biCh7=null;var moRows=[],moSortCol=4,moSortAsc=false;var biCmpNames=[];var biColors=['#FDA813','#0D7A8C','#534AB7','#2ec48a','#f26b5b','#11a0b8','#c4830a','#8ba3b8','#3C3489','#e8a87c','#FDA813','#0D7A8C','#f26b5b','#2ec48a','#534AB7'];var biCmpChart=null;function initBilling(){biCmpNames=Object.keys(biCampaigns);var paid_mo=[413854,400577,386248,381366,368529,382434,84351];var cancel_mo=[36108,17273,15091,9845,23996,57712,8373];var outst_mo=[1944,1794,1627,18406,25991,12016,265670];var recur_mo=[343037,327873,309319,313432,313174,296618,80684];var new_mo=[33625,28292,29248,35372,49071,86527,6239];var upgrade_mo=[11066,24260,11323,12257,9436,7950,0];var dngrd_mo=[6128,7511,13495,3996,4615,6181,0];var camp_mo=[885,841,789,773,694,726,666];if(biCh1){biCh1.destroy();}biCh1=_safeChart(document.getElementById('c_bi_status'),{type:'bar',data:{labels:months,datasets:[{label:'Paid',data:paid_mo,backgroundColor:'#2ec48a',borderRadius:3},{label:'Cancelled',data:cancel_mo,backgroundColor:'#f26b5b',borderRadius:3},{label:'Outstanding',data:outst_mo,backgroundColor:'#FDA813',borderRadius:3}]},options:bo()});if(biCh2){biCh2.destroy();}biCh2=_safeChart(document.getElementById('c_bi_count'),{type:'line',data:{labels:months,datasets:[{data:camp_mo,borderColor:'#FDA813',backgroundColor:'rgba(253,168,19,0.1)',fill:true,tension:0.35,pointBackgroundColor:'#FDA813',pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},min:600,max:950,ticks:{color:tc}}}}});if(biCh3){biCh3.destroy();}if(biCh4){biCh4.destroy();}biCh4=_safeChart(document.getElementById('c_bi_cat'),{type:'bar',data:{labels:['SEO','LSA','LBO','GBP','Other','PPC','RTM Pkg','Social','Design','Software'],datasets:[{data:[620685,430550,242820,220628,165970,161345,147083,128238,107903,107004],backgroundColor:'#FDA813',borderRadius:4,barThickness:14}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return '$'+c.parsed.x.toLocaleString();}}}},scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:10}}},y:{grid:{display:false},ticks:{color:tc,font:{size:11}}}}}});if(biCh5){biCh5.destroy();}biCh5=buildCmpChart('all');buildCmpTable('all');showMonth('JAN',document.querySelector('#moBtnRow .btn'));}
+function buildCmpChart(n){var list=n==='all'?biCmpNames.slice(0,10):[n];var datasets=list.map(function(nm,i){var d=biCampaigns[nm];return{label:nm,data:d?d.monthly:[0,0,0,0,0,0],borderColor:biColors[i%biColors.length],backgroundColor:biColors[i%biColors.length],borderWidth:1.5,tension:0.3,pointRadius:2,fill:false};});if(biCh6){biCh6.destroy();}biCh6=_safeChart(document.getElementById('c_bi_topcmp'),{type:'line',data:{labels:months,datasets:datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:list.length>1,labels:{color:tc,boxWidth:8,padding:6,font:{size:10}}}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},ticks:{color:tc,callback:k}}}}});}
+function buildCmpTable(n){var tb=document.getElementById('cmpTableBody');if(!tb)return;tb.innerHTML='';var list=n==='all'?biCmpNames.slice(0,10):[n];list.forEach(function(nm){var d=biCampaigns[nm];if(!d||!d.monthly)return;tb.innerHTML+='<tr><td style="font-size:11px;font-weight:500;">'+nm+'</td><td style="color:var(--muted);">'+d.am+'</td>'+d.monthly.map(function(v){return'<td>'+(v>0?'$'+v.toLocaleString():'&mdash;')+'</td>';}).join('')+'<td class="td-warn" style="font-weight:600;">$'+d.total.toLocaleString()+'</td></tr>';});}
 function showMonth(mo,el){var btns=document.querySelectorAll('#moBtnRow .btn');btns.forEach(function(b){b.classList.remove('active');});if(el)el.classList.add('active');var moData={JAN:moData_JAN,FEB:moData_FEB,MAR:moData_MAR,APR:moData_APR,MAY:moData_MAY,JUN:moData_JUN};var d=moData[mo];if(!d)return;var sub=document.getElementById('moSub');if(sub){var mn={JAN:'January',FEB:'February',MAR:'March',APR:'April',MAY:'May',JUN:'June',JUL:'July'};sub.textContent=mn[mo]+' 2026 billing detail';}
 moRows=d.r.map(function(r){var ctCode=ctLookup[r.c]||'M';var ctFull=ctCode==='C'?'In Contract':ctCode==='A'?'Annual':'Month to Month';return Object.assign({},r,{ct:ctFull});});moSortCol=4;moSortAsc=false;var si=document.getElementById('moSearch');if(si)si.value='';var sf=document.getElementById('moStatus');if(sf)sf.value='';var sa=document.getElementById('moAM');if(sa)sa.value='';var sc=document.getElementById('moCT');if(sc)sc.value='';var cb=document.getElementById('cddCTBtn');if(cb)cb.textContent='All contract types';var sb=document.getElementById('cddStatusBtn');if(sb)sb.textContent='All statuses';var ab=document.getElementById('cddAMBtn');if(ab)ab.textContent='All AMs';filterMoTable();var st=d.st;var kpiEl=document.getElementById('moKpis');if(kpiEl){kpiEl.innerHTML='<div class="mc"><div class="lbl">Total paid</div><div class="val pos">$'+Math.round(st.paid).toLocaleString()+'</div></div>'+'<div class="mc"><div class="lbl">Cancelled</div><div class="val neg">$'+Math.round(st.cancelled).toLocaleString()+'</div></div>'+'<div class="mc"><div class="lbl">Outstanding</div><div class="val warn">$'+Math.round(st.outstanding).toLocaleString()+'</div></div>'+'<div class="mc"><div class="lbl">Campaigns paid</div><div class="val">'+st.paid_cmp+'</div></div>';}
 if(biCh7){biCh7.destroy();}
@@ -2191,7 +2160,7 @@ function buildAMCharts(am){
   var c3=document.getElementById('c_am_monthly');
   if(c3){
     var col=am==='all'?'#f26b5b':(amColors[am]||'#f26b5b');
-    amCh3=_safeChart(c3,{type:'bar',data:{labels:months,datasets:[{data:monthlyData,backgroundColor:col,borderRadius:3}]},options:bo()});
+    amCh3=_safeChart(c3,{type:'line',data:{labels:months,datasets:[{data:monthlyData,borderColor:col,backgroundColor:'rgba(242,107,91,0.12)',fill:true,tension:0.3,pointRadius:3,borderWidth:2}]},options:bo()});
   }
   var dtb=document.getElementById('amDetailBody');
   if(dtb){
@@ -2375,18 +2344,10 @@ if(name==='services'){_safeChart(document.getElementById('c_s_combined'),{type:'
   var svcTb=document.getElementById('svcSummaryBody');
   if(svcTb){svcTb.innerHTML='';svcLabels.forEach(function(s,i){var pct=(svcVals[i]/svTotal*100).toFixed(1);svcTb.innerHTML+='<tr><td style="font-weight:500;">'+s+'</td><td class="td-warn">$'+svcVals[i].toLocaleString()+'</td><td style="color:var(--muted);">'+pct+'%</td></tr>';});}
   setTimeout(function(){buildSvcDashboard('SEO');buildSvcAMView('Kelly');buildSvcCampView('all');buildConcentrationChart();buildConcentrationRisk();},80);}
-if(name==='analytics'){setTimeout(function(){buildAMWinLoss();buildPriceErosion();buildPriceErosionChart();buildPriceErosionTable();buildPriceAttributionChart();buildPriceAttributionTable();buildPriceAttribution();buildCancelErosionXref();buildProfitPerService();buildProfitPerServiceChart();buildPerCampaignChart();buildProfitPerCampaign();buildCancelErosionTable();buildAMProfitabilityChart();buildAMProfitability();buildAMTenure();buildAMTenureChart();},80);}
+if(name==='analytics'){setTimeout(function(){_safeChart(document.getElementById('c_an_profit'),{type:'bar',data:{labels:['Madison','Melissa','Riza','Kelly','Jason','Veronica','John','Ada','Ann','Judy'],datasets:[{data:[440413,382212,302841,300926,295551,177963,88029,53475,37708,24789],backgroundColor:'#FDA813',borderRadius:4,barThickness:16}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return '$'+c.parsed.x.toLocaleString();}}}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{display:false},ticks:{color:tc,font:{size:11}}}}}});_safeChart(document.getElementById('c_an_attrition'),{type:'bar',data:{labels:['LSA','GBP','LBO','SEO','Call','PPC','Social','Software','RTM Package','Design'],datasets:[{data:[9.6,8.7,7.0,6.3,6.0,5.6,5.0,4.7,0,0],backgroundColor:'#f26b5b',borderRadius:4,barThickness:15}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.x+'% attrition';}}}},scales:{x:{grid:{color:gc},ticks:{color:tc,callback:function(v){return v+'%';}}},y:{grid:{display:false},ticks:{color:tc,font:{size:11}}}}}});_safeChart(document.getElementById('c_an_updown'),{type:'line',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'],datasets:[{label:'Upgrades',data:[11066,24260,11323,12257,9436,7950,0],borderColor:'#4caf82',backgroundColor:'#4caf82',pointRadius:3,borderWidth:2,tension:0.3,fill:false},{label:'Downgrades',data:[6128,7511,13495,3996,4615,6181,0],borderColor:'#f26b5b',backgroundColor:'#f26b5b',pointRadius:3,borderWidth:2,tension:0.3,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,font:{size:10},usePointStyle:true}}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},ticks:{color:tc}}}}});},80);}
 if(name==='cancel'){var caColors=['#f26b5b','#f26b5b','#f26b5b','#2ec48a','#f26b5b','#f26b5b'];_safeChart(document.getElementById('c_ca_trend'),{type:'line',data:{labels:months,datasets:[{label:'Cancellations',data:[36108,17273,15091,9845,23996,57712,8373],borderColor:'#f26b5b',backgroundColor:'rgba(242,107,91,0.12)',fill:true,tension:0.3,pointRadius:4,borderWidth:2}]},options:bo()});_safeChart(document.getElementById('c_ca_svc'),{type:'bar',data:{labels:['SEO','LSA','GBP','LBO','Hosting','PPC','Social','Software','Call','NoDig','Email','Yelp'],datasets:[{data:[44294,36802,22153,18534,13370,8468,6945,5653,1868,1056,448,399],backgroundColor:'#f26b5b',borderRadius:4,barThickness:13}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return '$'+c.parsed.x.toLocaleString();}}}},scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:10}}},y:{grid:{display:false},ticks:{color:tc,font:{size:10}}}}}});_safeChart(document.getElementById('c_ca_am'),{type:'bar',data:{labels:['Veronica','Riza','Kelly','Melissa','Jason','Ada','Ann','Madison','John','Judy'],datasets:[{data:[27939,25436,24716,18532,17801,16739,10522,8088,7663,1741],backgroundColor:'#f26b5b',borderRadius:4,barThickness:13}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return '$'+c.parsed.x.toLocaleString();}}}},scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:10}}},y:{grid:{display:false},ticks:{color:tc,font:{size:10}}}}}});_safeChart(document.getElementById('c_ca_reason'),{type:'doughnut',data:{labels:['In-House','Chng.Provider','Performance','No Reason','Hardships','Not In Use','Non-Payment'],datasets:[{data:[49465,49106,43188,7131,6571,1563,827],backgroundColor:['#f26b5b','#FDA813','#2ec48a','#534AB7','#0D7A8C','#11a0b8','#8ba3b8'],borderWidth:0}]},options:donut()});setTimeout(function(){buildAMCards('all');buildAMCharts('all');buildCancelReasonDetail('In-House');buildCancelServiceDetail('LSA');},80);}
 if(name==='billing'){setTimeout(function(){initBilling();},80);}
-if(name==='forecast'){
-  var fcLabels=['Jan','Feb','Mar','Apr','May','Jun','Jul','Jul (F)'];
-  _safeChart(document.getElementById('c_fc_rtm'),{type:'bar',data:{labels:fcLabels,datasets:[{data:[389314,376360,364142,375781,372675,377690,377690],backgroundColor:['#FDA813','#FDA813','#FDA813','#FDA813','#FDA813','#FDA813','rgba(253,168,19,0.35)'],borderRadius:3}]},options:bo()});
-  _safeChart(document.getElementById('c_fc_u360'),{type:'bar',data:{labels:fcLabels,datasets:[{data:[20582,20188,18110,17168,16222,16450,16450],backgroundColor:['#0D7A8C','#0D7A8C','#0D7A8C','#0D7A8C','#0D7A8C','#0D7A8C','rgba(13,122,140,0.35)'],borderRadius:3}]},options:bo()});
-  _safeChart(document.getElementById('c_fc_nodig'),{type:'bar',data:{labels:fcLabels,datasets:[{data:[5902,5822,5623,5902,5623,5125,5125],backgroundColor:['#534AB7','#534AB7','#534AB7','#534AB7','#534AB7','#534AB7','rgba(83,74,183,0.35)'],borderRadius:3}]},options:bo()});
-  _safeChart(document.getElementById('c_fc_bar'),{type:'bar',data:{labels:fcLabels,datasets:[{label:'RTM',data:[389314,376360,364142,375781,372675,377690,377690],backgroundColor:['#FDA813','#FDA813','#FDA813','#FDA813','#FDA813','#FDA813','rgba(253,168,19,0.45)'],borderRadius:3},{label:'U360',data:[20582,20188,18110,17168,16222,16450,16450],backgroundColor:['#0D7A8C','#0D7A8C','#0D7A8C','#0D7A8C','#0D7A8C','#0D7A8C','rgba(13,122,140,0.45)'],borderRadius:3},{label:'NoDig',data:[5902,5822,5623,5902,5623,5125,5125],backgroundColor:['#534AB7','#534AB7','#534AB7','#534AB7','#534AB7','#534AB7','rgba(83,74,183,0.45)'],borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,padding:12}}},scales:{x:{stacked:true,grid:{color:gc},ticks:{color:tc}},y:{stacked:true,grid:{color:gc},ticks:{color:tc,callback:k}}}}});
-}
-if(name==='opex'){setTimeout(function(){initOpex();buildBudgetVsActual();buildEbMomOpex();buildOpexDeptChart();},80);}
-if(name==='salary'){
+if(name==='forecast'){}if(name==='salary'){
   var salaryMonths=['Jan','Feb','Mar','Apr','May','Jun','Jul'];
   _safeChart(document.getElementById('c_sl_ratio'),{type:'bar',data:{labels:['Current','50% target','40% ideal','Industry avg'],datasets:[{data:[61.3,50,40,35],backgroundColor:['#f26b5b','#FDA813','#2ec48a','#0D7A8C'],borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},max:80,ticks:{color:tc,callback:function(v){return v+'%';}}}}}});
   _safeChart(document.getElementById('c_sl_split'),{type:'doughnut',data:{labels:['Philippines ($641K)','United States ($321K)'],datasets:[{data:[641754,320936],backgroundColor:['#0D7A8C','#FDA813'],borderWidth:0}]},options:donut('right',12)});
@@ -2414,13 +2375,13 @@ function buildCancelReasonDetail(reason){var d=cancelReasonData[reason];if(!d)re
 +'<div class="mc"><div class="lbl">Records</div><div class="val" style="font-size:17px;">'+d.count+'</div><div class="sub">Cancellation lines</div></div>'
 +'<div class="mc"><div class="lbl">Top campaign</div><div class="val" style="font-size:13px;">'+(d.campaigns&&d.campaigns[0]?d.campaigns[0].c:'—')+'</div><div class="sub">'+(d.campaigns&&d.campaigns[0]?'AM: '+d.campaigns[0].a:'')+'</div></div>';}
 if(crCh1){crCh1.destroy();crCh1=null;}
-var c1=document.getElementById('c_cr_monthly');if(c1){crCh1=_safeChart(c1,{type:'bar',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'],datasets:[{data:d.monthly,backgroundColor:col,borderRadius:3}]},options:bo()});}
+var c1=document.getElementById('c_cr_monthly');if(c1){crCh1=_safeChart(c1,{type:'line',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'],datasets:[{data:d.monthly,borderColor:col,backgroundColor:'rgba(242,107,91,0.12)',fill:true,tension:0.3,pointRadius:3,borderWidth:2}]},options:bo()});}
 var tb=document.getElementById('crTableBody');if(tb){tb.innerHTML='';(d.campaigns||[]).forEach(function(r){tb.innerHTML+='<tr><td style="font-size:12px;font-weight:500;">'+r.c+'</td><td style="color:var(--muted);">'+r.a+'</td><td style="color:var(--muted);">'+r.k+'</td><td class="td-neg" style="text-align:right;">$'+r.v.toLocaleString()+'</td></tr>';});}}
 function buildCancelServiceDetail(svc){var d=cancelServiceData[svc];if(!d)return;var col=serviceColors[svc]||'#FDA813';var w=document.getElementById('csCards');if(w){w.innerHTML='<div class="mc"><div class="lbl">Total cancelled</div><div class="val neg" style="font-size:17px;">$'+d.total.toLocaleString()+'</div><div class="sub">Jan–Jun 2026</div></div>'
 +'<div class="mc"><div class="lbl">Records</div><div class="val" style="font-size:17px;">'+d.count+'</div><div class="sub">Cancellation lines</div></div>'
 +'<div class="mc"><div class="lbl">Top campaign</div><div class="val" style="font-size:13px;">'+(d.campaigns&&d.campaigns[0]?d.campaigns[0].c:'—')+'</div><div class="sub">'+(d.campaigns&&d.campaigns[0]?'AM: '+d.campaigns[0].a:'')+'</div></div>';}
 if(csCh1){csCh1.destroy();csCh1=null;}
-var c1=document.getElementById('c_cs_monthly');if(c1){csCh1=_safeChart(c1,{type:'bar',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'],datasets:[{data:d.monthly,backgroundColor:col,borderRadius:3}]},options:bo()});}
+var c1=document.getElementById('c_cs_monthly');if(c1){csCh1=_safeChart(c1,{type:'line',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'],datasets:[{data:d.monthly,borderColor:col,backgroundColor:'rgba(242,107,91,0.12)',fill:true,tension:0.3,pointRadius:3,borderWidth:2}]},options:bo()});}
 var tb=document.getElementById('csTableBody');if(tb){tb.innerHTML='';(d.campaigns||[]).forEach(function(r){tb.innerHTML+='<tr><td style="font-size:12px;font-weight:500;">'+r.c+'</td><td style="color:var(--muted);">'+r.a+'</td><td style="color:var(--muted);">'+r.r+'</td><td class="td-neg" style="text-align:right;">$'+r.v.toLocaleString()+'</td></tr>';});}}
 var svcDrillData={'SEO':{total:620685,campaigns:[{c:'StraightShooterPlumbing.com',a:'Melissa',v:19500,m:[3250,3250,3250,3250,3250,3250]},{c:'PPM.us',a:'Madison',v:19500,m:[3250,3250,3250,3250,3250,3250]},{c:'Eielectrical.com',a:'Kelly',v:19500,m:[3250,3250,3250,3250,3250,3250]},{c:'QDIHVAC.com',a:'Madison',v:16575,m:[2762,2762,2762,2762,2762,2762]},{c:'Tridentplumbingllc.com',a:'Kelly',v:16250,m:[3250,3250,3250,3250,3250,0]},{c:'OneCallLegal.com',a:'Kelly',v:13348,m:[3037,3437,3437,3437,0,0]},{c:'1800heaters.com',a:'Jason',v:12000,m:[2000,2000,2000,2000,2000,2000]},{c:'Goldstarplumbingaz.com',a:'Melissa',v:12000,m:[2000,2000,2000,2000,2000,2000]},{c:'Pricebustersplumbing.com',a:'Kelly',v:12000,m:[2000,2000,2000,2000,2000,2000]},{c:'Callonthedouble.com',a:'Kelly',v:12000,m:[2000,2000,2000,2000,2000,2000]}]},'LSA':{total:430550,campaigns:[{c:'Goldstarplumbingaz.com',a:'Melissa',v:28646,m:[5798,5798,5598,3280,4597,3575]},{c:'ActionRoofing.com',a:'Veronica',v:19192,m:[2747,2747,4406,4826,0,4466]},{c:'Prideplumbingphc.com',a:'Melissa',v:14728,m:[1996,2796,2396,2146,1596,3798]},{c:'CallOptionOne.com',a:'Kelly',v:12992,m:[2498,2498,2498,2498,3000,0]},{c:'StraightShooterPlumbing.com',a:'Melissa',v:12789,m:[2799,1998,1998,1998,1998,1998]},{c:'Calljacknjill.com',a:'Veronica',v:11394,m:[1899,1899,1899,1899,1899,1899]},{c:'Drainsbyjames.com',a:'Jason',v:11394,m:[1899,1899,1899,1899,1899,1899]},{c:'Plumbtechmt.com',a:'Veronica',v:10734,m:[1797,1997,1597,2347,1997,999]},{c:'Callfastair.com',a:'Jason',v:9588,m:[1598,1598,1598,1598,1598,1598]},{c:'Greenhomepest.com',a:'Veronica',v:9137,m:[0,1798,798,2347,1997,2197]}]},'LBO':{total:242820,campaigns:[{c:'StraightShooterPlumbing.com',a:'Melissa',v:11988,m:[1998,1998,1998,1998,1998,1998]},{c:'Pricebustersplumbing.com',a:'Kelly',v:10241,m:[999,999,999,3248,1998,1998]},{c:'Prideplumbingphc.com',a:'Melissa',v:9495,m:[1749,1749,1749,1749,1749,750]},{c:'Deltronelectricfl.com',a:'Melissa',v:8745,m:[1749,1749,1749,1749,1749,0]},{c:'Thepipedoctorplumbing.com',a:'Madison',v:8488,m:[1498,1398,1398,1398,1398,1398]},{c:'PPM.us',a:'Madison',v:7244,m:[999,999,999,2249,999,999]},{c:'CallOptionOne.com',a:'Kelly',v:6392,m:[1598,1598,1598,1598,0,0]},{c:'1800heaters.com',a:'Jason',v:5994,m:[999,999,999,999,999,999]},{c:'SpeedyRooter.com',a:'Riza',v:5994,m:[999,999,999,999,999,999]},{c:'Bullseyeplumbing.com',a:'Kelly',v:5994,m:[999,999,999,999,999,999]}]},'GBP':{total:220628,campaigns:[{c:'ActionRoofing.com',a:'Veronica',v:15796,m:[2860,2860,3358,3358,0,3358]},{c:'Goldstarplumbingaz.com',a:'Melissa',v:13176,m:[2196,2196,2196,2196,2196,2196]},{c:'Airprosusa.com(1)',a:'Veronica',v:10758,m:[4980,4980,798,0,0,0]},{c:'Onesourcehomeservice.com(1)',a:'Veronica',v:9287,m:[2097,2097,2097,1498,1498,0]},{c:'Kinseyplumbing.com',a:'Riza',v:6186,m:[1497,1497,1497,1497,99,99]},{c:'Calljackrabbit.com(1)',a:'Veronica',v:6180,m:[1893,1893,2394,0,0,0]},{c:'Tridentplumbingllc.com',a:'Kelly',v:5990,m:[798,1298,1298,1298,1298,0]},{c:'Eielectrical.com',a:'Kelly',v:5394,m:[899,899,899,899,899,899]},{c:'Callonthedouble.com',a:'Kelly',v:4488,m:[748,748,748,748,748,748]},{c:'SolacePlumbingAndAir.com',a:'Kelly',v:4320,m:[0,0,1080,1080,1080,1080]}]},'PPC':{total:161345,campaigns:[{c:'Yourbellplumbing.com',a:'Veronica',v:15975,m:[2475,2700,2700,2700,2700,2700]},{c:'PPM.us',a:'Madison',v:15675,m:[2800,2575,2575,2575,2575,2575]},{c:'1800heaters.com',a:'Jason',v:10200,m:[1700,1700,1700,1700,1700,1700]},{c:'StraightShooterPlumbing.com',a:'Melissa',v:9500,m:[2000,1500,1500,1500,1500,1500]},{c:'Goldstarplumbingaz.com',a:'Melissa',v:9282,m:[1547,1547,1547,1547,1547,1547]},{c:'Jnrplumbing.com',a:'Jason',v:9000,m:[1500,1500,1500,1500,1500,1500]},{c:'Pricebustersplumbing.com',a:'Kelly',v:7132,m:[750,823,1340,1266,1460,1493]},{c:'Bullseyeplumbing.com',a:'Kelly',v:7032,m:[1032,1200,1200,1200,1200,1200]},{c:'Eielectrical.com',a:'Kelly',v:5957,m:[832,1025,1025,1025,1025,1025]},{c:'Thepipedoctorplumbing.com',a:'Madison',v:4500,m:[750,750,750,750,750,750]}]},'Rtm Package':{total:147083,campaigns:[{c:'StraightShooterPlumbing.com',a:'Melissa',v:25720,m:[5745,3995,3995,3995,3995,3995]},{c:'PipersDrainRepair.com',a:'Veronica',v:21000,m:[3500,3500,3500,3500,3500,3500]},{c:'MadeSimpleHeatingAndAir.com',a:'Kelly',v:18900,m:[3150,3150,3150,3150,3150,3150]},{c:'Rapidashresponse.com',a:'Jason',v:15300,m:[6100,2300,2300,2300,2300,0]},{c:'TJMPlumbingHeating.com',a:'Veronica',v:12600,m:[2500,2500,1900,1900,1900,1900]},{c:'ProvidencePlumbing.com',a:'Kelly',v:12000,m:[2000,2000,2000,2000,2000,2000]},{c:'LegendaryService.com',a:'Madison',v:11900,m:[0,0,0,0,8200,3700]},{c:'Bioremedies.net',a:'Madison',v:9000,m:[1500,1500,1500,1500,1500,1500]},{c:'CR3America.com/Ocala',a:'Kelly',v:7735,m:[0,2947,1197,1197,1197,1197]},{c:'CR3America.com/North-Charlotte',a:'Jason',v:6538,m:[0,0,2947,1197,1197,1197]}]},'Social':{total:128238,campaigns:[{c:'Goldstarplumbingaz.com',a:'Melissa',v:14988,m:[2498,2498,2498,2498,2498,2498]},{c:'StraightShooterPlumbing.com',a:'Melissa',v:10788,m:[1798,1798,1798,1798,1798,1798]},{c:'Eielectrical.com',a:'Kelly',v:9594,m:[1599,1599,1599,1599,1599,1599]},{c:'Deltronelectricfl.com',a:'Melissa',v:7500,m:[1500,1500,1500,1500,1500,0]},{c:'Tridentplumbingllc.com',a:'Kelly',v:6096,m:[400,1799,1299,1299,1299,0]},{c:'QDIHVAC.com',a:'Madison',v:5394,m:[899,899,899,899,899,899]},{c:'Diamondautoglassflagstaff.com',a:'Madison',v:5394,m:[899,899,899,899,899,899]},{c:'Drainsbyjames.com',a:'Jason',v:5100,m:[850,850,850,850,850,850]},{c:'Wooleytrenchless.com',a:'Kelly',v:3594,m:[599,599,599,599,599,599]},{c:'Prideplumbingphc.com',a:'Melissa',v:3494,m:[1049,549,549,399,549,399]}]},'Design':{total:107903,campaigns:[{c:'LBSProAdvanced.com',a:'John',v:34707,m:[0,0,492,0,16215,18000]},{c:'CR3America.com',a:'Madison',v:5350,m:[0,0,0,0,5350,0]},{c:'DrainCleaningNearMeRVA.com',a:'Riza',v:4999,m:[0,0,0,0,4999,0]},{c:'503capitalpartners.com',a:'Jason',v:4500,m:[0,4500,0,0,0,0]},{c:'PPM.us',a:'Madison',v:3663,m:[3366,0,0,297,0,0]},{c:'UseAvid.com',a:'Riza',v:3000,m:[0,0,0,2500,500,0]},{c:'SpeedyRooter.com',a:'Riza',v:2995,m:[0,0,0,2995,0,0]},{c:'SeattlePipeSolutions.com',a:'Melissa',v:2994,m:[499,499,499,499,499,499]},{c:'OneCallLegal.com',a:'Kelly',v:2796,m:[699,699,699,699,0,0]},{c:'AllGritPlumbing.com',a:'Madison',v:2500,m:[0,2500,0,0,0,0]}]},'Software':{total:107004,campaigns:[{c:'Prideplumbingphc.com',a:'Melissa',v:2883,m:[497,497,497,497,497,398]},{c:'Goldstarplumbingaz.com',a:'Melissa',v:2376,m:[396,396,396,396,396,396]},{c:'Kinseyplumbing.com',a:'Riza',v:2277,m:[297,396,396,396,396,396]},{c:'Mrrooter.com/southern-mass',a:'Jason',v:2088,m:[348,348,348,348,348,348]},{c:'Sweetsservices.com',a:'Veronica',v:1996,m:[499,499,499,499,0,0]},{c:'Tonytheplumbercompany.com',a:'Madison',v:1800,m:[300,300,300,300,300,300]},{c:'Rapidflowinc.com',a:'Madison',v:1794,m:[299,299,299,299,299,299]},{c:'1800heaters.com',a:'Jason',v:1794,m:[299,299,299,299,299,299]},{c:'Diamondautoglassflagstaff.com',a:'Madison',v:1794,m:[299,299,299,299,299,299]},{c:'BeisPlumbing.com',a:'Judy',v:1794,m:[299,299,299,299,299,299]}]},'Hosting':{total:62239,campaigns:[{c:'Trictools.com',a:'Madison',v:2994,m:[499,499,499,499,499,499]},{c:'Asheville-Plumber.com',a:'Jason',v:1194,m:[199,199,199,199,199,199]},{c:'Supermarcoplumbing.com',a:'Madison',v:1194,m:[199,199,199,199,199,199]},{c:'Valtorc.com',a:'Riza',v:1194,m:[199,199,199,199,199,199]},{c:'Budgetsewer.com',a:'Melissa',v:1176,m:[196,196,196,196,196,196]},{c:'SewerAndDrainChampion.com',a:'Jason',v:1106,m:[179,179,211,179,179,179]},{c:'Capstone-Plumbing.com',a:'Kelly',v:1074,m:[179,179,179,179,179,179]},{c:'P3PlumbingAZ.com',a:'Madison',v:1068,m:[0,0,471,199,199,199]},{c:'Tonytheplumbercompany.com',a:'Madison',v:900,m:[150,150,150,150,150,150]},{c:'Kingsplumbingbermuda.com',a:'Kelly',v:894,m:[149,149,149,149,149,149]}]},};var svcDrillColors={'SEO':'#FDA813','LSA':'#0D7A8C','LBO':'#534AB7','GBP':'#f26b5b','PPC':'#2ec48a','RTM Package':'#11a0b8','Social':'#8ba3b8','Software':'#c4830a','Design':'#3C3489','Hosting':'#e8a87c','NoDig':'#FDA813','Call':'#0D7A8C','Yelp':'#f26b5b','Email':'#2ec48a','Apps':'#534AB7'};function showSvcDrill(svc,el){document.querySelectorAll('#svcDrillBtnRow .btn').forEach(function(b){b.classList.remove('active');});if(el)el.classList.add('active');curSvcDrill=svc;buildSvcDashboard(svc);}
 var campSvcData={"StraightShooterPlumbing.com":{a:"Melissa",v:94853.0,svcs:[{svc:"CALL",m:[330.0,330.0,330.0,330.0,330.0,330.0],v:1980.0},{svc:"DESIGN",m:[900.0,0.0,0.0,0.0,0.0,0.0],v:900.0},{svc:"EMAIL",m:[500.0,0.0,0.0,0.0,0.0,0.0],v:500.0},{svc:"GBP",m:[0.0,0.0,0.0,0.0,0.0,0.0],v:0.0},{svc:"LBO",m:[1998.0,1998.0,1998.0,1998.0,1998.0,1998.0],v:11988.0},{svc:"LSA",m:[2799.0,1998.0,1998.0,1998.0,1998.0,1998.0],v:12789.0},{svc:"PPC",m:[2000.0,1500.0,1500.0,1500.0,1500.0,1500.0],v:9500.0},{svc:"RTM PACKAGE",m:[5745.0,3995.0,3995.0,3995.0,3995.0,3995.0],v:25720.0},{svc:"SEO",m:[3250.0,3250.0,3250.0,3250.0,3250.0,3250.0],v:19500.0},{svc:"SOCIAL",m:[1798.0,1798.0,1798.0,1798.0,1798.0,1798.0],v:10788.0},{svc:"SOFTWARE",m:[198.0,198.0,198.0,198.0,198.0,198.0],v:1188.0}]},"Goldstarplumbingaz.com":{a:"Melissa",v:84269.0,svcs:[{svc:"APPS",m:[299.0,99.0,0.0,299.0,0.0,0.0],v:697.0},{svc:"CALL",m:[543.0,524.0,537.0,479.0,542.0,479.0],v:3104.0},{svc:"GBP",m:[2196.0,2196.0,2196.0,2196.0,2196.0,2196.0],v:13176.0},{svc:"LSA",m:[5798.0,5798.0,5598.0,3280.0,4597.0,3575.0],v:28646.0},{svc:"PPC",m:[1547.0,1547.0,1547.0,1547.0,1547.0,1547.0],v:9282.0},{svc:"SEO",m:[2000.0,2000.0,2000.0,2000.0,2000.0,2000.0],v:12000.0},{svc:"SOCIAL",m:[2498.0,2498.0,2498.0,2498.0,2498.0,2498.0],v:14988.0},{svc:"SOFTWARE",m:[396.0,396.0,396.0,396.0,396.0,396.0],v:2376.0}]},"Eielectrical.com":{a:"Kelly",v:56915.0,svcs:[{svc:"CALL",m:[447.0,447.0,447.0,447.0,447.0,447.0],v:2682.0},{svc:"GBP",m:[899.0,899.0,899.0,899.0,899.0,899.0],v:5394.0},{svc:"LBO",m:[750.0,750.0,750.0,750.0,750.0,750.0],v:4500.0},{svc:"LSA",m:[999.0,1899.0,999.0,1899.0,1899.0,999.0],v:8694.0},{svc:"PPC",m:[832.0,1025.0,1025.0,1025.0,1025.0,1025.0],v:5957.0},{svc:"SEO",m:[3250.0,3250.0,3250.0,3250.0,3250.0,3250.0],v:19500.0},{svc:"SOCIAL",m:[1599.0,1599.0,1599.0,1599.0,1599.0,1599.0],v:9594.0},{svc:"SOFTWARE",m:[99.0,99.0,99.0,99.0,99.0,99.0],v:594.0}]},"PPM.us":{a:"Madison",v:52552.0,svcs:[{svc:"CALL",m:[199.0,199.0,199.0,199.0,199.0,199.0],v:1194.0},{svc:"DESIGN",m:[3366.0,0.0,0.0,297.0,0.0,0.0],v:3663.0},{svc:"GBP",m:[0.0,0.0,0.0,699.0,699.0,699.0],v:2097.0},{svc:"HOSTING",m:[0.0,429.0,0.0,0.0,0.0,0.0],v:429.0},{svc:"LBO",m:[999.0,999.0,999.0,2249.0,999.0,999.0],v:7244.0},{svc:"PPC",m:[2800.0,2575.0,2575.0,2575.0,2575.0,2575.0],v:15675.0},{svc:"SEO",m:[3250.0,3250.0,3250.0,3250.0,3250.0,3250.0],v:19500.0},{svc:"SOCIAL",m:[250.0,500.0,500.0,500.0,500.0,500.0],v:2750.0}]},"Pricebustersplumbing.com":{a:"Kelly",v:45705.0,svcs:[{svc:"APPS",m:[299.0,299.0,299.0,299.0,299.0,299.0],v:1794.0},{svc:"CALL",m:[0.0,0.0,0.0,0.0,0.0,0.0],v:0.0},{svc:"HOSTING",m:[29.0,29.0,29.0,29.0,29.0,29.0],v:174.0},{svc:"LBO",m:[999.0,999.0,999.0,3248.0,1998.0,1998.0],v:10241.0},{svc:"LSA",m:[599.0,599.0,599.0,999.0,999.0,999.0],v:4794.0},{svc:"NODIG",m:[199.0,199.0,199.0,199.0,199.0,199.0],v:1194.0},{svc:"PPC",m:[750.0,823.0,1340.0,1266.0,1460.0,1493.0],v:7132.0},{svc:"SEO",m:[2000.0,2000.0,2000.0,2000.0,2000.0,2000.0],v:12000.0},{svc:"SOCIAL",m:[500.0,500.0,500.0,500.0,500.0,500.0],v:3000.0},{svc:"SOFTWARE",m:[298.0,298.0,298.0,298.0,298.0,298.0],v:1788.0},{svc:"YELP",m:[598.0,598.0,598.0,598.0,598.0,598.0],v:3588.0}]},"Prideplumbingphc.com":{a:"Melissa",v:45531.2,svcs:[{svc:"CALL",m:[165.0,185.0,165.0,186.0,185.0,0.0],v:886.0},{svc:"DESIGN",m:[36.2,36.2,36.2,36.2,36.2,0.0],v:181.2},{svc:"GBP",m:[100.0,100.0,100.0,100.0,100.0,0.0],v:500.0},{svc:"LBO",m:[1749.0,1749.0,1749.0,1749.0,1749.0,750.0],v:9495.0},{svc:"LSA",m:[1996.0,2796.0,2396.0,2146.0,1596.0,3798.0],v:14728.0},{svc:"PPC",m:[434.0,434.0,434.0,434.0,434.0,0.0],v:2170.0},{svc:"SEO",m:[2000.0,2000.0,2000.0,2000.0,2000.0,0.0],v:10000.0},{svc:"SOCIAL",m:[1049.0,549.0,549.0,399.0,549.0,399.0],v:3494.0},{svc:"SOFTWARE",m:[497.0,497.0,497.0,497.0,497.0,398.0],v:2883.0},{svc:"YELP",m:[199.0,199.0,199.0,199.0,199.0,199.0],v:1194.0}]},"Tridentplumbingllc.com":{a:"Kelly",v:43311.0,svcs:[{svc:"CALL",m:[0.0,0.0,165.0,165.0,165.0,0.0],v:495.0},{svc:"DESIGN",m:[0.0,0.0,900.0,0.0,0.0,0.0],v:900.0},{svc:"GBP",m:[798.0,1298.0,1298.0,1298.0,1298.0,0.0],v:5990.0},{svc:"LBO",m:[499.0,499.0,499.0,499.0,499.0,0.0],v:2495.0},{svc:"LSA",m:[599.0,599.0,599.0,2499.0,599.0,0.0],v:4895.0},{svc:"NODIG",m:[199.0,199.0,199.0,199.0,199.0,0.0],v:995.0},{svc:"PPC",m:[0.0,0.0,1900.0,1150.0,1150.0,0.0],v:4200.0},{svc:"SEO",m:[3250.0,3250.0,3250.0,3250.0,3250.0,0.0],v:16250.0},{svc:"SOCIAL",m:[400.0,1799.0,1299.0,1299.0,1299.0,0.0],v:6096.0},{svc:"SOFTWARE",m:[99.0,99.0,99.0,99.0,99.0,0.0],v:495.0},{svc:"YELP",m:[500.0,0.0,0.0,0.0,0.0,0.0],v:500.0}]},"Deltronelectricfl.com":{a:"Melissa",v:38554.0,svcs:[{svc:"CALL",m:[50.0,50.0,0.0,0.0,0.0,0.0],v:100.0},{svc:"EMAIL",m:[250.0,250.0,149.0,149.0,149.0,0.0],v:947.0},{svc:"GBP",m:[100.0,100.0,100.0,100.0,100.0,0.0],v:500.0},{svc:"HOSTING",m:[429.0,0.0,0.0,0.0,0.0,0.0],v:429.0},{svc:"LBO",m:[1749.0,1749.0,1749.0,1749.0,1749.0,0.0],v:8745.0},{svc:"LSA",m:[1499.0,1499.0,1499.0,1499.0,1899.0,0.0],v:7895.0},{svc:"PPC",m:[250.0,250.0,250.0,500.0,500.0,0.0],v:1750.0},{svc:"SEO",m:[1750.0,1750.0,2000.0,2000.0,2000.0,0.0],v:9500.0},{svc:"SOCIAL",m:[1500.0,1500.0,1500.0,1500.0,1500.0,0.0],v:7500.0},{svc:"SOFTWARE",m:[297.0,297.0,198.0,198.0,198.0,0.0],v:1188.0}]},"Yourbellplumbing.com":{a:"Veronica",v:38187.0,svcs:[{svc:"GBP",m:[699.0,699.0,699.0,699.0,699.0,699.0],v:4194.0},{svc:"HOSTING",m:[0.0,0.0,429.0,0.0,0.0,0.0],v:429.0},{svc:"LSA",m:[900.0,900.0,298.0,599.0,599.0,199.0],v:3495.0},{svc:"NODIG",m:[0.0,0.0,0.0,0.0,0.0,0.0],v:0.0},{svc:"PPC",m:[2475.0,2700.0,2700.0,2700.0,2700.0,2700.0],v:15975.0},{svc:"SEO",m:[1750.0,1750.0,1750.0,1750.0,1750.0,1750.0],v:10500.0},{svc:"SOCIAL",m:[400.0,400.0,400.0,400.0,400.0,400.0],v:2400.0},{svc:"SOFTWARE",m:[199.0,199.0,199.0,199.0,199.0,199.0],v:1194.0}]},"Bullseyeplumbing.com":{a:"Kelly",v:37710.0,svcs:[{svc:"CALL",m:[241.0,237.0,230.0,250.0,233.0,237.0],v:1428.0},{svc:"DESIGN",m:[0.0,0.0,0.0,0.0,0.0,0.0],v:0.0},{svc:"GBP",m:[199.0,199.0,199.0,199.0,199.0,199.0],v:1194.0},{svc:"LBO",m:[999.0,999.0,999.0,999.0,999.0,999.0],v:5994.0},{svc:"LSA",m:[1800.0,698.0,999.0,999.0,999.0,999.0],v:6494.0},{svc:"PPC",m:[1032.0,1200.0,1200.0,1200.0,1200.0,1200.0],v:7032.0},{svc:"SEO",m:[1995.0,1995.0,1995.0,1995.0,1995.0,1995.0],v:11970.0},{svc:"SOCIAL",m:[0.0,500.0,500.0,500.0,500.0,500.0],v:2500.0},{svc:"SOFTWARE",m:[183.0,183.0,183.0,183.0,183.0,183.0],v:1098.0}]},"ActionRoofing.com":{a:"Veronica",v:36941.0,svcs:[{svc:"GBP",m:[2860.3,2860.3,3358.3,3358.3,0.0,3358.3],v:15795.5},{svc:"LBO",m:[0.0,0.0,500.0,0.0,0.0,0.0],v:500.0},{svc:"LSA",m:[2747.0,2747.0,4406.0,4826.0,0.0,4466.0],v:19192.0},{svc:"SOFTWARE",m:[330.3,330.3,330.3,132.3,330.3,0.0],v:1453.5}]},"LBSProAdvanced.com":{a:"John",v:36823.4,svcs:[{svc:"DESIGN",m:[0.0,0.0,492.0,0.0,16215.4,18000.0],v:34707.4},{svc:"EMAIL",m:[0.0,0.0,1228.0,0.0,888.0,0.0],v:2116.0}]},"Drainsbyjames.com":{a:"Jason",v:34136.0,svcs:[{svc:"CALL",m:[149.0,149.0,149.0,149.0,149.0,260.0],v:1005.0},{svc:"HOSTING",m:[0.0,429.0,0.0,0.0,0.0,0.0],v:429.0},{svc:"LBO",m:[999.0,999.0,999.0,999.0,999.0,999.0],v:5994.0},{svc:"LSA",m:[1899.0,1899.0,1899.0,1899.0,1899.0,1899.0],v:11394.0},{svc:"NODIG",m:[0.0,0.0,0.0,0.0,0.0,0.0],v:0.0},{svc:"PPC",m:[620.0,600.0,600.0,600.0,600.0,600.0],v:3620.0},{svc:"SEO",m:[1000.0,1000.0,1000.0,1000.0,1000.0,1000.0],v:6000.0},{svc:"SOCIAL",m:[850.0,850.0,850.0,850.0,850.0,850.0],v:5100.0},{svc:"SOFTWARE",m:[99.0,99.0,99.0,99.0,99.0,99.0],v:594.0}]},"SpeedyRooter.com":{a:"Riza",v:32376.0,svcs:[{svc:"DESIGN",m:[0.0,0.0,0.0,2995.0,0.0,0.0],v:2995.0},{svc:"GBP",m:[100.0,100.0,100.0,100.0,100.0,100.0],v:600.0},{svc:"LBO",m:[999.0,999.0,999.0,999.0,999.0,999.0],v:5994.0},{svc:"LSA",m:[698.0,999.0,999.0,999.0,999.0,999.0],v:5693.0},{svc:"PPC",m:[750.0,750.0,750.0,750.0,750.0,750.0],v:4500.0},{svc:"SEO",m:[2000.0,2000.0,2000.0,2000.0,2000.0,2000.0],v:12000.0},{svc:"SOFTWARE",m:[99.0,99.0,99.0,99.0,99.0,99.0],v:594.0}]},"1800heaters.com":{a:"Jason",v:31341.0,svcs:[{svc:"CALL",m:[149.0,149.0,149.0,149.0,149.0,179.0],v:924.0},{svc:"HOSTING",m:[429.0,0.0,0.0,0.0,0.0,0.0],v:429.0},{svc:"LBO",m:[999.0,999.0,999.0,999.0,999.0,999.0],v:5994.0},{svc:"PPC",m:[1700.0,1700.0,1700.0,1700.0,1700.0,1700.0],v:10200.0},{svc:"SEO",m:[2000.0,2000.0,2000.0,2000.0,2000.0,2000.0],v:12000.0},{svc:"SOFTWARE",m:[299.0,299.0,299.0,299.0,299.0,299.0],v:1794.0}]},"QDIHVAC.com":{a:"Madison",v:30397.0,svcs:[{svc:"DESIGN",m:[130.0,0.0,0.0,0.0,0.0,0.0],v:130.0},{svc:"LBO",m:[849.0,849.0,849.0,849.0,849.0,849.0],v:5094.0},{svc:"LSA",m:[450.0,450.0,450.0,450.0,450.0,450.0],v:2700.0},{svc:"SEO",m:[2762.5,2762.5,2762.5,2762.5,2762.5,2762.5],v:16575.0},{svc:"SOCIAL",m:[899.0,899.0,899.0,899.0,899.0,899.0],v:5394.0},{svc:"SOFTWARE",m:[84.0,84.0,84.0,84.0,84.0,84.0],v:504.0}]},"CallOptionOne.com":{a:"Kelly",v:30276.0,svcs:[{svc:"CALL",m:[100.0,100.0,100.0,0.0,0.0,0.0],v:300.0},{svc:"LBO",m:[1598.0,1598.0,1598.0,1598.0,0.0,0.0],v:6392.0},{svc:"LSA",m:[2498.0,2498.0,2498.0,2498.0,3000.0,0.0],v:12992.0},{svc:"PPC",m:[400.0,400.0,400.0,400.0,0.0,0.0],v:1600.0},{svc:"SEO",m:[1500.0,1500.0,1500.0,700.0,1500.0,1500.0],v:8200.0},{svc:"SOFTWARE",m:[198.0,198.0,198.0,198.0,0.0,0.0],v:792.0}]},"Jnrplumbing.com":{a:"Jason",v:29562.0,svcs:[{svc:"CALL",m:[330.0,330.0,330.0,330.0,330.0,330.0],v:1980.0},{svc:"HOSTING",m:[0.0,0.0,0.0,0.0,0.0,0.0],v:0.0},{svc:"LBO",m:[999.0,999.0,999.0,999.0,999.0,999.0],v:5994.0},{svc:"PPC",m:[1500.0,1500.0,1500.0,1500.0,1500.0,1500.0],v:9000.0},{svc:"SEO",m:[1500.0,1500.0,1500.0,1500.0,1500.0,1500.0],v:9000.0},{svc:"SOCIAL",m:[399.0,399.0,399.0,399.0,399.0,399.0],v:2394.0},{svc:"SOFTWARE",m:[199.0,199.0,199.0,199.0,199.0,199.0],v:1194.0}]},"Thepipedoctorplumbing.com":{a:"Madison",v:28055.0,svcs:[{svc:"CALL",m:[165.0,165.0,165.0,165.0,165.0,165.0],v:990.0},{svc:"LBO",m:[1498.0,1398.0,1398.0,1398.0,1398.0,1398.0],v:8488.0},{svc:"LSA",m:[399.0,399.0,399.0,399.0,399.0,399.0],v:2394.0},{svc:"NODIG",m:[0.0,0.0,0.0,0.0,0.0,0.0],v:0.0},{svc:"PPC",m:[750.0,750.0,750.0,750.0,750.0,750.0],v:4500.0},{svc:"SEO",m:[2000.0,2000.0,2000.0,2000.0,2000.0,0.0],v:10000.0},{svc:"SOFTWARE",m:[198.0,297.0,297.0,297.0,297.0,297.0],v:1683.0}]},"Valleycitymechanical.com":{a:"Madison",v:24276.0,svcs:[{svc:"GBP",m:[199.0,199.0,199.0,132.3,199.0,199.0],v:1127.3},{svc:"LBO",m:[999.0,999.0,999.0,932.3,999.0,999.0],v:5927.3},{svc:"LSA",m:[599.0,599.0,599.0,599.0,399.0,399.0],v:3194.0},{svc:"PPC",m:[250.0,250.0,250.0,250.0,250.0,250.0],v:1500.0},{svc:"SEO",m:[2000.0,2000.0,2000.0,1933.3,2000.0,2000.0],v:11933.3},{svc:"SOFTWARE",m:[99.0,99.0,99.0,99.0,99.0,99.0],v:594.0}]},"SewerSurgeons.com":{a:"Riza",v:22452.6,svcs:[{svc:"CALL",m:[45.0,45.0,45.0,45.0,45.0,45.0],v:270.0},{svc:"LBO",m:[899.0,899.0,899.0,899.0,899.0,899.0],v:5394.0},{svc:"LSA",m:[359.1,359.1,359.1,359.1,359.1,359.1],v:2154.6},{svc:"NODIG",m:[279.0,279.0,279.0,279.0,279.0,279.0],v:1674.0},{svc:"PPC",m:[180.0,180.0,180.0,180.0,180.0,180.0],v:1080.0},{svc:"SEO",m:[1800.0,1800.0,1800.0,1800.0,1800.0,1800.0],v:10800.0},{svc:"SOCIAL",m:[180.0,180.0,180.0,180.0,180.0,180.0],v:1080.0}]},"Airprosusa.com(1)":{a:"Veronica",v:22176.0,svcs:[{svc:"GBP",m:[4980.0,4980.0,798.0,0.0,0.0,0.0],v:10758.0},{svc:"LSA",m:[2394.0,2394.0,1796.0,0.0,0.0,0.0],v:6584.0},{svc:"SEO",m:[0.0,0.0,3250.0,0.0,0.0,0.0],v:3250.0},{svc:"SOFTWARE",m:[792.0,792.0,0.0,0.0,0.0,0.0],v:1584.0}]},"Callonthedouble.com":{a:"Kelly",v:22008.0,svcs:[{svc:"CALL",m:[0.0,0.0,0.0,0.0,0.0,0.0],v:0.0},{svc:"GBP",m:[748.0,748.0,748.0,748.0,748.0,748.0],v:4488.0},{svc:"HOSTING",m:[0.0,0.0,429.0,0.0,0.0,0.0],v:429.0},{svc:"LSA",m:[500.0,500.0,500.0,999.0,999.0,999.0],v:4497.0},{svc:"SEO",m:[2000.0,2000.0,2000.0,2000.0,2000.0,2000.0],v:12000.0},{svc:"SOFTWARE",m:[99.0,99.0,99.0,99.0,99.0,99.0],v:594.0}]},"Peerlessplumbingrepipes.com":{a:"Madison",v:21979.0,svcs:[{svc:"GBP",m:[0.0,0.0,0.0,0.0,0.0,0.0],v:0.0},{svc:"LBO",m:[999.0,999.0,999.0,999.0,999.0,999.0],v:5994.0},{svc:"LSA",m:[400.0,400.0,400.0,599.0,599.0,399.0],v:2797.0},{svc:"NODIG",m:[199.0,199.0,199.0,199.0,199.0,199.0],v:1194.0},{svc:"SEO",m:[1500.0,1500.0,1500.0,1500.0,1500.0,1500.0],v:9000.0},{svc:"SOCIAL",m:[400.0,400.0,400.0,400.0,400.0,400.0],v:2400.0},{svc:"SOFTWARE",m:[99.0,99.0,99.0,99.0,99.0,99.0],v:594.0}]},"PipersDrainRepair.com":{a:"Veronica",v:21750.0,svcs:[{svc:"GBP",m:[0.0,0.0,0.0,0.0,0.0,0.0],v:0.0},{svc:"PPC",m:[0.0,150.0,150.0,150.0,150.0,150.0],v:750.0},{svc:"RTM PACKAGE",m:[3500.0,3500.0,3500.0,3500.0,3500.0,3500.0],v:21000.0}]},"MadeSimpleHeatingAndAir.com":{a:"Kelly",v:21094.0,svcs:[{svc:"APPS",m:[299.0,299.0,299.0,299.0,299.0,299.0],v:1794.0},{svc:"LSA",m:[200.0,200.0,0.0,0.0,0.0,0.0],v:400.0},{svc:"RTM PACKAGE",m:[3150.0,3150.0,3150.0,3150.0,3150.0,3150.0],v:18900.0}]},"Farmingtonvalleyplumbing.com":{a:"Jason",v:20308.0,svcs:[{svc:"GBP",m:[599.0,599.0,599.0,599.0,599.0,0.0],v:2995.0},{svc:"HOSTING",m:[0.0,0.0,0.0,429.0,0.0,0.0],v:429.0},{svc:"LSA",m:[1398.0,999.0,999.0,999.0,999.0,0.0],v:5394.0},{svc:"SEO",m:[1750.0,1750.0,1750.0,1750.0,1750.0,0.0],v:8750.0},{svc:"SOFTWARE",m:[99.0,99.0,99.0,99.0,99.0,0.0],v:495.0},{svc:"YELP",m:[0.0,649.0,399.0,399.0,399.0,399.0],v:2245.0}]},"OneCallLegal.com":{a:"Kelly",v:20000.0,svcs:[{svc:"CALL",m:[165.0,165.0,165.0,165.0,0.0,0.0],v:660.0},{svc:"DESIGN",m:[699.0,699.0,699.0,699.0,0.0,0.0],v:2796.0},{svc:"GBP",m:[699.0,699.0,699.0,699.0,0.0,0.0],v:2796.0},{svc:"PPC",m:[200.0,0.0,0.0,0.0,0.0,0.0],v:200.0},{svc:"SEO",m:[3037.0,3437.0,3437.0,3437.0,0.0,0.0],v:13348.0},{svc:"SOCIAL",m:[200.0,0.0,0.0,0.0,0.0,0.0],v:200.0}]},"FluidDynamicsPlumbing.com":{a:"Veronica",v:19380.0,svcs:[{svc:"CALL",m:[142.0,142.0,142.0,142.0,142.0,142.0],v:852.0},{svc:"GBP",m:[499.0,499.0,499.0,499.0,699.0,699.0],v:3394.0},{svc:"LSA",m:[360.0,540.0,360.0,360.0,360.0,360.0],v:2340.0},{svc:"PPC",m:[400.0,400.0,400.0,400.0,200.0,200.0],v:2000.0},{svc:"SEO",m:[1500.0,1500.0,1500.0,1500.0,1500.0,1500.0],v:9000.0},{svc:"SOFTWARE",m:[299.0,299.0,299.0,299.0,299.0,299.0],v:1794.0}]},"CLeeServices.com":{a:"Madison",v:19129.0,svcs:[{svc:"CALL",m:[0.0,0.0,0.0,0.0,0.0,0.0],v:0.0},{svc:"DESIGN",m:[0.0,0.0,1000.0,1000.0,0.0,0.0],v:2000.0},{svc:"GBP",m:[0.0,0.0,0.0,699.0,699.0,699.0],v:2097.0},{svc:"LBO",m:[0.0,0.0,0.0,1250.0,0.0,0.0],v:1250.0},{svc:"LSA",m:[399.0,399.0,399.0,399.0,599.0,399.0],v:2594.0},{svc:"NODIG",m:[99.0,99.0,99.0,99.0,99.0,99.0],v:594.0},{svc:"SEO",m:[2000.0,2000.0,1000.0,1000.0,2000.0,2000.0],v:10000.0},{svc:"SOFTWARE",m:[99.0,99.0,99.0,99.0,99.0,99.0],v:594.0}]}};function buildOpexDeptChart(){var sorted=deptOverhead.slice().sort(function(a,b){return b.monthly-a.monthly;});var c2=document.getElementById('c_opex_dept');if(c2){opexCharts.dept=_safeChart(c2,{type:'bar',data:{labels:sorted.map(function(d){return d.dept;}),datasets:[{data:sorted.map(function(d){return d.monthly;}),backgroundColor:'#FDA813',borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc,callback:k}},y:{grid:{color:gc},ticks:{color:tc,font:{size:10}}}}}});}
@@ -2459,7 +2420,7 @@ function buildSvcDashboard(svc){var d=svcDrillData[svc];var amd=svcAMData[svc];v
 +'<div class="mc"><div class="lbl">Account Managers</div><div class="val" style="font-size:17px;">'+amCt+'</div><div class="sub">On this service</div></div>'
 +'<div class="mc"><div class="lbl">Top campaign</div><div class="val" style="font-size:13px;">'+(top?top.c:'\u2014')+'</div><div class="sub">'+(top?'AM: '+top.a+' \u00b7 $'+top.v.toLocaleString():'')+'</div></div>';}
 if(svcDrillChart){svcDrillChart.destroy();svcDrillChart=null;}
-var c=document.getElementById('c_svd_monthly');if(c){var monthly=[0,0,0,0,0,0];d.campaigns.forEach(function(r){r.m.forEach(function(v,i){monthly[i]+=v;});});svcDrillChart=_safeChart(c,{type:'bar',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'],datasets:[{data:monthly,backgroundColor:col,borderRadius:3}]},options:bo()});}
+var c=document.getElementById('c_svd_monthly');if(c){var monthly=[0,0,0,0,0,0];d.campaigns.forEach(function(r){r.m.forEach(function(v,i){monthly[i]+=v;});});svcDrillChart=_safeChart(c,{type:'line',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'],datasets:[{data:monthly,borderColor:col,backgroundColor:'rgba(253,168,19,0.1)',fill:true,tension:0.3,pointRadius:3,borderWidth:2}]},options:bo()});}
 var tb=document.getElementById('svcPerSvcTableBody');if(tb){tb.innerHTML='';(d.campaigns||[]).forEach(function(r){tb.innerHTML+='<tr>'
 +'<td style="font-size:12px;font-weight:500;">'+r.c+'</td>'
 +'<td style="color:var(--muted);font-size:11px;">'+r.a+'</td>'
@@ -2548,7 +2509,7 @@ function buildSvcAMView(am){var w=document.getElementById('svcAMViewCards');if(w
 +d.total.toLocaleString()+'</div><div class="sub">Jan\u2013Jun 2026</div></div>';}}
 if(svcAMViewChart){svcAMViewChart.destroy();svcAMViewChart=null;}
 var c=document.getElementById('c_svc_am_view');if(c){var labels,vals,cols;if(am==='all'){var sorted=Object.entries(amSummaryData).sort(function(a,b){return b[1].total-a[1].total;});labels=sorted.map(function(e){return e[0];});vals=sorted.map(function(e){return e[1].total;});cols=labels.map(function(a2){return amBarColors[a2]||'#FDA813';});}else{var d2=amSummaryData[am];if(!d2)return;labels=['Jan','Feb','Mar','Apr','May','Jun','Jul'];vals=d2.m;cols=(amBarColors[am]||'#FDA813');}
-svcAMViewChart=_safeChart(c,{type:am==='all'?'bar':'bar',data:{labels:labels,datasets:[{data:vals,backgroundColor:cols,borderRadius:3}]},options:am==='all'?ho():bo()});}
+svcAMViewChart=_safeChart(c,{type:am==='all'?'bar':'line',data:{labels:labels,datasets:[{data:vals,backgroundColor:cols,borderColor:cols,borderRadius:3,borderWidth:2,tension:0.3,pointRadius:3,fill:false}]},options:am==='all'?ho():bo()});}
 var tb=document.getElementById('svcAMViewTableBody');if(!tb)return;tb.innerHTML='';if(am==='all'){var allSorted=Object.entries(amSummaryData).sort(function(a,b){return b[1].total-a[1].total;});allSorted.forEach(function(entry){var a2=entry[0],d3=entry[1];var amCol=amBarColors[a2]||'#FDA813';tb.innerHTML+='<tr>'
 +'<td style="font-weight:600;color:'+amCol+';">'+a2+'</td>'
 +'<td style="text-align:center;">'+d3.camps+'</td>'
@@ -2577,7 +2538,7 @@ function buildSvcCampView(camp){var w=document.getElementById('svcCampViewCards'
 +'<div class="mc"><div class="lbl">Services</div><div class="val" style="font-size:17px;">'+d.svcs.length+'</div><div class="sub">'+d.svcs.slice(0,3).join(', ')+(d.svcs.length>3?'…':'')+'</div></div>'
 +'<div class="mc"><div class="lbl">Total paid (YTD)</div><div class="val amb" style="font-size:17px;">$'+d.v.toLocaleString()+'</div><div class="sub">Jan\u2013Jun 2026</div></div>';}}
 if(svcCampViewChart){svcCampViewChart.destroy();svcCampViewChart=null;}
-var c=document.getElementById('c_svc_camp_view');if(c){if(camp==='all'){var top15=Object.entries(campSummaryData).slice(0,15);svcCampViewChart=_safeChart(c,{type:'bar',data:{labels:top15.map(function(e){var l=e[0];return l.length>22?l.substr(0,21)+'\u2026':l;}),datasets:[{data:top15.map(function(e){return e[1].v;}),backgroundColor:'#FDA813',borderRadius:3}]},options:ho()});}else{var d2=campSummaryData[camp];if(!d2)return;svcCampViewChart=_safeChart(c,{type:'bar',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'],datasets:[{data:d2.m,backgroundColor:amBarColors[d2.a]||'#FDA813',borderRadius:3}]},options:bo()});}}
+var c=document.getElementById('c_svc_camp_view');if(c){if(camp==='all'){var top15=Object.entries(campSummaryData).slice(0,15);svcCampViewChart=_safeChart(c,{type:'bar',data:{labels:top15.map(function(e){var l=e[0];return l.length>22?l.substr(0,21)+'\u2026':l;}),datasets:[{data:top15.map(function(e){return e[1].v;}),backgroundColor:'#FDA813',borderRadius:3}]},options:ho()});}else{var d2=campSummaryData[camp];if(!d2)return;svcCampViewChart=_safeChart(c,{type:'line',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'],datasets:[{data:d2.m,borderColor:amBarColors[d2.a]||'#FDA813',backgroundColor:'rgba(253,168,19,0.1)',fill:true,tension:0.3,pointRadius:3,borderWidth:2}]},options:bo()});}}
 var tb=document.getElementById('svcCampViewTableBody');if(!tb)return;tb.innerHTML='';if(camp==='all'){Object.entries(campSummaryData).forEach(function(entry){var name=entry[0],d3=entry[1];var amCol=amBarColors[d3.a]||'#8ba3b8';tb.innerHTML+='<tr>'
 +'<td style="font-size:12px;font-weight:500;">'+name+'</td>'
 +'<td style="font-size:11px;color:'+amCol+';font-weight:600;">'+d3.a+'</td>'
@@ -2792,7 +2753,7 @@ var annualData={years:['2023','2024','2025'],months:['Jan','Feb','Mar','Apr','Ma
   A.cancelReasons['2026 YTD']={'In-House':49465,'Chng.Provider':49106,'Performance':43188,'No Reason':7131,'Hardships':6571,'Not In Use':1563,'Non-Payment':827};})();
 var annualView='sales';var annualC1=null,annualC2=null,annualC3=null;var annualTopYear='2025';function showAnnualView(view,el){annualView=view;document.querySelectorAll('#annualViewBtns .btn').forEach(function(b){b.classList.remove('active');});if(el)el.classList.add('active');var yrSel=document.getElementById('annualYrSel');if(yrSel)yrSel.style.display=(view==='top')?'inline-flex':'none';if(view==='top'){buildAnnualKpisTop(document.getElementById('annualKpiCards'),annualData,annualTopYear);buildAnnualChartsTop(annualData,annualTopYear);buildAnnualTableTop(document.getElementById('annualTableBody'),document.getElementById('annualTableHead'),annualData,annualTopYear);var lbl=document.getElementById('annualTableLabel');if(lbl)lbl.textContent='Service & AM detail — '+annualTopYear;}else{buildAnnualKpis(view);buildAnnualCharts(view);buildAnnualTable(view);}}
 function setAnnualTopYear(yr){annualTopYear=yr;document.querySelectorAll('#annualYrSel .btn').forEach(function(b){b.classList.remove('active');});var sel=document.querySelector('#annualYrSel [data-yr="'+yr+'"]');if(sel)sel.classList.add('active');showAnnualView('top',null);document.querySelectorAll('#annualViewBtns .btn').forEach(function(b){if(b.getAttribute('onclick')&&b.getAttribute('onclick').indexOf("'top'")>=0)b.classList.add('active');});}
-function buildAnnualKpis(view){var d=annualData;var w=document.getElementById('annualKpiCards');if(!w)return;if(view==='sales'){var yoy24=((d.totalSales[1]-d.totalSales[0])/d.totalSales[0]*100).toFixed(1);var yoy25=((d.totalSales[2]-d.totalSales[1])/d.totalSales[1]*100).toFixed(1);var avgMo23=Math.round(d.totalSales[0]/12);var avgMo25=Math.round(d.totalSales[2]/12);w.innerHTML='<div class="mc"><div class="lbl">2023 Total Sales</div><div class="val amb">$6.51M</div><div class="sub">Avg $'+avgMo23.toLocaleString()+'/mo</div></div>'
+function buildAnnualKpis(view){var d=annualData;var w=document.getElementById('annualKpiCards');if(!w)return;if(!w)return;if(view==='sales'){var yoy24=((d.totalSales[1]-d.totalSales[0])/d.totalSales[0]*100).toFixed(1);var yoy25=((d.totalSales[2]-d.totalSales[1])/d.totalSales[1]*100).toFixed(1);var avgMo23=Math.round(d.totalSales[0]/12);var avgMo25=Math.round(d.totalSales[2]/12);w.innerHTML='<div class="mc"><div class="lbl">2023 Total Sales</div><div class="val amb">$6.51M</div><div class="sub">Avg $'+avgMo23.toLocaleString()+'/mo</div></div>'
 +'<div class="mc"><div class="lbl">2024 Total Sales</div><div class="val'+(yoy24<0?' neg':' pos')+'">$6.36M</div><div class="sub">'+(yoy24>0?'+':'')+yoy24+'% vs 2023</div></div>'
 +'<div class="mc"><div class="lbl">2025 Total Sales</div><div class="val neg">$5.89M</div><div class="sub">'+yoy25+'% vs 2024</div></div>'
 +'<div class="mc"><div class="lbl">Recurring 2025</div><div class="val pos">$5.54M</div><div class="sub">94.1% of total sales</div></div>'
@@ -2818,7 +2779,7 @@ function buildAnnualCharts(view){var d=annualData;if(annualC1){annualC1.destroy(
 if(annualC2){annualC2.destroy();annualC2=null;}
 if(annualC3){annualC3.destroy();annualC3=null;}
 var c1=document.getElementById('c_annual_main');var c2=document.getElementById('c_annual_secondary');if(view==='sales'){if(c1)annualC1=_safeChart(c1,{type:'bar',data:{labels:d.years,datasets:[{label:'Total Sales',data:d.totalSales,backgroundColor:['#FDA813','#0D7A8C','#f26b5b','#534AB7'],borderRadius:4},{label:'New Sales',data:d.newSalesTotal,backgroundColor:['rgba(46,196,138,.7)','rgba(46,196,138,.7)','rgba(46,196,138,.7)','rgba(46,196,138,.7)'],borderRadius:4},{label:'Attrition',data:d.attritionTotal,backgroundColor:['rgba(253,168,19,.35)','rgba(13,122,140,.35)','rgba(242,107,91,.35)','rgba(83,74,183,.35)'],borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,padding:8,font:{size:11}}}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},ticks:{color:tc,callback:k}}}}});if(c2)annualC2=_safeChart(c2,{type:'line',data:{labels:d.months,datasets:[{label:'2023',data:d.monthlySales['2023'],borderColor:'#FDA813',backgroundColor:'transparent',tension:0.3,pointRadius:3},{label:'2024',data:d.monthlySales['2024'],borderColor:'#0D7A8C',backgroundColor:'transparent',tension:0.3,pointRadius:3},{label:'2025',data:d.monthlySales['2025'],borderColor:'#f26b5b',backgroundColor:'transparent',tension:0.3,pointRadius:3},{label:'2026 YTD',data:d.monthlySales['2026 YTD'],borderColor:'#534AB7',backgroundColor:'transparent',tension:0.3,pointRadius:3,borderWidth:2.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,padding:8,font:{size:11}}}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},ticks:{color:tc,callback:k}}}}});}else if(view==='service'){var svcs=Object.keys(d.salesPerService).filter(function(s){return d.salesPerService[s][2]>0||d.salesPerService[s][1]>0;});svcs.sort(function(a,b){return d.salesPerService[b][2]-d.salesPerService[a][2];});if(c1)annualC1=_safeChart(c1,{type:'bar',data:{labels:svcs,datasets:[{label:'2023',data:svcs.map(function(s){return d.salesPerService[s][0];}),backgroundColor:'rgba(253,168,19,.7)',borderRadius:2},{label:'2024',data:svcs.map(function(s){return d.salesPerService[s][1];}),backgroundColor:'rgba(13,122,140,.7)',borderRadius:2},{label:'2025',data:svcs.map(function(s){return d.salesPerService[s][2];}),backgroundColor:'rgba(242,107,91,.7)',borderRadius:2},{label:'2026 YTD',data:svcs.map(function(s){return d.salesPerService[s][3];}),backgroundColor:'rgba(83,74,183,.85)',borderRadius:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,padding:8,font:{size:11}}}},scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:10}}},y:{grid:{color:gc},ticks:{color:tc,callback:k}}}}});var growthVals=svcs.map(function(s){var v=d.salesPerService[s];return v[1]>0?Math.round((v[2]-v[1])/v[1]*100):null;});if(c2)annualC2=_safeChart(c2,{type:'bar',data:{labels:svcs,datasets:[{label:'2024→2025 Growth %',data:growthVals,backgroundColor:growthVals.map(function(v){return v>=0?'rgba(46,196,138,.8)':'rgba(242,107,91,.8)';}),borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:10}}},y:{grid:{color:gc},ticks:{color:tc,callback:function(v){return v+'%';}}}}}});}else{if(c1)annualC1=_safeChart(c1,{type:'bar',data:{labels:d.years,datasets:[{label:'One-Time',data:d.newSalesOneTime,backgroundColor:'#FDA813',borderRadius:3},{label:'New Recurring',data:d.newSalesRecurring,backgroundColor:'#0D7A8C',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,padding:8,font:{size:11}}}},scales:{x:{stacked:true,grid:{color:gc},ticks:{color:tc}},y:{stacked:true,grid:{color:gc},ticks:{color:tc,callback:k}}}}});if(c2)annualC2=_safeChart(c2,{type:'line',data:{labels:d.months,datasets:[{label:'2023',data:d.attritionMonthly['2023'],borderColor:'#FDA813',backgroundColor:'transparent',tension:0.3,pointRadius:3},{label:'2024',data:d.attritionMonthly['2024'],borderColor:'#0D7A8C',backgroundColor:'transparent',tension:0.3,pointRadius:3},{label:'2025',data:d.attritionMonthly['2025'],borderColor:'#f26b5b',backgroundColor:'transparent',tension:0.3,pointRadius:3},{label:'2026 YTD',data:d.attritionMonthly['2026 YTD'],borderColor:'#534AB7',backgroundColor:'transparent',tension:0.3,pointRadius:3,borderWidth:2.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,padding:8,font:{size:11}}}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},ticks:{color:tc,callback:k}}}}});}}
-function buildAnnualTable(view){var d=annualData;var head=document.getElementById('annualTableHead');var tb=document.getElementById('annualTableBody');if(!tb)return;if(view==='sales'){if(head)head.innerHTML='<tr><th>Metric</th><th style="text-align:right;">2023</th><th style="text-align:right;">2024</th><th style="text-align:right;">vs 2023</th><th style="text-align:right;">2025</th><th style="text-align:right;">vs 2024</th><th style="text-align:right;">2-Year</th><th style="text-align:right;color:#8a7fd6;">2026 YTD</th></tr>';var rows=[{l:'Total Sales',v:d.totalSales,fmt:'$',inv:false},{l:'Recurring Sales',v:d.recurringSales,fmt:'$',inv:false},{l:'One-Time Sales',v:d.oneTimeSales,fmt:'$',inv:false},{l:'Attrition',v:d.attritionTotal,fmt:'$',inv:true},{l:'Attrition Rate',v:[3.23,4.18,4.03,annualData.attritionRate2026],fmt:'%',inv:true},{l:'New Sales',v:d.newSalesTotal,fmt:'$',inv:false},{l:'Refunds',v:d.refunds,fmt:'$',inv:true},{l:'Payroll (w/ chg)',v:d.payrollTotal,fmt:'$',inv:true}];tb.innerHTML='';rows.forEach(function(row){var c24=(row.v[1]-row.v[0])/Math.abs(row.v[0])*100;var c25=(row.v[2]-row.v[1])/Math.abs(row.v[1])*100;var c2y=(row.v[2]-row.v[0])/Math.abs(row.v[0])*100;var cl24=c24>=0?(row.inv?'td-neg':'td-pos'):(row.inv?'td-pos':'td-neg');var cl25=c25>=0?(row.inv?'td-neg':'td-pos'):(row.inv?'td-pos':'td-neg');var cl2y=c2y>=0?(row.inv?'td-neg':'td-pos'):(row.inv?'td-pos':'td-neg');var fmt=function(v){return row.fmt==='%'?v.toFixed(1)+'%':'$'+Math.round(v).toLocaleString();};tb.innerHTML+='<tr>'
+function buildAnnualTable(view){var d=annualData;var head=document.getElementById('annualTableHead');var tb=document.getElementById('annualTableBody');if(!tb)return;if(!tb)return;if(view==='sales'){if(head)head.innerHTML='<tr><th>Metric</th><th style="text-align:right;">2023</th><th style="text-align:right;">2024</th><th style="text-align:right;">vs 2023</th><th style="text-align:right;">2025</th><th style="text-align:right;">vs 2024</th><th style="text-align:right;">2-Year</th><th style="text-align:right;color:#8a7fd6;">2026 YTD</th></tr>';var rows=[{l:'Total Sales',v:d.totalSales,fmt:'$',inv:false},{l:'Recurring Sales',v:d.recurringSales,fmt:'$',inv:false},{l:'One-Time Sales',v:d.oneTimeSales,fmt:'$',inv:false},{l:'Attrition',v:d.attritionTotal,fmt:'$',inv:true},{l:'Attrition Rate',v:[3.23,4.18,4.03,annualData.attritionRate2026],fmt:'%',inv:true},{l:'New Sales',v:d.newSalesTotal,fmt:'$',inv:false},{l:'Refunds',v:d.refunds,fmt:'$',inv:true},{l:'Payroll (w/ chg)',v:d.payrollTotal,fmt:'$',inv:true}];tb.innerHTML='';rows.forEach(function(row){var c24=(row.v[1]-row.v[0])/Math.abs(row.v[0])*100;var c25=(row.v[2]-row.v[1])/Math.abs(row.v[1])*100;var c2y=(row.v[2]-row.v[0])/Math.abs(row.v[0])*100;var cl24=c24>=0?(row.inv?'td-neg':'td-pos'):(row.inv?'td-pos':'td-neg');var cl25=c25>=0?(row.inv?'td-neg':'td-pos'):(row.inv?'td-pos':'td-neg');var cl2y=c2y>=0?(row.inv?'td-neg':'td-pos'):(row.inv?'td-pos':'td-neg');var fmt=function(v){return row.fmt==='%'?v.toFixed(1)+'%':'$'+Math.round(v).toLocaleString();};tb.innerHTML+='<tr>'
 +'<td style="font-weight:600;padding-left:.5rem;">'+row.l+'</td>'
 +'<td style="text-align:right;">'+fmt(row.v[0])+'</td>'
 +'<td style="text-align:right;">'+fmt(row.v[1])+'</td>'
