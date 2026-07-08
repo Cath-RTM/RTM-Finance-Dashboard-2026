@@ -53,41 +53,51 @@
  <div style="margin-bottom:1rem;"></div>
  <p class="slabel">Running sales summary — by entity &middot; Jan&ndash;Jul 2026 &middot; Source: Billing Master (Paid+Outstanding+Pending)</p>
  <div class="cc"><div class="tscroll"><table class="dt" id="entitySummaryTable">
- <thead>
- <tr>
- <th>Entity</th>
- <th style="text-align:right;">Total (Paid+Outst.)</th>
- <th style="text-align:right;">Cancellations</th>
- <th style="text-align:right;">New Sales</th>
- </tr>
- </thead>
- <tbody>
+<thead>
+<tr>
+<th>Entity</th>
+<th style="text-align:right;">Total Sales</th>
+<th style="text-align:right;">Paid</th>
+<th style="text-align:right;">Outstanding</th>
+<th style="text-align:right;">Cancellations</th>
+<th style="text-align:right;">New Sales</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td style="font-weight:600;color:var(--amber);">RTM</td>
-<td class="td-warn" style="text-align:right;">$2,581,101</td>
+<td style="text-align:right;">$2,581,101</td>
+<td class="td-pos" style="text-align:right;">$2,272,880</td>
+<td class="td-warn" style="text-align:right;">$308,221</td>
 <td class="td-neg" style="text-align:right;">$161,392</td>
-<td class="td-pos" style="text-align:right;">$265,935</td>
+<td style="text-align:right;">$265,935</td>
 </tr>
 <tr>
 <td style="font-weight:600;color:var(--teal2);">Unify360</td>
-<td class="td-warn" style="text-align:right;">$124,873</td>
+<td style="text-align:right;">$124,873</td>
+<td class="td-pos" style="text-align:right;">$111,092</td>
+<td class="td-warn" style="text-align:right;">$13,781</td>
 <td class="td-neg" style="text-align:right;">$5,950</td>
-<td class="td-pos" style="text-align:right;">$2,439</td>
+<td style="text-align:right;">$2,439</td>
 </tr>
 <tr>
 <td style="font-weight:600;color:#534AB7;">NoDig</td>
-<td class="td-warn" style="text-align:right;">$38,833</td>
+<td style="text-align:right;">$38,833</td>
+<td class="td-pos" style="text-align:right;">$33,387</td>
+<td class="td-warn" style="text-align:right;">$5,446</td>
 <td class="td-neg" style="text-align:right;">$1,056</td>
 <td style="text-align:right;color:var(--muted);">&mdash;</td>
 </tr>
 <tr class="tot">
 <td>Combined</td>
 <td style="text-align:right;">$2,744,807</td>
+<td style="text-align:right;">$2,424,244</td>
+<td style="text-align:right;">$327,448</td>
 <td style="text-align:right;">$168,398</td>
-<td class="td-pos" style="text-align:right;">$270,874</td>
+<td style="text-align:right;">$270,874</td>
 </tr>
 </tbody>
- </table></div></div>
+</table></div></div>
 <hr class="dv">
 <p class="slabel" data-nav="Monthly Sales">Combined monthly sales &mdash; by entity &middot; Jan&ndash;Jul 2026 &middot; Paid + Outstanding</p>
 <div class="cc"><div class="tscroll"><table class="dt" style="width:100%;table-layout:fixed;">
@@ -165,15 +175,19 @@
 <div class="mc"><div class="lbl">YTD Active Clients</div><div class="val">204</div><div class="sub">Current &middot; Jul MTD</div></div>
 </div>
 <hr class="dv">
-<p class="slabel" data-nav="Monthly Sales">Monthly Sales &mdash; All Entities &middot; Jan&ndash;Jul 2026</p>
-<div class="cc"><div class="cw" style="height:220px;"><canvas id="c_s_combined"></canvas></div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start;">
+<div><p class="slabel" data-nav="Monthly Sales">Monthly Sales &mdash; All Entities &middot; Jan&ndash;Jul 2026</p>
+<div class="cc"><div class="cw" style="height:220px;"><canvas id="c_s_combined"></canvas></div></div></div>
+<div><p class="slabel" data-nav="Trend">Monthly sales trend &middot; paid, outstanding &amp; cancellations &middot; Jan&ndash;Jul 2026</p>
+<div class="cc"><div class="cw" style="height:250px;"><canvas id="c_s_trend"></canvas></div></div>
+
+</div>
+</div>
 <hr class="dv">
 <p class="slabel" data-nav="Monthly Table">Monthly sales activity &middot; paid, outstanding &amp; cancellations &middot; Jan&ndash;Jul 2026</p>
 <div class="cc"><div class="tscroll"><table class="dt"><thead><tr><th>Month</th><th style="text-align:right;">Paid</th><th style="text-align:right;">Outstanding</th><th style="text-align:right;">Cancellation</th></tr></thead><tbody><tr><td style="font-weight:500;">Jan</td><td style="text-align:right;">$413,854</td><td style="text-align:right;">$1,944</td><td style="text-align:right;color:var(--neg,#e8705f);">$36,108</td></tr><tr><td style="font-weight:500;">Feb</td><td style="text-align:right;">$400,577</td><td style="text-align:right;">$1,794</td><td style="text-align:right;color:var(--neg,#e8705f);">$17,273</td></tr><tr><td style="font-weight:500;">Mar</td><td style="text-align:right;">$386,248</td><td style="text-align:right;">$1,627</td><td style="text-align:right;color:var(--neg,#e8705f);">$15,091</td></tr><tr><td style="font-weight:500;">Apr</td><td style="text-align:right;">$381,366</td><td style="text-align:right;">$18,406</td><td style="text-align:right;color:var(--neg,#e8705f);">$9,845</td></tr><tr><td style="font-weight:500;">May</td><td style="text-align:right;">$368,529</td><td style="text-align:right;">$25,991</td><td style="text-align:right;color:var(--neg,#e8705f);">$23,996</td></tr><tr><td style="font-weight:500;">Jun</td><td style="text-align:right;">$382,434</td><td style="text-align:right;">$5,892</td><td style="text-align:right;color:var(--neg,#e8705f);">$57,712</td></tr><tr><td style="font-weight:500;">Jul</td><td style="text-align:right;">$91,236</td><td style="text-align:right;">$259,014</td><td style="text-align:right;color:var(--neg,#e8705f);">$8,373</td></tr><tr style="font-weight:600;border-top:2px solid var(--border);"><td>Total</td><td style="text-align:right;" class="td-warn">$2,424,244</td><td style="text-align:right;">$314,668</td><td style="text-align:right;color:var(--neg,#e8705f);">$168,398</td></tr></tbody></table></div></div>
 <hr class="dv">
-<p class="slabel" data-nav="Trend">Monthly sales trend &middot; paid, outstanding &amp; cancellations &middot; Jan&ndash;Jul 2026</p>
-<div class="cc"><div class="cw" style="height:250px;"><canvas id="c_s_trend"></canvas></div></div>
-
+<hr class="dv">
 <p class="slabel">Running sales summary — by entity · Jan–Jul 2026</p>
  <div class="cc"><div class="tscroll"><table class="dt">
  <thead>
@@ -198,6 +212,12 @@
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
 <div class="cc"><div class="ct">New Sales vs. Cancellations</div><div class="cw" style="height:240px;"><canvas id="c_ov_nvc2"></canvas></div></div>
 <div class="cc"><div class="ct">New Recurring Sales vs. Cancellations</div><div class="cw" style="height:240px;"><canvas id="c_nr_vs_cancel"></canvas></div></div>
+</div>
+<hr class="dv">
+<p class="slabel" data-nav="Growth Signals">Net growth signals &middot; existing-account movement &amp; net new MRR &middot; Jan&ndash;Jul 2026</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+<div class="cc"><div class="slabel">Expansion vs. Contraction &middot; upgrades &minus; downgrades</div><div class="cw" style="height:230px;"><canvas id="c_exp_con"></canvas></div></div>
+<div class="cc"><div class="slabel">Net New MRR &middot; new recurring &minus; cancellations</div><div class="cw" style="height:230px;"><canvas id="c_net_mrr"></canvas></div></div>
 </div>
 <p class="slabel" data-nav="Recurring">Sales &amp; recurring breakdown &mdash; by rep, AM &amp; category &middot; Jan&ndash;Jul 2026</p>
 <div class="cc"><div class="ct">Sales by Original Sales Rep</div><div class="cs">Total value &middot; YTD Jan&ndash;Jul 2026</div><div class="cw" style="height:150px;"><canvas id="c_nr_rep"></canvas></div></div>
@@ -656,6 +676,7 @@
 <div class="ig">
 <div class="ins warn-ins"><div class="it">RTM concentration risk</div>RTM is 94.0% of booked revenue ($2.581M of $2.745M). Any acceleration in cancellations hits the total directly.</div>
 <div class="ins neg-ins"><div class="it">Recurring runs a deficit</div>New sales ($270.9K YTD) beat cancellations ($168.4K) by +$100.0K, but on recurring alone it's a &minus;$81.0K deficit ($87.4K new recurring vs $168.4K cancelled).</div>
+<div class="ins warn-ins"><div class="it">Expansion softens but doesn't cover churn</div>Upgrades beat downgrades by +$33.4K YTD (existing accounts are growing), but that only partly offsets the &minus;$81.0K recurring deficit &mdash; the recurring base is still net &minus;$47.7K for the year.</div>
 <div class="ins info-ins"><div class="it">Cancellations peaked in June</div>Cancellations hit $57.7K in June, the highest month; $168.4K YTD across all entities.</div>
 <div class="ins neg-ins"><div class="it">Active clients declining</div>Active clients fell from 246 (Jan) to 203 (Jul MTD) &mdash; about 17%, the clearest attrition signal.</div>
 <div class="ins info-ins"><div class="it">Concentration to watch</div>SEO + LSA drive 45% of service revenue ($1.05M); Unify360 ($124.9K) and NoDig ($38.8K) stay small but steady.</div>
@@ -2353,9 +2374,11 @@ window.addEventListener('DOMContentLoaded',function(){requestAnimationFrame(func
 function _rtmMergeMo(loc,fd){if(!Array.isArray(fd))return loc;if(!Array.isArray(loc))return fd;var out=fd.slice();for(var i=fd.length;i<loc.length;i++)out[i]=loc[i];return out;}
 function initTab(name){if(inited[name]){_resizeAllCharts();}if(name==='overview'){_safeChart(document.getElementById('c_ov_rtm'),{type:'bar',data:{labels:months,datasets:[{data:[389314,376262,363863,376702,372675,372875,329410],backgroundColor:'#FDA813',borderRadius:3}]},options:bo()});_safeChart(document.getElementById('c_ov_u360'),{type:'bar',data:{labels:months,datasets:[{data:[20582,20287,18110,17168,16222,16450,16054],backgroundColor:'#0D7A8C',borderRadius:3}]},options:bo()});_safeChart(document.getElementById('c_ov_nodig'),{type:'bar',data:{labels:months,datasets:[{data:[5902,5822,5902,5902,5623,5125,4557],backgroundColor:'#534AB7',borderRadius:3}]},options:bo()});_safeChart(document.getElementById('c_ov_nvc'),{type:'bar',data:{labels:months,datasets:[{label:'New',data:[33625,28292,29248,35372,49071,86527,8739],backgroundColor:'#2ec48a',borderRadius:3},{label:'Cancels',data:[36108,17273,15091,9845,23996,57712,8373],backgroundColor:'#f26b5b',borderRadius:3}]},options:bo()});_safeChart(document.getElementById('c_ov_clients'),{type:'line',data:{labels:months,datasets:[{data:[246,235,232,224,217,226,203],borderColor:'#FDA813',backgroundColor:'rgba(253,168,19,0.1)',fill:true,tension:0.35,pointBackgroundColor:'#FDA813',pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},min:200,max:260,ticks:{color:tc}}}}});_safeChart(document.getElementById('c_ov_contract'),{type:'line',data:{labels:contractData.months,datasets:[{label:'In Contract',data:contractData.inContract,borderColor:'#4caf82',backgroundColor:'#4caf82',pointStyle:'circle',pointRadius:4,borderWidth:2,tension:0.3,fill:false},{label:'Annual',data:contractData.annual,borderColor:'#31b0ab',backgroundColor:'#31b0ab',pointStyle:'rectRot',pointRadius:4,borderWidth:2,tension:0.3,fill:false},{label:'Month-to-Month',data:contractData.monthToMonth,borderColor:'#e8705f',backgroundColor:'#e8705f',pointStyle:'triangle',pointRadius:5,borderWidth:2,tension:0.3,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,padding:8,font:{size:11},usePointStyle:true}}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},ticks:{color:tc,callback:k}}}}});_safeChart(document.getElementById('c_ov_contract_pct'),{type:'line',data:{labels:contractData.months,datasets:[{label:'In Contract',data:[15.7,15.8,18.7,20.7,22.3,26.2,25.4],borderColor:'#4caf82',backgroundColor:'rgba(76,175,130,0.55)',fill:true,pointRadius:0,borderWidth:1.5,tension:0.3},{label:'Annual',data:[21.8,21.9,21.8,21.9,19.8,26.1,24.4],borderColor:'#31b0ab',backgroundColor:'rgba(49,176,171,0.55)',fill:true,pointRadius:0,borderWidth:1.5,tension:0.3},{label:'Month-to-Month',data:[62.6,62.3,59.5,57.4,57.9,47.7,50.2],borderColor:'#e8705f',backgroundColor:'rgba(232,112,95,0.55)',fill:true,pointRadius:0,borderWidth:1.5,tension:0.3}]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,font:{size:10},usePointStyle:true}}},scales:{x:{stacked:true,grid:{color:gc},ticks:{color:tc}},y:{stacked:true,grid:{color:gc},min:0,max:100,ticks:{color:tc,callback:function(v){return v+'%';}}}}}});_safeChart(document.getElementById('c_ov_indexed'),{type:'line',data:{labels:contractData.months,datasets:[{label:'RTM',data:[100.0, 96.6, 93.5, 96.8, 95.7, 95.8, 84.6],borderColor:'#FDA813',backgroundColor:'#FDA813',pointStyle:'circle',pointRadius:4,borderWidth:2,tension:0.3,fill:false},{label:'Unify360',data:[100.0, 98.6, 88.0, 83.4, 78.8, 79.9, 78.0],borderColor:'#31b0ab',backgroundColor:'#31b0ab',pointStyle:'rectRot',pointRadius:4,borderWidth:2,tension:0.3,fill:false},{label:'NoDig',data:[100.0, 98.6, 100.0, 100.0, 95.3, 86.8, 77.2],borderColor:'#8b7ff0',backgroundColor:'#8b7ff0',pointStyle:'triangle',pointRadius:4,borderWidth:2,tension:0.3,fill:false}]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,font:{size:11},usePointStyle:true}}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},ticks:{color:tc}}}}});}
 
-  _safeChart(document.getElementById('c_ov_nvc2'),{type:'line',data:{labels:months,datasets:[{label:'New',data:[33625,28292,29248,35372,49071,86527,8739],borderColor:'#2ec48a',backgroundColor:'#2ec48a',pointRadius:3,borderWidth:2,tension:0.3,fill:false},{label:'Cancels',data:[36108,17273,15091,9845,23996,57712,8373],borderColor:'#f26b5b',backgroundColor:'#f26b5b',pointRadius:3,borderWidth:2,tension:0.3,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,font:{size:10},usePointStyle:true}}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},ticks:{color:tc}}}}});
+  _safeChart(document.getElementById('c_ov_nvc2'),{type:'bar',data:{labels:months,datasets:[{label:'New Sales',data:[33625,28292,29248,35372,49071,86527,8739],backgroundColor:'#2ec48a',borderRadius:3},{label:'Cancellations',data:[36108,17273,15091,9845,23996,57712,8373],backgroundColor:'#f26b5b',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#cfe0ee',boxWidth:11,font:{size:10}}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': $'+c.raw.toLocaleString();}}}},scales:{x:{grid:{color:'rgba(255,255,255,0.06)'},ticks:{color:'#8ba3b8',font:{size:10}}},y:{grid:{color:'rgba(255,255,255,0.06)'},ticks:{color:'#8ba3b8',font:{size:10},callback:function(v){return '$'+(v/1000)+'k';}}}}}});
   
   _safeChart(document.getElementById('c_nr_vs_cancel'),{type:'line',data:{labels:months,datasets:[{label:'New recurring',data:[12340,4730,13336,11381,8476,33663,3430],borderColor:'#4caf82',backgroundColor:'#4caf82',pointRadius:3,borderWidth:2,tension:0.3,fill:false},{label:'Cancellations',data:[36108,17273,15091,9845,23996,57712,8373],borderColor:'#e8705f',backgroundColor:'#e8705f',pointRadius:3,borderWidth:2,tension:0.3,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,font:{size:10},usePointStyle:true}}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},ticks:{color:tc}}}}});
+_safeChart(document.getElementById('c_exp_con'),{type:'bar',data:{labels:months,datasets:[{label:'Upgrades',data:[11066,24260,11323,12257,9436,7950,1000],backgroundColor:'#2ec48a',borderRadius:3},{label:'Downgrades',data:[-6128,-7511,-13495,-3996,-4615,-6180,-1996],backgroundColor:'#f26b5b',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#cfe0ee',boxWidth:11,font:{size:10}}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': $'+Math.abs(c.raw).toLocaleString();}}}},scales:{x:{stacked:true,grid:{color:'rgba(255,255,255,0.06)'},ticks:{color:'#8ba3b8',font:{size:10}}},y:{stacked:true,grid:{color:'rgba(255,255,255,0.06)'},ticks:{color:'#8ba3b8',font:{size:10},callback:function(v){return (v>=0?'$':'-$')+Math.abs(v/1000)+'k';}}}}}});
+_safeChart(document.getElementById('c_net_mrr'),{type:'line',data:{labels:months,datasets:[{label:'Net New MRR',data:[-23768,-12543,-1755,1536,-15520,-24049,-4943],borderColor:'#FDA813',backgroundColor:'rgba(253,168,19,0.15)',fill:'origin',tension:0.3,pointRadius:3,pointBackgroundColor:['#f26b5b','#f26b5b','#f26b5b','#2ec48a','#f26b5b','#f26b5b','#f26b5b'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){var v=c.raw;return (v>=0?'+$':'-$')+Math.abs(v).toLocaleString();}}}},scales:{x:{grid:{color:'rgba(255,255,255,0.06)'},ticks:{color:'#8ba3b8',font:{size:10}}},y:{grid:{color:'rgba(255,255,255,0.06)'},ticks:{color:'#8ba3b8',font:{size:10},callback:function(v){return (v>=0?'$':'-$')+Math.abs(v/1000)+'k';}}}}}});
   _safeChart(document.getElementById('c_nr_am'),{type:'bar',data:{labels:['Kelly','Jason','Melissa','Riza','Ada','Ann'],datasets:[{data:[2214,1500,1479,1264,699,399],backgroundColor:'#FDA813',borderRadius:4,barThickness:16}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.x.toLocaleString();}}}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{display:false},ticks:{color:tc,font:{size:11}}}}}});
   _safeChart(document.getElementById('c_nr_cat'),{type:'bar',data:{labels:['PPC','SEO','Social','GBP','Other','LSA','Reviews'],datasets:[{data:[3060,1500,1298,699,500,399,99],backgroundColor:'#FDA813',borderRadius:4,barThickness:16}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.x.toLocaleString();}}}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{display:false},ticks:{color:tc,font:{size:11}}}}}});
   _safeChart(document.getElementById('c_nr_rep'),{type:'bar',data:{labels:['Courtlyn','House','Courtlyn/Sean'],datasets:[{data:[216366,38451,18372],backgroundColor:'#FDA813',borderRadius:4,barThickness:16}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.x.toLocaleString();}}}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{display:false},ticks:{color:tc,font:{size:11}}}}}});
