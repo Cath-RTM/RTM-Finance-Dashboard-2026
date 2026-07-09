@@ -14,16 +14,16 @@
  <div class="subtab" onclick="showGroup('finance-perf', this)">Finance Performance</div>
 </div>
 <div class="nav">
-<div class="tab active" onclick="sw(this,'overview')" data-group="sales-perf">Overview by Company <span id="_liveSplitBadge" style="display:none;font-size:10px;background:#FDA813;color:#042234;padding:2px 6px;border-radius:8px;font-weight:600;">● LIVE</span></div>
-<div class="tab" onclick="sw(this,'services')" data-group="sales-perf">Sales Activity <span id="_liveSvcBadge" title="Live from Google Sheets" style="display:none;font-size:10px;background:#0D7A8C;color:#fff;padding:2px 6px;border-radius:8px;font-weight:600;">● LIVE</span></div>
+<div class="tab active" onclick="sw(this,'overview')" data-group="sales-perf">Overview by Company <span id="_snapOverviewBadge" title="Derived from live billing data" style="display:none;font-size:10px;background:#0D7A8C;color:#fff;padding:2px 6px;border-radius:8px;font-weight:600;">&#9670; SNAPSHOT</span></div>
+<div class="tab" onclick="sw(this,'services')" data-group="sales-perf">Sales Activity <span id="_snapServicesBadge" title="Derived from live billing &amp; cancellation data" style="display:none;font-size:10px;background:#0D7A8C;color:#fff;padding:2px 6px;border-radius:8px;font-weight:600;">&#9670; SNAPSHOT</span></div>
 
 <div class="tab" onclick="sw(this,'cancel')" data-group="sales-perf">Cancellations <span id="_liveCancelBadge" title="Live from Google Sheets" style="display:none;font-size:10px;background:#f26b5b;color:#fff;padding:2px 6px;border-radius:8px;font-weight:600;">● LIVE</span></div>
 <div class="tab" onclick="sw(this,'billing')" data-group="sales-perf">Billing Activity <span id="_liveBillingBadge" style="display:none;font-size:10px;background:#0D7A8C;color:#fff;padding:2px 6px;border-radius:8px;font-weight:600;">● LIVE</span></div>
-<div class="tab" onclick="sw(this,'forecast')" data-group="sales-perf">Recurring Forecast <span id="_liveForecastBadge" style="display:none;font-size:10px;background:#FDA813;color:#042234;padding:2px 6px;border-radius:8px;font-weight:600;">● LIVE</span></div>
+<div class="tab" onclick="sw(this,'forecast')" data-group="sales-perf">Recurring Forecast <span id="_snapForecastBadge" title="Manual projection &mdash; not fed" style="display:none;font-size:10px;background:#0D7A8C;color:#fff;padding:2px 6px;border-radius:8px;font-weight:600;">&#9670; SNAPSHOT</span></div>
 <div class="tab" onclick="sw(this,'analytics')" data-group="sales-perf">Sales Analytics <span id="_snapAnalyticsBadge" title="Derived from live billing &amp; cancellation data" style="display:none;font-size:10px;background:#0D7A8C;color:#fff;padding:2px 6px;border-radius:8px;font-weight:600;">&#9670; SNAPSHOT</span></div>
 <div class="tab" onclick="sw(this,'annual')" data-group="sales-perf">Annual Performance Overview <span id="_snapAnnualBadge" title="Derived from live billing &amp; cancellation data" style="display:none;font-size:10px;background:#0D7A8C;color:#fff;padding:2px 6px;border-radius:8px;font-weight:600;">&#9670; SNAPSHOT</span></div>
 <div class="tab" onclick="sw(this,'ebitda')" data-group="finance-perf" style="display:none;">EBITDA (QuickBooks)</div>
-<div class="tab" onclick="sw(this,'opex')" data-group="finance-perf" style="display:none;">Operational Cost <span id="_liveOpexBadge" title="Live from Google Sheets" style="display:none;font-size:10px;background:#534AB7;color:#fff;padding:2px 6px;border-radius:8px;font-weight:600;">● LIVE</span> <span id="_liveToolsBadge" title="Live Tools" style="display:none;font-size:10px;background:#0D7A8C;color:#fff;padding:2px 6px;border-radius:8px;font-weight:600;">🔧 LIVE</span></div>
+<div class="tab" onclick="sw(this,'opex')" data-group="finance-perf" style="display:none;">Operational Cost <span id="_liveOpexBadge" title="Live from Google Sheets" style="display:none;font-size:10px;background:#534AB7;color:#fff;padding:2px 6px;border-radius:8px;font-weight:600;">● LIVE</span> </div>
 <div class="tab" onclick="sw(this,'salary')" data-group="finance-perf" style="display:none;">Salary Analysis <span id="_salaryBadge" title="Snapshot from the PAL" style="display:none;font-size:10px;background:#0D7A8C;color:#fff;padding:2px 6px;border-radius:8px;font-weight:600;">◆ SNAPSHOT</span></div>
 <div class="tab" onclick="sw(this,'payroll')" data-group="finance-perf" style="display:none;">Annual Payroll Comparison</div>
 </div>
@@ -1525,12 +1525,11 @@ function _fetchToolsLive(){
       }
 
       // ── Show live badge ──────────────────────────────────────────────────
-      var badge=document.getElementById('_liveToolsBadge');
-      if(badge){
-        badge.style.display='inline-block';
-        badge.title='Live · '+new Date(data.updated).toLocaleString()+
-                    ' · Grand Total: $'+data.grandTotal.toLocaleString();
-      }
+      /* One badge per tab. The tools feed appends its own timestamp to the OpEx
+         badge rather than adding a second '🔧 LIVE' pill. */
+      _opexBadgeInfo.tools=new Date(data.updated).toLocaleString()+
+        ' (Grand Total $'+data.grandTotal.toLocaleString()+')';
+      _paintOpexBadge();
       console.log('[RTM] Live tools loaded. Depts:',Object.keys(dt).length,'Grand Total:$'+data.grandTotal);
     })
     .catch(function(e){console.warn('[RTM] Tools feed unavailable:',e.message);});
@@ -1591,10 +1590,9 @@ function _fetchSplitSalesLive(){
       }
 
       // [disabled — using Billing-booked hardcoded values with July] // ── Show live badge ──────────────────────────────────────────────────
-      ['_liveSplitBadge','_liveForecastBadge','_liveSalesBadge'].forEach(function(id){
-        var b=document.getElementById(id);
-        if(b){b.style.display='inline-block';b.title='Live · '+new Date(data.updated).toLocaleString();}
-      });
+      /* This feed currently updates NOTHING: its Overview writes are disabled and its
+// forecast chart ids (c_fc_bar/c_fc_u360/c_fc_nodig/c_fc_rtm) were renamed in a
+// rebuild to c_fc_combined/c_fc_*_seg. It must not light any badge. */
       console.log('[RTM] Live split sales loaded. activeMo:',mo,'RTM YTD:',data.ytd.rtm);
     })
     .catch(function(e){console.warn('[RTM] Split sales feed unavailable:',e.message);});
@@ -1634,6 +1632,20 @@ function _checkSalaryFreshness(livePayroll,liveSales,updated){
     b.title='Matches the PAL as of '+new Date(updated).toLocaleString()+
       ' · payroll only, regenerated by refresh_salary.py';
   }
+}
+/* Operational Cost is served by TWO feeds (PAL + Department Tools). One badge,
+   composed from both. Each feed fills its own slot and repaints, so whichever
+   resolves last cannot erase the other's timestamp. */
+var _opexBadgeInfo={pal:null,tools:null};
+function _paintOpexBadge(){
+  var b=document.getElementById('_liveOpexBadge');
+  if(!b)return;
+  var parts=[];
+  if(_opexBadgeInfo.pal)  parts.push('PAL '+new Date(_opexBadgeInfo.pal).toLocaleString());
+  if(_opexBadgeInfo.tools)parts.push('Tools '+_opexBadgeInfo.tools);
+  if(!parts.length)return;
+  b.style.display='inline-block';
+  b.title='Live \u00b7 '+parts.join(' \u00b7 ');
 }
 function _fetchOpexLive(){
   fetch(_opexFeedURL)
@@ -1685,8 +1697,7 @@ function _fetchOpexLive(){
       // c_sl_ratio intentionally not updated by opex feed (uses benchmark data, not monthly actuals)
 
       // ── Show live badge ──────────────────────────────────────────────────
-      var badge=document.getElementById('_liveOpexBadge');
-      if(badge){badge.style.display='inline-block';badge.title='Live · '+new Date(data.updated).toLocaleString();}
+      _opexBadgeInfo.pal=data.updated; _paintOpexBadge();
 
       /* ── Salary tab freshness ──────────────────────────────────────────
          The Salary tab is a SNAPSHOT. This feed carries payroll and paid sales
@@ -1883,8 +1894,12 @@ function _fetchBillingLive(){
 
       var badge=document.getElementById('_liveBillingBadge');
       if(badge){badge.style.display='inline-block';badge.title='Live · '+new Date(data.updated).toLocaleString();}var _sa=document.getElementById('_snapAnalyticsBadge');if(_sa)_sa.style.display='inline-block';var _an=document.getElementById('_snapAnnualBadge');if(_an)_an.style.display='inline-block';
-      var svcBadge=document.getElementById('_liveSvcBadge');
-      if(svcBadge){svcBadge.style.display='inline-block';svcBadge.title='Live · '+new Date(data.updated).toLocaleString();}
+      /* The billing feed updates the Billing pane only. Sales Activity, Overview and
+         Forecast render hardcoded values derived from it — badge them SNAPSHOT, not LIVE. */
+      ['_snapServicesBadge','_snapOverviewBadge','_snapForecastBadge'].forEach(function(id){
+        var s=document.getElementById(id);
+        if(s){s.style.display='inline-block';s.title=s.title+' · as of '+new Date(data.updated).toLocaleString();}
+      });
       _billingLive=true;
       console.log('[RTM] Live billing loaded. JAN paid:',paid[0]);
     })
@@ -1946,8 +1961,7 @@ function _fetchNewSalesLive(){
       var kpiNet=document.querySelector('[data-kpi="net-new"]');
       /* net-new KPI held to Billing basis (incl July) */
       // Show live badge
-      var badge=document.getElementById('_liveNewSalesBadge');
-      if(badge){badge.style.display='inline-block';badge.title='Live · '+new Date(data.updated).toLocaleString();}
+      /* This feed updates nothing and '_liveNewSalesBadge' has no element. No badge. */
       console.log('[RTM] Live new sales:',ns,'YTD:',ytd);
     })
     .catch(function(e){console.warn('[RTM] Live feed unavailable, using cached data');} );
