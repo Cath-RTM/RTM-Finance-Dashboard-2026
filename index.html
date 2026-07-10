@@ -153,6 +153,24 @@
 </tbody>
  </table></div></div>
  <hr class="dv">
+ <p class="slabel" data-nav="Top Companies">Top 20 Paying Companies &mdash; Revenue &amp; Service Mix</p>
+ <p class="mssub" id="topCoSub">Ranked by total revenue &middot; Jan&ndash;Jul 2026 YTD &middot; Source: Billing Master (paid basis) &mdash; company totals reconcile to Billing Master paid revenue; services derived from actual billed line items (no manual tagging).</p>
+ <div class="cc" style="margin-bottom:1rem;">
+ <div class="ct">Revenue ranking &mdash; top 20 paying companies</div>
+ <div class="cs" id="topCoChartSub">Highest-paying at top</div>
+ <div class="cw" style="height:560px;"><canvas id="c_top_companies"></canvas></div>
+ </div>
+ <div id="topCoInsightKpi" class="mg3" style="margin-bottom:1rem;"></div>
+ <p class="mssub" id="topCoInsightNote" style="margin-bottom:1rem;"></p>
+ <div class="cc" style="margin-bottom:1rem;">
+ <div class="ct">Company revenue &amp; services availed</div>
+ <div class="cs">Top 20 by YTD revenue &middot; services listed by spend, largest first</div>
+ <div class="tscroll"><table class="dt">
+ <thead><tr><th>#</th><th>Company</th><th style="text-align:right;">Total Revenue ($)</th><th>Services Availed</th></tr></thead>
+ <tbody id="topCoBody"></tbody>
+ </table></div>
+ </div>
+ <hr class="dv">
 <p class="slabel" data-nav="Insights">Key insights</p>
 <div class="ig">
 <div class="ins good-ins"><div class="it">Contract mix improving</div>Contracted revenue (In Contract + Annual) reached 52.3% in June &mdash; first month above month-to-month &mdash; up from 37.4% in January. M2M fell $260K to $188K.</div>
@@ -991,6 +1009,28 @@
  <thead><tr><th>Month</th><th style="text-align:right;">Total Revenue</th><th style="text-align:center;">Headcount</th><th style="text-align:right;">Revenue per FTE</th></tr></thead>
  <tbody id="headcountEffTableBody"></tbody>
  </table></div></div>
+ </div>
+ <hr class="dv">
+ <p class="slabel" data-nav="EBITDA">EBITDA Analysis &mdash; Reference (Accounting-Based)</p>
+ <p class="mssub" id="salEbitdaSub">Reference view only &middot; Mirrors the QuickBooks EBITDA figures (RTM) from the EBITDA (QuickBooks) tab, which remains the source of truth. Values are read as reported &mdash; QuickBooks EBITDA carries the standard add-backs, so it is not simply Sales &minus; OpEx. QuickBooks closes with a lag, so only booked months appear.</p>
+ <div id="salEbitdaKpi" class="mg4" style="margin-bottom:1rem;"></div>
+ <div class="cc" style="margin-bottom:1rem;">
+ <div class="ct">Revenue, expense &amp; EBITDA by month</div>
+ <div class="cs" id="salEbitdaChartSub">Actual paid sales, operational expense and resulting EBITDA</div>
+ <div class="leg">
+ <span><span class="ld" style="background:#0D7A8C;"></span>Revenue</span>
+ <span><span class="ld" style="background:#f26b5b;"></span>Operational expense</span>
+ <span><span class="ld" style="background:#2ec48a;"></span>EBITDA</span>
+ </div>
+ <div class="cw" style="height:240px;"><canvas id="c_sl_ebitda"></canvas></div>
+ </div>
+ <div class="cc">
+ <div class="ct">Monthly EBITDA detail</div>
+ <div class="cs">Sales, operational expense &amp; EBITDA as reported in QuickBooks (RTM) &middot; margin = EBITDA &divide; Sales &middot; Salary-to-Rev % = payroll &divide; paid sales (Salary-tab basis)</div>
+ <div class="tscroll"><table class="dt">
+ <thead><tr><th>Month</th><th style="text-align:right;">Revenue</th><th style="text-align:right;">Expense</th><th style="text-align:right;">EBITDA</th><th style="text-align:right;">EBITDA %</th><th style="text-align:right;">Salary-to-Rev %</th></tr></thead>
+ <tbody id="salEbitdaBody"></tbody>
+ </table></div>
  </div>
  <hr class="dv">
  <p class="slabel" data-nav="Insights">Key insights</p>
@@ -2642,9 +2682,98 @@ function buildSalaryInsights(){
   }
   w.innerHTML=ins.map(function(x){return '<div class="ins '+x.c+'"><div class="it">'+x.t+'</div>'+x.b+'</div>';}).join('');
 }
+function buildSalaryEbitda(){
+  /* Reference layer only. Mirrors the QuickBooks EBITDA figures used by the
+     EBITDA (QuickBooks) tab -- RTM entity, 2026, monthly. Sales, OpEx, EBITDA and
+     margin are taken straight from ebData; nothing is recomputed. Note QuickBooks
+     EBITDA is NOT Sales - OpEx (it carries the interest/tax/D&A add-backs), so it is
+     read directly from ebData.*.ebitda. QuickBooks closes with a lag, so only booked
+     months are shown (through the last booked month). The EBITDA (QuickBooks) tab
+     remains the source of truth. */
+  if(typeof ebData==='undefined'||!ebData.rtm||!ebData.rtm['2026'])return;
+  var q=ebData.rtm['2026'];
+  var MAP={JAN:'Jan',FEB:'Feb',MAR:'Mar',APR:'Apr',MAY:'May',JUN:'Jun',JUL:'Jul',AUG:'Aug',SEP:'Sep',OCT:'Oct',NOV:'Nov',DEC:'Dec'};
+  var rev=q.sales||[],exp=q.opex||[],eb=q.ebitda||[];
+  var n=Math.min(rev.length,exp.length,eb.length);if(n<1)return;
+  var months=(q.months||[]).slice(0,n).map(function(m){return MAP[m]||m;});
+  var mg=[],i,sumR=0,sumE=0,sumEB=0;
+  for(i=0;i<n;i++){mg.push(rev[i]?eb[i]/rev[i]*100:0);sumR+=rev[i];sumE+=exp[i];sumEB+=eb[i];}
+  var mgYTD=sumR?sumEB/sumR*100:0,last=n-1;
+  var kw=document.getElementById('salEbitdaKpi');
+  if(kw)kw.innerHTML=
+    '<div class="mc"><div class="lbl">YTD revenue</div><div class="val" style="color:var(--teal2);">'+_slM(sumR)+'</div><div class="sub">QuickBooks &middot; Jan&ndash;'+months[last]+' 2026</div></div>'+
+    '<div class="mc"><div class="lbl">YTD operational expense</div><div class="val neg">'+_slM(sumE)+'</div><div class="sub">QuickBooks OpEx</div></div>'+
+    '<div class="mc"><div class="lbl">YTD EBITDA</div><div class="val '+(sumEB>=0?'pos':'neg')+'">'+_slM(sumEB)+'</div><div class="sub">QuickBooks-reported (incl. add-backs)</div></div>'+
+    '<div class="mc"><div class="lbl">EBITDA margin</div><div class="val '+(mgYTD>=0?'pos':'neg')+'">'+mgYTD.toFixed(1)+'%</div><div class="sub">'+months[last]+': '+mg[last].toFixed(1)+'%</div></div>';
+  var tb=document.getElementById('salEbitdaBody');
+  if(tb){var _sp2=(typeof salaryData!=='undefined')?salaryData:null;var html='';for(i=0;i<n;i++){var lastR=(i===last);
+    var srTxt='&mdash;',srCol='var(--muted)';
+    if(_sp2&&_sp2.payroll&&_sp2.revenue&&_sp2.revenue[i]){var sr=_sp2.payroll[i]/_sp2.revenue[i]*100;srTxt=sr.toFixed(1)+'%';srCol=sr<=40?'var(--pos)':(sr<=50?'var(--amber)':'var(--neg)');}
+    html+='<tr'+(lastR?' style="border-top:1px solid var(--border);"':'')+'>'+
+      '<td style="font-weight:'+(lastR?'700':'600')+';">'+months[i]+'</td>'+
+      '<td style="text-align:right;">'+_slM(rev[i])+'</td>'+
+      '<td style="text-align:right;color:var(--muted);">'+_slM(exp[i])+'</td>'+
+      '<td class="'+(eb[i]>=0?'td-pos':'td-neg')+'" style="text-align:right;'+(lastR?'font-weight:600;':'')+'">'+_slM(eb[i])+'</td>'+
+      '<td style="text-align:right;'+(lastR?'font-weight:600;':'')+'">'+mg[i].toFixed(1)+'%</td>'+
+      '<td style="text-align:right;color:'+srCol+';'+(lastR?'font-weight:600;':'')+'">'+srTxt+'</td></tr>';}
+    tb.innerHTML=html;}
+  var sc=document.getElementById('salEbitdaChartSub');
+  if(sc)sc.innerHTML='RTM &middot; QuickBooks &middot; Jan&ndash;'+months[last]+' 2026 &middot; YTD EBITDA '+_slM(sumEB)+' at '+mgYTD.toFixed(1)+'% margin';
+  var cv=document.getElementById('c_sl_ebitda');
+  if(cv)_safeChart(cv,{type:'line',data:{labels:months,datasets:[
+    {label:'Revenue',data:rev.slice(0,n),borderColor:'#0D7A8C',backgroundColor:'#0D7A8C',tension:0.3,pointRadius:3,fill:false},
+    {label:'Operational expense',data:exp.slice(0,n),borderColor:'#f26b5b',backgroundColor:'#f26b5b',tension:0.3,pointRadius:3,fill:false},
+    {label:'EBITDA',data:eb.slice(0,n),borderColor:'#2ec48a',backgroundColor:'rgba(46,196,138,0.12)',tension:0.3,pointRadius:3,fill:true}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.dataset.label+': $'+Math.round(c.parsed.y).toLocaleString();}}}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},ticks:{color:tc,callback:k}}}}});
+}
+
+function buildTopCompanies(){
+  /* Top 20 paying companies from campSvcData (the campaign-billing source).
+     Revenue = company total (.v); services = billed line items ordered by spend.
+     Fully dynamic: reads campSvcData at render, so it updates on refresh. No manual
+     tags. YTD basis (the overview has no period control); monthly arrays (.m) are
+     present if a date filter is later added. */
+  if(typeof campSvcData==='undefined')return;
+  var arr=[],total=0,ky;
+  for(ky in campSvcData){if(!campSvcData.hasOwnProperty(ky))continue;
+    var rec=campSvcData[ky],v=+rec.v||0;total+=v;
+    var svcs=(rec.svcs||[]).slice().sort(function(x,y){return (y.v||0)-(x.v||0);}).map(function(s){return s.svc;});
+    arr.push({name:ky,rev:v,svcs:svcs});}
+  arr.sort(function(x,y){return y.rev-x.rev;});
+  var top=arr.slice(0,20),top3=0,top5=0,top20=0,i;
+  for(i=0;i<top.length;i++){if(i<3)top3+=top[i].rev;if(i<5)top5+=top[i].rev;top20+=top[i].rev;}
+  var freq={};top.forEach(function(c){c.svcs.forEach(function(s){freq[s]=(freq[s]||0)+1;});});
+  var freqArr=Object.keys(freq).map(function(s){return {s:s,n:freq[s]};}).sort(function(a,b){return b.n-a.n;});
+  var pct=function(x){return total?(x/total*100).toFixed(1):'0.0';};
+  var usd=function(x){return '$'+Math.round(x).toLocaleString();};
+  var tb=document.getElementById('topCoBody');
+  if(tb){var html='';for(i=0;i<top.length;i++){var c=top[i];
+    html+='<tr>'+
+      '<td>'+(i+1)+'</td>'+
+      '<td style="font-weight:600;">'+c.name+'</td>'+
+      '<td style="text-align:right;">'+usd(c.rev)+'</td>'+
+      '<td style="color:var(--muted);">'+c.svcs.join(', ')+'</td></tr>';}
+    tb.innerHTML=html;}
+  var cv=document.getElementById('c_top_companies');
+  if(cv)_safeChart(cv,{type:'bar',data:{labels:top.map(function(c){return c.name;}),
+    datasets:[{label:'YTD revenue',data:top.map(function(c){return c.rev;}),backgroundColor:'#FDA813',borderRadius:3}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ct){return usd(ct.parsed.x);}}}},
+      scales:{x:{grid:{color:gc},ticks:{color:tc,callback:function(v){return v>=1000?'$'+(Math.round(v/100)/10)+'K':'$'+v;}}},
+              y:{grid:{display:false},ticks:{color:tc,font:{size:10},autoSkip:false}}}}});
+  var kw=document.getElementById('topCoInsightKpi');
+  if(kw)kw.innerHTML=
+    '<div class="mc"><div class="lbl">Top 3 contribution</div><div class="val" style="color:var(--teal2);">'+pct(top3)+'%</div><div class="sub">'+usd(top3)+' of '+usd(total)+'</div></div>'+
+    '<div class="mc"><div class="lbl">Top 5 concentration</div><div class="val" style="color:var(--amber);">'+pct(top5)+'%</div><div class="sub">'+usd(top5)+' of Billing Master paid</div></div>'+
+    '<div class="mc"><div class="lbl">Most common service (top 20)</div><div class="val pos">'+(freqArr[0]?freqArr[0].s:'&mdash;')+'</div><div class="sub">'+(freqArr[0]?('in '+freqArr[0].n+' of '+top.length+' companies'):'')+'</div></div>';
+  var nt=document.getElementById('topCoInsightNote');
+  if(nt)nt.innerHTML='Most common services across top clients: '+freqArr.slice(0,5).map(function(f){return f.s+' ('+f.n+')';}).join(' &middot; ')+'. Concentration is '+pct(top5)+'% in the top 5 and '+pct(top20)+'% in the top 20 &mdash; a broad book with limited single-client dependency.';
+  var cs=document.getElementById('topCoChartSub');
+  if(cs&&top.length)cs.innerHTML=top.length+' companies &middot; leader '+top[0].name+' at '+usd(top[0].rev);
+}
 function buildSalaryTab(){
   buildSalaryHeaders();buildSalaryKpis();buildSalaryRegion();buildSalaryMilestones();
-  buildSalaryPassFail();buildHeadcountEfficiency();buildSalaryInsights();
+  buildSalaryPassFail();buildHeadcountEfficiency();buildSalaryEbitda();buildSalaryInsights();
 }
 var perCampaignData={"Apps":{"campaigns":5,"revenuePerCamp":1933.4,"costPerCamp":10555.68,"profitPerCamp":-8622.28},"Call":{"campaigns":63,"revenuePerCamp":517.37,"costPerCamp":1040.75,"profitPerCamp":-523.38},"Design":{"campaigns":58,"revenuePerCamp":1860.39,"costPerCamp":2231.21,"profitPerCamp":-370.82},"Email":{"campaigns":8,"revenuePerCamp":1045.42,"costPerCamp":4467.53,"profitPerCamp":-3422.11},"GBP":{"campaigns":87,"revenuePerCamp":2535.96,"costPerCamp":410.81,"profitPerCamp":2125.15},"Hosting":{"campaigns":164,"revenuePerCamp":379.51,"costPerCamp":223.16,"profitPerCamp":156.35},"LBO":{"campaigns":66,"revenuePerCamp":3679.1,"costPerCamp":541.52,"profitPerCamp":3137.58},"LSA":{"campaigns":116,"revenuePerCamp":3711.63,"costPerCamp":454.99,"profitPerCamp":3256.65},"NoDig":{"campaigns":39,"revenuePerCamp":817.82,"costPerCamp":1195.84,"profitPerCamp":-378.02},"PPC":{"campaigns":55,"revenuePerCamp":2933.55,"costPerCamp":831.29,"profitPerCamp":2102.25},"RTM Package":{"campaigns":12,"revenuePerCamp":12256.92,"costPerCamp":7361.44,"profitPerCamp":4895.47},"SEO":{"campaigns":95,"revenuePerCamp":6533.53,"costPerCamp":490.92,"profitPerCamp":6042.61},"Social":{"campaigns":39,"revenuePerCamp":3288.15,"costPerCamp":2219.67,"profitPerCamp":1068.49},"Software":{"campaigns":130,"revenuePerCamp":823.1,"costPerCamp":819.99,"profitPerCamp":3.11},"Yelp":{"campaigns":10,"revenuePerCamp":2124.3,"costPerCamp":3574.03,"profitPerCamp":-1449.73}};var perCampaignChart=null;function buildProfitPerCampaign(){var sorted=Object.entries(perCampaignData).sort(function(a,b){return b[1].profitPerCamp-a[1].profitPerCamp;});var w=document.getElementById('perCampaignCards');if(w){var best=sorted[0],worst=sorted[sorted.length-1];var flipped=sorted.filter(function(e){var aggMargin=profitPerServiceData[e[0]]?profitPerServiceData[e[0]].margin:0;return(aggMargin<0&&e[1].profitPerCamp>0)||(aggMargin>0&&e[1].profitPerCamp<0);}).length;w.innerHTML='<div class="mc"><div class="lbl">Best per-campaign profit</div><div class="val pos" style="font-size:15px;">'+best[0]+'</div><div class="sub">$'+best[1].profitPerCamp.toLocaleString()+' / campaign</div></div>'
 +'<div class="mc"><div class="lbl">Worst per-campaign profit</div><div class="val neg" style="font-size:15px;">'+worst[0]+'</div><div class="sub">$'+worst[1].profitPerCamp.toLocaleString()+' / campaign</div></div>'
@@ -2655,6 +2784,46 @@ var inited={};function buildSectionNav(name){var pane=document.getElementById('p
 if(labels.length>8){var _rows=Math.ceil(labels.length/8);var _cols=Math.ceil(labels.length/_rows);nav.style.display='grid';nav.style.gridTemplateColumns='repeat('+_cols+',minmax(0,1fr))';nav.setAttribute('data-cols',_cols);}labels.forEach(function(lb,i){if(!lb.id)lb.id='sec-'+name+'-'+i;var t=lb.getAttribute('data-nav')||'';var b=document.createElement('button');b.className='section-nav-btn';b.textContent=t;b.addEventListener('click',function(){var el=(i===0)?nav:document.getElementById(lb.id);if(!el)return;var off=0;['.hdr','.nav','.subnav-row'].forEach(function(s){var e=document.querySelector(s);if(e){var cs=getComputedStyle(e);if(cs.position==='sticky'||cs.position==='fixed')off+=e.offsetHeight;}});el.style.scrollMarginTop=(off+14)+'px';el.scrollIntoView({behavior:'smooth',block:'start'});});nav.appendChild(b);});pane.insertBefore(nav,pane.firstChild);}
 function sw(el,name){var _wasActive=el.classList.contains('active');document.querySelectorAll('.pane').forEach(function(p){p.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});document.getElementById('pane-'+name).classList.add('active');buildSectionNav(name);el.classList.add('active');window.scrollTo({top:0,behavior:_wasActive?'smooth':'auto'});requestAnimationFrame(function(){requestAnimationFrame(function(){requestAnimationFrame(function(){initTab(name);});});});}
 window.addEventListener('DOMContentLoaded',function(){requestAnimationFrame(function(){requestAnimationFrame(function(){requestAnimationFrame(function(){initTab('overview');buildSectionNav('overview');});});});_fetchNewSalesLive();_fetchBillingLive();_fetchCancelLive();_fetchOpexLive();_fetchSplitSalesLive();_fetchToolsLive();});
+
+/* ===== Table balance — consistent column alignment across every .dt table =====
+   One deterministic rule applied everywhere: numeric columns right-aligned, text
+   columns left-aligned, and each header snapped to match its column. Touches ONLY
+   text-align — never colour, weight, or content — and re-runs automatically when a
+   table body is repopulated (live feeds, tab renders), so tables stay balanced. */
+var _numRe=/^[-+\u2212]?\$?\s*\d[\d,]*(\.\d+)?\s*%?$/;
+function _balanceOneTable(tbl){
+  try{
+    var head=tbl.tHead,bodies=tbl.tBodies;if(!bodies||!bodies.length)return;
+    var rows=[],bi,ri;
+    for(bi=0;bi<bodies.length;bi++){for(ri=0;ri<bodies[bi].rows.length;ri++)rows.push(bodies[bi].rows[ri]);}
+    if(!rows.length)return;
+    var cols=0;rows.forEach(function(r){if(r.cells.length>cols)cols=r.cells.length;});
+    var c;for(c=0;c<cols;c++){
+      var num=0,tot=0;
+      rows.forEach(function(r){var cell=r.cells[c];if(!cell)return;
+        if(cell.colSpan&&cell.colSpan>1)return; /* skip spanned summary cells */
+        var t=(cell.textContent||'').trim();
+        if(!t||t==='\u2014'||t==='-')return;   /* neutral: em-dash / blank */
+        tot++;if(_numRe.test(t))num++;});
+      var align=(tot>0&&num/tot>=0.6)?'right':'left';
+      rows.forEach(function(r){var cell=r.cells[c];if(cell&&!(cell.colSpan>1))cell.style.textAlign=align;});
+      if(head&&head.rows.length){var hr=head.rows[head.rows.length-1];if(hr.cells[c]&&!(hr.cells[c].colSpan>1))hr.cells[c].style.textAlign=align;}
+    }
+  }catch(e){}
+}
+function _balanceTables(){var t=document.querySelectorAll('table.dt');for(var i=0;i<t.length;i++)_balanceOneTable(t[i]);}
+window.addEventListener('DOMContentLoaded',function(){
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    _balanceTables();
+    var t=document.querySelectorAll('table.dt');
+    for(var i=0;i<t.length;i++){(function(tbl){
+      var bodies=tbl.tBodies;if(!bodies||!bodies.length)return;
+      var obs=new MutationObserver(function(){_balanceOneTable(tbl);});
+      for(var b=0;b<bodies.length;b++)obs.observe(bodies[b],{childList:true,subtree:true});
+    })(t[i]);}
+    setTimeout(_balanceTables,250);setTimeout(_balanceTables,800);
+  });});
+});
 
 /* ===== RTM Dynamic Date Labels — auto-extend YTD range from live data ===== */
 (function(){
@@ -2692,7 +2861,7 @@ window.addEventListener('DOMContentLoaded',function(){requestAnimationFrame(func
 /* ===== end RTM Dynamic Date Labels ===== */
 
 function _rtmMergeMo(loc,fd){if(!Array.isArray(fd))return loc;if(!Array.isArray(loc))return fd;var out=fd.slice();for(var i=fd.length;i<loc.length;i++)out[i]=loc[i];return out;}
-function initTab(name){if(inited[name]){_resizeAllCharts();}if(name==='overview'){_safeChart(document.getElementById('c_ov_rtm'),{type:'bar',data:{labels:months,datasets:[{data:[389314,376262,363863,376702,372675,372875,329410],backgroundColor:'#FDA813',borderRadius:3}]},options:bo()});_safeChart(document.getElementById('c_ov_u360'),{type:'bar',data:{labels:months,datasets:[{data:[20582,20287,18110,17168,16222,16450,16054],backgroundColor:'#0D7A8C',borderRadius:3}]},options:bo()});_safeChart(document.getElementById('c_ov_nodig'),{type:'bar',data:{labels:months,datasets:[{data:[5902,5822,5902,5902,5623,5125,4557],backgroundColor:'#534AB7',borderRadius:3}]},options:bo()});_safeChart(document.getElementById('c_ov_nvc'),{type:'bar',data:{labels:months,datasets:[{label:'New',data:[33625,28292,29248,35372,49071,86527,8739],backgroundColor:'#2ec48a',borderRadius:3},{label:'Cancels',data:[36108,17273,15091,9845,23996,57712,8373],backgroundColor:'#f26b5b',borderRadius:3}]},options:bo()});_safeChart(document.getElementById('c_ov_clients'),{type:'line',data:{labels:months,datasets:[{data:[246,235,232,224,217,226,203],borderColor:'#FDA813',backgroundColor:'rgba(253,168,19,0.1)',fill:true,tension:0.35,pointBackgroundColor:'#FDA813',pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},min:200,max:260,ticks:{color:tc}}}}});_safeChart(document.getElementById('c_ov_contract'),{type:'line',data:{labels:contractData.months,datasets:[{label:'In Contract',data:contractData.inContract,borderColor:'#4caf82',backgroundColor:'#4caf82',pointStyle:'circle',pointRadius:4,borderWidth:2,tension:0.3,fill:false},{label:'Annual',data:contractData.annual,borderColor:'#31b0ab',backgroundColor:'#31b0ab',pointStyle:'rectRot',pointRadius:4,borderWidth:2,tension:0.3,fill:false},{label:'Month-to-Month',data:contractData.monthToMonth,borderColor:'#e8705f',backgroundColor:'#e8705f',pointStyle:'triangle',pointRadius:5,borderWidth:2,tension:0.3,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,padding:8,font:{size:11},usePointStyle:true}}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},ticks:{color:tc,callback:k}}}}});_safeChart(document.getElementById('c_ov_contract_pct'),{type:'line',data:{labels:contractData.months,datasets:[{label:'In Contract',data:[15.7,15.8,18.7,20.7,22.3,26.2,25.4],borderColor:'#4caf82',backgroundColor:'rgba(76,175,130,0.55)',fill:true,pointRadius:0,borderWidth:1.5,tension:0.3},{label:'Annual',data:[21.8,21.9,21.8,21.9,19.8,26.1,24.4],borderColor:'#31b0ab',backgroundColor:'rgba(49,176,171,0.55)',fill:true,pointRadius:0,borderWidth:1.5,tension:0.3},{label:'Month-to-Month',data:[62.6,62.3,59.5,57.4,57.9,47.7,50.2],borderColor:'#e8705f',backgroundColor:'rgba(232,112,95,0.55)',fill:true,pointRadius:0,borderWidth:1.5,tension:0.3}]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,font:{size:10},usePointStyle:true}}},scales:{x:{stacked:true,grid:{color:gc},ticks:{color:tc}},y:{stacked:true,grid:{color:gc},min:0,max:100,ticks:{color:tc,callback:function(v){return v+'%';}}}}}});_safeChart(document.getElementById('c_ov_indexed'),{type:'line',data:{labels:contractData.months,datasets:[{label:'RTM',data:[100.0, 96.6, 93.5, 96.8, 95.7, 95.8, 84.6],borderColor:'#FDA813',backgroundColor:'#FDA813',pointStyle:'circle',pointRadius:4,borderWidth:2,tension:0.3,fill:false},{label:'Unify360',data:[100.0, 98.6, 88.0, 83.4, 78.8, 79.9, 78.0],borderColor:'#31b0ab',backgroundColor:'#31b0ab',pointStyle:'rectRot',pointRadius:4,borderWidth:2,tension:0.3,fill:false},{label:'NoDig',data:[100.0, 98.6, 100.0, 100.0, 95.3, 86.8, 77.2],borderColor:'#8b7ff0',backgroundColor:'#8b7ff0',pointStyle:'triangle',pointRadius:4,borderWidth:2,tension:0.3,fill:false}]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,font:{size:11},usePointStyle:true}}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},ticks:{color:tc}}}}});}
+function initTab(name){if(inited[name]){_resizeAllCharts();}if(name==='overview'){_safeChart(document.getElementById('c_ov_rtm'),{type:'bar',data:{labels:months,datasets:[{data:[389314,376262,363863,376702,372675,372875,329410],backgroundColor:'#FDA813',borderRadius:3}]},options:bo()});_safeChart(document.getElementById('c_ov_u360'),{type:'bar',data:{labels:months,datasets:[{data:[20582,20287,18110,17168,16222,16450,16054],backgroundColor:'#0D7A8C',borderRadius:3}]},options:bo()});_safeChart(document.getElementById('c_ov_nodig'),{type:'bar',data:{labels:months,datasets:[{data:[5902,5822,5902,5902,5623,5125,4557],backgroundColor:'#534AB7',borderRadius:3}]},options:bo()});_safeChart(document.getElementById('c_ov_nvc'),{type:'bar',data:{labels:months,datasets:[{label:'New',data:[33625,28292,29248,35372,49071,86527,8739],backgroundColor:'#2ec48a',borderRadius:3},{label:'Cancels',data:[36108,17273,15091,9845,23996,57712,8373],backgroundColor:'#f26b5b',borderRadius:3}]},options:bo()});_safeChart(document.getElementById('c_ov_clients'),{type:'line',data:{labels:months,datasets:[{data:[246,235,232,224,217,226,203],borderColor:'#FDA813',backgroundColor:'rgba(253,168,19,0.1)',fill:true,tension:0.35,pointBackgroundColor:'#FDA813',pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},min:200,max:260,ticks:{color:tc}}}}});_safeChart(document.getElementById('c_ov_contract'),{type:'line',data:{labels:contractData.months,datasets:[{label:'In Contract',data:contractData.inContract,borderColor:'#4caf82',backgroundColor:'#4caf82',pointStyle:'circle',pointRadius:4,borderWidth:2,tension:0.3,fill:false},{label:'Annual',data:contractData.annual,borderColor:'#31b0ab',backgroundColor:'#31b0ab',pointStyle:'rectRot',pointRadius:4,borderWidth:2,tension:0.3,fill:false},{label:'Month-to-Month',data:contractData.monthToMonth,borderColor:'#e8705f',backgroundColor:'#e8705f',pointStyle:'triangle',pointRadius:5,borderWidth:2,tension:0.3,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,padding:8,font:{size:11},usePointStyle:true}}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},ticks:{color:tc,callback:k}}}}});_safeChart(document.getElementById('c_ov_contract_pct'),{type:'line',data:{labels:contractData.months,datasets:[{label:'In Contract',data:[15.7,15.8,18.7,20.7,22.3,26.2,25.4],borderColor:'#4caf82',backgroundColor:'rgba(76,175,130,0.55)',fill:true,pointRadius:0,borderWidth:1.5,tension:0.3},{label:'Annual',data:[21.8,21.9,21.8,21.9,19.8,26.1,24.4],borderColor:'#31b0ab',backgroundColor:'rgba(49,176,171,0.55)',fill:true,pointRadius:0,borderWidth:1.5,tension:0.3},{label:'Month-to-Month',data:[62.6,62.3,59.5,57.4,57.9,47.7,50.2],borderColor:'#e8705f',backgroundColor:'rgba(232,112,95,0.55)',fill:true,pointRadius:0,borderWidth:1.5,tension:0.3}]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,font:{size:10},usePointStyle:true}}},scales:{x:{stacked:true,grid:{color:gc},ticks:{color:tc}},y:{stacked:true,grid:{color:gc},min:0,max:100,ticks:{color:tc,callback:function(v){return v+'%';}}}}}});_safeChart(document.getElementById('c_ov_indexed'),{type:'line',data:{labels:contractData.months,datasets:[{label:'RTM',data:[100.0, 96.6, 93.5, 96.8, 95.7, 95.8, 84.6],borderColor:'#FDA813',backgroundColor:'#FDA813',pointStyle:'circle',pointRadius:4,borderWidth:2,tension:0.3,fill:false},{label:'Unify360',data:[100.0, 98.6, 88.0, 83.4, 78.8, 79.9, 78.0],borderColor:'#31b0ab',backgroundColor:'#31b0ab',pointStyle:'rectRot',pointRadius:4,borderWidth:2,tension:0.3,fill:false},{label:'NoDig',data:[100.0, 98.6, 100.0, 100.0, 95.3, 86.8, 77.2],borderColor:'#8b7ff0',backgroundColor:'#8b7ff0',pointStyle:'triangle',pointRadius:4,borderWidth:2,tension:0.3,fill:false}]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},plugins:{legend:{display:true,labels:{color:tc,boxWidth:10,font:{size:11},usePointStyle:true}}},scales:{x:{grid:{color:gc},ticks:{color:tc}},y:{grid:{color:gc},ticks:{color:tc}}}}});buildTopCompanies();}
 
   _safeChart(document.getElementById('c_ov_nvc2'),{type:'bar',data:{labels:months,datasets:[{label:'New Sales',data:[33625,28292,29248,35372,49071,86527,8739],backgroundColor:'#2ec48a',borderRadius:3},{label:'Cancellations',data:[36108,17273,15091,9845,23996,57712,8373],backgroundColor:'#f26b5b',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#cfe0ee',boxWidth:11,font:{size:10}}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': $'+c.raw.toLocaleString();}}}},scales:{x:{grid:{color:'rgba(255,255,255,0.06)'},ticks:{color:'#8ba3b8',font:{size:10}}},y:{grid:{color:'rgba(255,255,255,0.06)'},ticks:{color:'#8ba3b8',font:{size:10},callback:function(v){return '$'+(v/1000)+'k';}}}}}});
   
