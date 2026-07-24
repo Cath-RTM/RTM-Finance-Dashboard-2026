@@ -77,6 +77,40 @@
   .hdr .hdr-right{flex-wrap:wrap;gap:10px;}
   .hdr .hdr-right .hdr-sub{white-space:normal;}
 }
+
+/* ===== MOBILE RESPONSIVENESS V4 (2026-07-24) — off-canvas drawer + grid collapse ===== */
+.hbtn{display:none;}
+.nav-backdrop{display:none;}
+@media(max-width:820px){
+  .sidebar{position:fixed;top:0;left:0;bottom:0;height:100vh;width:270px;max-width:82vw;z-index:1200;transform:translateX(-100%);transition:transform .25s ease;overflow-y:auto;flex:0 0 270px;border-right:1px solid var(--border);border-bottom:none;box-shadow:0 0 34px rgba(0,0,0,.55);}
+  body.nav-open .sidebar{transform:translateX(0);}
+  .side-nav{flex-direction:column;flex-wrap:nowrap;}
+  .side-nav .side-group-h{width:auto;}
+  .nav-backdrop{display:block;position:fixed;inset:0;background:rgba(4,18,32,.55);z-index:1150;opacity:0;pointer-events:none;transition:opacity .25s;}
+  body.nav-open .nav-backdrop{opacity:1;pointer-events:auto;}
+  body.nav-open{overflow:hidden;}
+  .hbtn{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:38px;height:38px;margin-right:12px;border-radius:9px;cursor:pointer;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--txt);padding:0;}
+  .hbtn:active{background:rgba(255,255,255,.12);}
+  .hbtn svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none;}
+  .hdr{align-items:center;flex-wrap:wrap;}
+  .hdr .hdr-title-wrap{flex:1 1 auto;min-width:0;}
+  .hdr .hdr-right{flex-wrap:wrap;min-width:0;max-width:100%;gap:8px 12px;}
+  .hdr .hdr-right .hdr-sub{white-space:normal;min-width:0;overflow-wrap:anywhere;}
+}
+@media(max-width:820px){
+  .two>*,.three>*{min-width:0;}
+  .cc{min-width:0;}
+  .cw{max-width:100%;overflow-x:hidden;}
+  .cw canvas{max-width:100%!important;}
+}
+@media(max-width:700px){
+  div[style*="grid-template-columns:1fr 1fr"]:not([class]){grid-template-columns:1fr!important;}
+  .mc{min-width:0;}
+  .mg4[style*="1fr 1fr 1fr"]{grid-template-columns:1fr 1fr!important;}
+}
+
+/* Hide LIVE / SNAPSHOT status pills (2026-07-24) — elements kept so feed JS never null-refs */
+[id$="Badge"]{display:none!important;}
 </style>
 </head>
 <body>
@@ -3885,6 +3919,28 @@ function init(){var tabs=document.querySelectorAll('.side-nav .tab');
 tabs.forEach(function(t){t.addEventListener('click',function(){upd(t);});});
 upd(document.querySelector('.side-nav .tab.active'));}
 if(document.readyState!=='loading')init();else window.addEventListener('DOMContentLoaded',init);})();
+</script>
+<script>
+/* Mobile off-canvas nav drawer (additive; mobile-only effect via CSS media query) */
+(function(){
+  try{
+    var hdr=document.querySelector('.maincol .hdr'); var body=document.body;
+    if(!hdr) return;
+    var btn=document.createElement('button');
+    btn.className='hbtn'; btn.type='button'; btn.setAttribute('aria-label','Toggle navigation'); btn.setAttribute('aria-expanded','false');
+    btn.innerHTML='<svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+    hdr.insertBefore(btn, hdr.firstChild);
+    var bd=document.createElement('div'); bd.className='nav-backdrop'; body.appendChild(bd);
+    function setExpanded(){ btn.setAttribute('aria-expanded', body.classList.contains('nav-open')?'true':'false'); }
+    function close(){ body.classList.remove('nav-open'); setExpanded(); }
+    function toggle(){ body.classList.toggle('nav-open'); setExpanded(); }
+    btn.addEventListener('click', function(e){ e.stopPropagation(); toggle(); });
+    bd.addEventListener('click', close);
+    document.querySelectorAll('.side-nav .tab').forEach(function(t){ t.addEventListener('click', close); });
+    window.addEventListener('resize', function(){ if(window.innerWidth>820) close(); });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
+  }catch(e){}
+})();
 </script>
 </body>
 </html>
