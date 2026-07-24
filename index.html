@@ -111,6 +111,9 @@
 
 /* Hide LIVE / SNAPSHOT status pills (2026-07-24) — elements kept so feed JS never null-refs */
 [id$="Badge"]{display:none!important;}
+
+/* Right-align the MoM column of the Combined Monthly Sales table to match the NEW SALES column above (2026-07-24). !important overrides the JS table-builder that sets text-align:left. */
+#tblMonthlyMoM td:last-child,#tblMonthlyMoM th:last-child{text-align:right!important;}
 </style>
 </head>
 <body>
@@ -209,7 +212,7 @@
 </table></div></div>
 <hr class="dv">
 <p class="slabel" data-nav="Monthly Sales">Combined monthly sales &mdash; by entity &middot; Jan&ndash;Jul 2026 &middot; Paid + Outstanding</p>
-<div class="cc"><div class="tscroll"><table class="dt" style="width:100%;table-layout:fixed;">
+<div class="cc"><div class="tscroll"><table id="tblMonthlyMoM" class="dt" style="width:100%;table-layout:fixed;">
 <thead><tr><th>Month</th><th style="text-align:right;">RTM</th><th style="text-align:right;">Unify360</th><th style="text-align:right;">NoDig</th><th style="text-align:right;">Combined</th><th style="text-align:right;">MoM</th></tr></thead>
 <tbody>
 <tr><td>Jan</td><td style="text-align:right;color:var(--amber);">$389,314</td><td style="text-align:right;color:var(--teal2);">$20,582</td><td style="text-align:right;color:#8b7ff0;">$5,902</td><td style="text-align:right;font-weight:600;">$415,798</td><td style="text-align:right;"><span style="color:var(--muted);font-size:11px;">&mdash;</span></td></tr>
