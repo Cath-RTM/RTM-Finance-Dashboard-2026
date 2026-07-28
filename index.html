@@ -918,16 +918,8 @@
 <div class="mc"><div class="lbl">YTD Top Cancelled Service (Campaigns)</div><div class="val" style="color:#FDA813;font-size:22px;">Hosting</div><div class="sub">62 unique campaigns &middot; low value</div></div>
 <div class="mc"><div class="lbl">YTD Top Service Cancellation (Reason)</div><div class="val" style="color:#FDA813;font-size:18px;">Changing Providers</div><div class="sub">94 cancels &middot; $50.6K</div></div>
 </div>
- <div class="two">
- <div class="cc"><div class="ct">Monthly trend</div><div class="cw" style="height:200px;"><canvas id="c_ca_trend"></canvas></div></div>
- <div class="cc"><div class="ct">By reason</div><div class="cw" style="height:200px;"><canvas id="c_ca_reason"></canvas></div></div>
- </div>
- <div class="two">
- <div class="cc"><div class="ct">By service</div><div class="cw" style="height:340px;"><canvas id="c_ca_svc"></canvas></div></div>
- <div class="cc"><div class="ct">By account manager</div><div class="cw" style="height:300px;"><canvas id="c_ca_am"></canvas></div></div>
- </div>
  <hr class="dv">
- <p class="slabel" data-nav="Monthly Detail">Cancellation — monthly detail</p>
+ <p class="slabel" data-nav="Breakdown">Cancellation breakdown — trend, reason, service &amp; AM &middot; filter by month / AM / service / reason</p>
  <div class="btn-row" id="cdFilterRow">
  <div class="cdd-wrap" id="cdMonthWrap">
  <div class="cdd-btn" id="cdMonthBtn" onclick="cdToggleDD('Month')">All months</div>
@@ -2299,6 +2291,7 @@ function _resizeAllCharts(){
 }
 
 function _safeChart(canvas,cfg){
+  if(!canvas)return null;
   try{
     if(typeof Chart.getChart==='function'){
       var ex=Chart.getChart(canvas);
