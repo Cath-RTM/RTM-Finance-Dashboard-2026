@@ -116,7 +116,23 @@
 
 /* Right-align Expected Collection column to match Active Subscriptions / % Collected (2026-07-25) */
 .pf-ec{text-align:right!important;}.pf-res{text-align:right!important;}#opexTrendTbl th:nth-child(4),#opexTrendTbl td:nth-child(4){text-align:right!important;}#moDetailTbl th:nth-child(-n+3),#moDetailTbl td:nth-child(-n+3){text-align:left!important;}#moDetailTbl th:nth-child(4),#moDetailTbl td:nth-child(4){text-align:center!important;}#moDetailTbl th:last-child,#moDetailTbl td:last-child{text-align:right!important;}#ebSummaryTable th:last-child,#ebSummaryTable td:last-child{text-align:center!important;}#amRecurTbl th:first-child,#amRecurTbl td:first-child{text-align:left!important;}#amRecurTbl th:not(:first-child),#amRecurTbl td:not(:first-child){text-align:center!important;}#salEbitdaTbl th:first-child,#salEbitdaTbl td:first-child{text-align:left!important;}#salEbitdaTbl th:not(:first-child),#salEbitdaTbl td:not(:first-child){text-align:center!important;}#opexOverheadTbl th:first-child,#opexOverheadTbl td:first-child{text-align:left!important;}#opexOverheadTbl th:not(:first-child),#opexOverheadTbl td:not(:first-child){text-align:center!important;}#recEntityTbl th:first-child,#recEntityTbl td:first-child{text-align:left!important;}#recEntityTbl th:not(:first-child),#recEntityTbl td:not(:first-child){text-align:center!important;}
-.mg5{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1.25rem}@media(min-width:580px){.mg5{grid-template-columns:repeat(5,1fr)}}</style>
+.mg5{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1.25rem}@media(min-width:580px){.mg5{grid-template-columns:repeat(5,1fr)}}
+/* ===== COMPACT MODE — global vertical tightening (draft) ===== */
+.pane{padding:1rem 1.25rem!important;}
+.cc{padding:.6rem .75rem!important;margin-bottom:.6rem!important;}
+.cs{margin-bottom:.4rem!important;}
+.slabel{margin-bottom:.4rem!important;}
+.dt th{padding:5px 12px!important;}
+.dt td{padding:4px 12px!important;line-height:1.3!important;}
+.mc{padding:.5rem .75rem!important;}
+.two,.three{gap:.7rem!important;margin-bottom:.6rem!important;}
+.mg2,.mg3,.mg5{gap:.6rem!important;margin-bottom:.7rem!important;}
+.dv{margin:.8rem 0!important;}
+.prog-bar{height:5px!important;margin-top:3px!important;}
+.leg{margin-bottom:.4rem!important;}
+.ig{gap:.6rem!important;margin-bottom:.6rem!important;}
+.good-box,.ins,.info-ins,.good-ins,.warn-ins,.neg-ins{padding:8px 11px!important;margin-bottom:.5rem!important;line-height:1.45!important;}
+</style>
 </head>
 <body>
 <div class="applayout">
@@ -940,7 +956,7 @@
 <p class="slabel" data-nav="Payroll vs ceiling">Payroll vs the 39% ceiling &mdash; actual &amp; forecast</p>
 <p class="cs" id="salCeilSub" style="margin:.2rem 0 .7rem;"></p>
 <div class="mg4" id="salFwdKpi"></div>
-<div class="cc" style="margin-top:1rem;"><div class="tscroll"><table class="dt" style="width:100%;"><thead><tr><th>Month</th><th style="text-align:right;">Payroll</th><th style="text-align:right;">Revenue</th><th style="text-align:right;">39% Ceiling</th><th style="text-align:right;">Over / Under</th><th style="text-align:right;">Ratio</th><th style="text-align:right;">Result</th></tr></thead><tbody id="salCeilBody"></tbody></table></div></div>
+<div class="cc" style="margin-top:1rem;"><div class="tscroll"><table class="dt" style="width:100%;"><thead><tr><th>Month</th><th style="text-align:right;">Payroll</th><th style="text-align:right;">Revenue</th><th style="text-align:right;">39% Ceiling</th><th style="text-align:right;">Over / Under</th><th style="text-align:right;">Ratio</th><th class="pf-res" style="text-align:right;">Result</th></tr></thead><tbody id="salCeilBody"></tbody></table></div></div>
 <hr class="dv">
 <p class="slabel" data-nav="Insights">Key insights</p>
 <div id="salInsights" class="ig ig-4"></div>
@@ -2769,7 +2785,7 @@ function buildSalaryCeiling(){
     rows+='<tr>'+ml+td(_slM(pay))+td(_slM(rev))+td(_slM(ceil))+
       '<td style="text-align:right;color:'+(over>0?'var(--neg)':'var(--pos)')+';">'+(over>0?'+':'&minus;')+_slM(Math.abs(over))+'</td>'+
       '<td style="text-align:right;font-weight:600;color:'+vcol(v)+';">'+r.toFixed(1)+'%</td>'+
-      '<td style="text-align:right;font-weight:600;color:'+vcol(v)+';">'+vtxt(v)+'</td></tr>';
+      '<td class="pf-res" style="text-align:right;font-weight:600;color:'+vcol(v)+';">'+vtxt(v)+'</td></tr>';
   }
   body.innerHTML=rows;
   var fyPay=o.payrollYTD+run*(12-n), fyRev=0; for(i=0;i<12;i++) fyRev+=fcTotRev[i];
